@@ -10,7 +10,8 @@ class samba::server($workgroup = '',
   augeas { 'global-section':
     context => $context,
     changes => "set ${target} global",
-    require => Class["samba::server::config"]
+    require => Class["samba::server::config"],
+    notify => Class['samba::server::service']
   }
 
   augeas { 'global-workgroup':
@@ -20,6 +21,7 @@ class samba::server($workgroup = '',
       '' => "rm ${target}/workgroup",
     },
     require => Augeas['global-section'],
+    notify => Class['samba::server::service']
   }
 
   augeas { 'global-server_string':
