@@ -1,10 +1,10 @@
-define samba::share($ensure = present,
+define samba::server::share($ensure = present,
                     $description = '',
                     $path = '',
                     $browsable = '',
                     $guest_ok = '',
                     $read_only = '') {
-  
+
   $context = "/files/etc/samba/smb.conf"
   $target = "target[. = '${name}']"
 
@@ -53,7 +53,7 @@ define samba::share($ensure = present,
       },
       require => Augeas["${name}-section"],
     }
-    
+
     augeas { "${name}-read_only":
       context => $context,
       changes => $read_only ? {
