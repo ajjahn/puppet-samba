@@ -14,7 +14,8 @@ define samba::server::share($ensure = present,
       present => "set ${target} ${name}",
       default => "rm ${target} ${name}",
     },
-    require => Class["samba::server::config"]
+    require => Class["samba::server::config"],
+    notify => Class["samba::server::service"]
   }
 
   if $ensure == "present" {
@@ -25,6 +26,7 @@ define samba::server::share($ensure = present,
         '' => "rm ${target}/comment",
       },
       require => Augeas["${name}-section"],
+      notify => Class["samba::server::service"]
     }
 
     augeas { "${name}-path":
@@ -34,6 +36,7 @@ define samba::server::share($ensure = present,
         '' => "rm ${target}/path",
       },
       require => Augeas["${name}-section"],
+      notify => Class["samba::server::service"]
     }
 
     augeas { "${name}-browsable":
@@ -43,6 +46,7 @@ define samba::server::share($ensure = present,
         '' => "rm ${target}/browsable",
       },
       require => Augeas["${name}-section"],
+      notify => Class["samba::server::service"]
     }
 
     augeas { "${name}-guest_ok":
@@ -52,6 +56,7 @@ define samba::server::share($ensure = present,
         '' => "rm \"${target}/guest ok\"",
       },
       require => Augeas["${name}-section"],
+      notify => Class["samba::server::service"]
     }
 
     augeas { "${name}-read_only":
@@ -61,6 +66,7 @@ define samba::server::share($ensure = present,
         '' => "rm \"${target}/read_only\"",
       },
       require => Augeas["${name}-section"],
+      notify => Class["samba::server::service"]
     }
   }
 }
