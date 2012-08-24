@@ -1,4 +1,4 @@
-class samba::server($workgroup = pcch) {
+class samba::server($workgroup = '') {
 	include samba::server::install
 	include samba::server::config
 	include samba::server::service
