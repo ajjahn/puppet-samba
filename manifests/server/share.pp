@@ -7,6 +7,8 @@ define samba::server::share($ensure = present,
                     $directory_mask = '',
                     $force_create_mask = '',
                     $force_directory_mask = '',
+                    $force_group = '',
+                    $force_user = '',
                     $guest_ok = '',
                     $read_only = '') {
 
@@ -100,6 +102,26 @@ define samba::server::share($ensure = present,
       changes => $force_directory_mask ? {
         default => "set \"${target}/force directory mask\" '${force_directory_mask}'",
         '' => "rm \"${target}/force directory mask\"",
+      },
+      require => Augeas["${name}-section"],
+      notify => Class["samba::server::service"]
+    }
+
+    augeas { "${name}-force_group":
+      context => $context,
+      changes => $force_group ? {
+        default => "set \"${target}/force group\" '${force_group}'",
+        '' => "rm \"${target}/force group\"",
+      },
+      require => Augeas["${name}-section"],
+      notify => Class["samba::server::service"]
+    }
+
+    augeas { "${name}-force_user":
+      context => $context,
+      changes => $force_user ? {
+        default => "set \"${target}/force user\" '${force_user}'",
+        '' => "rm \"${target}/force user\"",
       },
       require => Augeas["${name}-section"],
       notify => Class["samba::server::service"]
