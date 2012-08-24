@@ -1,4 +1,5 @@
-class samba::server($server_string = '',
+class samba::server($interfaces = '',
+                    $server_string = '',
                     $workgroup = '') {
 
   include samba::server::install
@@ -12,6 +13,16 @@ class samba::server($server_string = '',
     context => $context,
     changes => "set ${target} global",
     require => Class["samba::server::config"],
+    notify => Class['samba::server::service']
+  }
+
+  augeas { 'global-interfaces':
+    context => $context,
+    changes => $interfaces ? {
+      default => ["set \"${target}/interfaces\" '$interfaces'", "set \"${target}/bind interfaces only\" yes"],
+      '' => ["rm \"${target}/interfaces\"", "rm \"${target}/bind interfaces only\""],
+    },
+    require => Augeas['global-section'],
     notify => Class['samba::server::service']
   }
 
