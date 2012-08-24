@@ -1,5 +1,6 @@
-class samba::server($workgroup = '',
-                    $server_string = '') {
+class samba::server($server_string = '',
+                    $workgroup = '') {
+
   include samba::server::install
   include samba::server::config
   include samba::server::service
@@ -14,16 +15,6 @@ class samba::server($workgroup = '',
     notify => Class['samba::server::service']
   }
 
-  augeas { 'global-workgroup':
-    context => $context,
-    changes => $workgroup ? {
-      default => "set ${target}/workgroup '$workgroup'",
-      '' => "rm ${target}/workgroup",
-    },
-    require => Augeas['global-section'],
-    notify => Class['samba::server::service']
-  }
-
   augeas { 'global-server_string':
     context => $context,
     changes => $server_string ? {
@@ -34,4 +25,13 @@ class samba::server($workgroup = '',
     notify => Class['samba::server::service']
   }
 
+  augeas { 'global-workgroup':
+    context => $context,
+    changes => $workgroup ? {
+      default => "set ${target}/workgroup '$workgroup'",
+      '' => "rm ${target}/workgroup",
+    },
+    require => Augeas['global-section'],
+    notify => Class['samba::server::service']
+  }
 }

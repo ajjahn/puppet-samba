@@ -1,18 +1,18 @@
 define samba::server::share($ensure = present,
-                    $comment = '',
-                    $path = '',
-                    $browsable = '',
-                    $copy = '',
-                    $create_mask = '',
-                    $directory_mask = '',
-                    $force_create_mask = '',
-                    $force_directory_mask = '',
-                    $force_group = '',
-                    $force_user = '',
-                    $guest_account = '',
-                    $guest_ok = '',
-                    $guest_only = '',
-                    $read_only = '') {
+                            $browsable = '',
+                            $comment = '',
+                            $copy = '',
+                            $create_mask = '',
+                            $directory_mask = '',
+                            $force_create_mask = '',
+                            $force_directory_mask = '',
+                            $force_group = '',
+                            $force_user = '',
+                            $guest_account = '',
+                            $guest_ok = '',
+                            $guest_only = '',
+                            $path = '',
+                            $read_only = '') {
 
   $context = "/files/etc/samba/smb.conf"
   $target = "target[. = '${name}']"
@@ -28,32 +28,22 @@ define samba::server::share($ensure = present,
   }
 
   if $ensure == "present" {
-    augeas { "${name}-comment":
-      context => $context,
-      changes => $comment ? {
-        default => "set ${target}/comment '${comment}'",
-        '' => "rm ${target}/comment",
-      },
-      require => Augeas["${name}-section"],
-      notify => Class["samba::server::service"]
-    }
-
-    augeas { "${name}-path":
-      context => $context,
-      changes => $path ? {
-        default => "set ${target}/path '${path}'",
-        '' => "rm ${target}/path",
-      },
-      require => Augeas["${name}-section"],
-      notify => Class["samba::server::service"]
-    }
-
     augeas { "${name}-browsable":
       context => $context,
       changes => $browsable ? {
         true => "set ${target}/browsable yes",
         false => "set ${target}/browsable no",
         default => "rm ${target}/browsable",
+      },
+      require => Augeas["${name}-section"],
+      notify => Class["samba::server::service"]
+    }
+
+    augeas { "${name}-comment":
+      context => $context,
+      changes => $comment ? {
+        default => "set ${target}/comment '${comment}'",
+        '' => "rm ${target}/comment",
       },
       require => Augeas["${name}-section"],
       notify => Class["samba::server::service"]
@@ -156,6 +146,16 @@ define samba::server::share($ensure = present,
         true => "set \"${target}/guest only\" yes",
         false => "set \"${target}/guest only\" no",
         default => "rm \"${target}/guest only\"",
+      },
+      require => Augeas["${name}-section"],
+      notify => Class["samba::server::service"]
+    }
+
+    augeas { "${name}-path":
+      context => $context,
+      changes => $path ? {
+        default => "set ${target}/path '${path}'",
+        '' => "rm ${target}/path",
       },
       require => Augeas["${name}-section"],
       notify => Class["samba::server::service"]
