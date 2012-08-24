@@ -13,8 +13,8 @@ define samba::server::share($ensure = present,
   augeas { "${name}-section":
     context => $context,
     changes => $ensure ? {
-      present => "set ${target} ${name}",
-      default => "rm ${target} ${name}",
+      present => "set ${target} '${name}'",
+      default => "rm ${target} '${name}'",
     },
     require => Class["samba::server::config"],
     notify => Class["samba::server::service"]
@@ -34,7 +34,7 @@ define samba::server::share($ensure = present,
     augeas { "${name}-path":
       context => $context,
       changes => $path ? {
-        default => "set ${target}/path ${path}",
+        default => "set ${target}/path '${path}'",
         '' => "rm ${target}/path",
       },
       require => Augeas["${name}-section"],
