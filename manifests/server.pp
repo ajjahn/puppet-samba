@@ -1,7 +1,7 @@
 class samba::server($workgroup = '') {
-	include samba::server::install
-	include samba::server::config
-	include samba::server::service
+  include samba::server::install
+  include samba::server::config
+  include samba::server::service
 
   $context = "/files/etc/samba/smb.conf"
   $target = "target[. = 'global']"
