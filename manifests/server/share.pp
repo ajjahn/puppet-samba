@@ -2,6 +2,7 @@ define samba::server::share($ensure = present,
                     $comment = '',
                     $path = '',
                     $browsable = '',
+                    $copy = '',
                     $create_mask = '',
                     $guest_ok = '',
                     $read_only = '') {
@@ -46,6 +47,16 @@ define samba::server::share($ensure = present,
         true => "set ${target}/browsable yes",
         false => "set ${target}/browsable no",
         default => "rm ${target}/browsable",
+      },
+      require => Augeas["${name}-section"],
+      notify => Class["samba::server::service"]
+    }
+
+    augeas { "${name}-copy":
+      context => $context,
+      changes => $copy ? {
+        default => "set ${target}/copy '${copy}'",
+        '' => "rm ${target}/copy",
       },
       require => Augeas["${name}-section"],
       notify => Class["samba::server::service"]
