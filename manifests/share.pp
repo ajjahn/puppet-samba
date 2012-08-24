@@ -5,11 +5,10 @@ define samba::share($ensure=present,
               $guestok="no",
               $readonly="no" ) {
   
-  $share = $name
   $context = "/files/etc/samba/smb.conf"
   $target = "target[. = '${name}']"
 
-  augeas { "${share}":
+  augeas { "${name}":
     context => $context,
     changes => $ensure ? {
       present => [ "set ${target} ${name}",
