@@ -1,5 +1,5 @@
 define samba::server::share($ensure = present,
-                    $description = '',
+                    $comment = '',
                     $path = '',
                     $browsable = '',
                     $create_mask = '',
@@ -22,8 +22,8 @@ define samba::server::share($ensure = present,
   if $ensure == "present" {
     augeas { "${name}-comment":
       context => $context,
-      changes => $description ? {
-        default => "set ${target}/comment ${description}",
+      changes => $comment ? {
+        default => "set ${target}/comment '${comment}'",
         '' => "rm ${target}/comment",
       },
       require => Augeas["${name}-section"],
