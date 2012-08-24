@@ -10,6 +10,7 @@ define samba::server::share($ensure = present,
                     $force_group = '',
                     $force_user = '',
                     $guest_ok = '',
+                    $guest_only = '',
                     $read_only = '') {
 
   $context = "/files/etc/samba/smb.conf"
@@ -133,6 +134,17 @@ define samba::server::share($ensure = present,
         true => "set \"${target}/guest ok\" yes",
         false => "set \"${target}/guest ok\" no",
         default => "rm \"${target}/guest ok\"",
+      },
+      require => Augeas["${name}-section"],
+      notify => Class["samba::server::service"]
+    }
+
+    augeas { "${name}-guest_only":
+      context => $context,
+      changes => $guest_only ? {
+        true => "set \"${target}/guest only\" yes",
+        false => "set \"${target}/guest only\" no",
+        default => "rm \"${target}/guest only\"",
       },
       require => Augeas["${name}-section"],
       notify => Class["samba::server::service"]
