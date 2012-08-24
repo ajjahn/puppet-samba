@@ -1,4 +1,5 @@
 class samba::server($interfaces = '',
+                    $security = '',
                     $server_string = '',
                     $workgroup = '') {
 
@@ -21,6 +22,16 @@ class samba::server($interfaces = '',
     changes => $interfaces ? {
       default => ["set \"${target}/interfaces\" '$interfaces'", "set \"${target}/bind interfaces only\" yes"],
       '' => ["rm \"${target}/interfaces\"", "rm \"${target}/bind interfaces only\""],
+    },
+    require => Augeas['global-section'],
+    notify => Class['samba::server::service']
+  }
+
+  augeas { 'global-security':
+    context => $context,
+    changes => $security ? {
+      default => "set \"${target}/security\" '$security'",
+      '' => "rm \"${target}/security\"",
     },
     require => Augeas['global-section'],
     notify => Class['samba::server::service']
