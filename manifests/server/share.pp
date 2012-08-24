@@ -66,7 +66,7 @@ define samba::server::share($ensure = present,
     augeas { "${name}-create_mask":
       context => $context,
       changes => $create_mask ? {
-        default => "set \"${target}/create mask\" yes",
+        default => "set \"${target}/create mask\" '${create_mask}'",
         '' => "rm \"${target}/create mask\"",
       },
       require => Augeas["${name}-section"],
