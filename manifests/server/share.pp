@@ -2,6 +2,7 @@ define samba::server::share($ensure = present,
                     $description = '',
                     $path = '',
                     $browsable = '',
+                    $create_mask = '',
                     $guest_ok = '',
                     $read_only = '') {
 
@@ -45,6 +46,16 @@ define samba::server::share($ensure = present,
         true => "set ${target}/browsable yes",
         false => "set ${target}/browsable no",
         default => "rm ${target}/browsable",
+      },
+      require => Augeas["${name}-section"],
+      notify => Class["samba::server::service"]
+    }
+
+    augeas { "${name}-create_mask":
+      context => $context,
+      changes => $create_mask ? {
+        default => "set \"${target}/create mask\" yes",
+        '' => "rm \"${target}/create mask\"",
       },
       require => Augeas["${name}-section"],
       notify => Class["samba::server::service"]
