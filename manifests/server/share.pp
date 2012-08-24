@@ -42,8 +42,9 @@ define samba::server::share($ensure = present,
     augeas { "${name}-browsable":
       context => $context,
       changes => $browsable ? {
-        default => "set ${target}/browsable ${browsable}",
-        '' => "rm ${target}/browsable",
+        true => "set ${target}/browsable yes",
+        false => "set ${target}/browsable no",
+        default => "rm ${target}/browsable",
       },
       require => Augeas["${name}-section"],
       notify => Class["samba::server::service"]
@@ -52,8 +53,9 @@ define samba::server::share($ensure = present,
     augeas { "${name}-guest_ok":
       context => $context,
       changes => $guest_ok ? {
-        default => "set \"${target}/guest ok\" ${guest_ok}",
-        '' => "rm \"${target}/guest ok\"",
+        true => "set \"${target}/guest ok\" yes",
+        false => "set \"${target}/guest ok\" no",
+        default => "rm \"${target}/guest ok\"",
       },
       require => Augeas["${name}-section"],
       notify => Class["samba::server::service"]
@@ -62,8 +64,9 @@ define samba::server::share($ensure = present,
     augeas { "${name}-read_only":
       context => $context,
       changes => $read_only ? {
-        default => "set \"${target}/read only\" ${read_only}",
-        '' => "rm \"${target}/read_only\"",
+        true => "set \"${target}/read only\" yes",
+        false => "set \"${target}/read only\" no",
+        default => "rm \"${target}/read_only\"",
       },
       require => Augeas["${name}-section"],
       notify => Class["samba::server::service"]
