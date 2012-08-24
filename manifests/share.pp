@@ -2,7 +2,6 @@ define samba::share($ensure=present,
               $description,
               $path,
               $browsable,
-              $mask,
               $guestok="no",
               $readonly="no" ) {
   
@@ -17,7 +16,8 @@ define samba::share($ensure=present,
                     "set ${target}/comment ${description}",
                     "set ${target}/path ${path}",
                     "set ${target}/browsable ${browsable}",
-                    "set ${target}/mask ${mask}" ],
+                    "set ${target}/guestok ${guestok}",
+                    "set ${target}/readonly ${readonly}" ],
       default => ["rm ${target} ${name}"],
     },
     require => Class["samba::server::config"]
