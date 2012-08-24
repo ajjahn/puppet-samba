@@ -4,10 +4,10 @@ class samba::server($workgroup = PCCH) {
 	include samba::server::service
   
   augeas { global:
-      context => "/files/etc/samba/smb.conf",
-      changes => [
-        "set target[. = 'global']/workgroup $workgroup"
-        ],
-      require => Class["samba::server::config"]
-    }
+    context => "/files/etc/samba/smb.conf",
+    changes => [
+      "set target[. = 'global']/workgroup $workgroup"
+      ],
+    require => Class["samba::server::config"]
+  }
 }
