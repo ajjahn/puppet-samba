@@ -17,7 +17,7 @@ class samba::server($workgroup = '',
   augeas { 'global-workgroup':
     context => $context,
     changes => $workgroup ? {
-      default => "set ${target}/workgroup $workgroup",
+      default => "set ${target}/workgroup '$workgroup'",
       '' => "rm ${target}/workgroup",
     },
     require => Augeas['global-section'],
