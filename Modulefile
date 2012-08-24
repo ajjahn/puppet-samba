@@ -1,4 +1,4 @@
-name 'examplecorp-mymodule'
+name 'puppet-samba'
 version '0.1.0'
 summary "Module for provisioning Samba"
 description "Module for provisioning Samba"
