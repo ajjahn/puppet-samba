@@ -9,6 +9,7 @@ define samba::server::share($ensure = present,
                     $force_directory_mask = '',
                     $force_group = '',
                     $force_user = '',
+                    $guest_account = '',
                     $guest_ok = '',
                     $guest_only = '',
                     $read_only = '') {
@@ -123,6 +124,16 @@ define samba::server::share($ensure = present,
       changes => $force_user ? {
         default => "set \"${target}/force user\" '${force_user}'",
         '' => "rm \"${target}/force user\"",
+      },
+      require => Augeas["${name}-section"],
+      notify => Class["samba::server::service"]
+    }
+
+    augeas { "${name}-guest_account":
+      context => $context,
+      changes => $guest_account ? {
+        default => "set \"${target}/guest account\" '${guest_account}'",
+        '' => "rm \"${target}/guest account\"",
       },
       require => Augeas["${name}-section"],
       notify => Class["samba::server::service"]
