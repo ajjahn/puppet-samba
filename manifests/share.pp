@@ -2,8 +2,8 @@ define samba::share($ensure = present,
                     $description = '',
                     $path = '',
                     $browsable = '',
-                    $guestok = '',
-                    $readonly = '') {
+                    $guest_ok = '',
+                    $read_only = '') {
   
   $context = "/files/etc/samba/smb.conf"
   $target = "target[. = '${name}']"
@@ -45,20 +45,20 @@ define samba::share($ensure = present,
       require => Augeas["${name}-section"],
     }
 
-    augeas { "${name}-guestok":
+    augeas { "${name}-guest_ok":
       context => $context,
-      changes => $guestok ? {
-        default => "set ${target}/guestok ${guestok}",
-        '' => "rm ${target}/guestok",
+      changes => $guest_ok ? {
+        default => "set \"${target}/guest ok\" ${guest_ok}",
+        '' => "rm \"${target}/guest ok\"",
       },
       require => Augeas["${name}-section"],
     }
     
-    augeas { "${name}-readonly":
+    augeas { "${name}-read_only":
       context => $context,
-      changes => $readonly ? {
-        default => "set ${target}/readonly ${readonly}",
-        '' => "rm ${target}/readonly",
+      changes => $read_only ? {
+        default => "set \"${target}/read only\" ${read_only}",
+        '' => "rm \"${target}/read_only\"",
       },
       require => Augeas["${name}-section"],
     }
