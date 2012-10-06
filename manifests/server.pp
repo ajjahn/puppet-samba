@@ -1,6 +1,7 @@
 class samba::server($interfaces = '',
                     $security = '',
                     $server_string = '',
+                    $unix_password_sync = '',
                     $workgroup = '') {
 
   include samba::server::install
@@ -45,6 +46,16 @@ class samba::server($interfaces = '',
     },
     require => Augeas['global-section'],
     notify  => Class['samba::server::service']
+  }
+
+  augeas { 'global-unix_password_sync':
+    context => $context,
+    changes => $unix_password_sync ? {
+      default => "set \"${target}/unix password sync\" '$unix_password_sync'",
+      '' => "rm \"${target}/unix_password_sync\"",
+    },
+    require => Augeas['global-section'],
+    notify => Class['samba::server::service']
   }
 
   augeas { 'global-workgroup':
