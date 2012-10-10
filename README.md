@@ -48,3 +48,9 @@ Most configuration options are optional.
 3. Commit your changes (`git commit -am 'Added some feature'`)
 4. Push to the branch (`git push origin my-new-feature`)
 5. Create new Pull Request
+
+## License
+
+This module is released under the MIT license:
+
+* [http://www.opensource.org/licenses/MIT](http://www.opensource.org/licenses/MIT)
