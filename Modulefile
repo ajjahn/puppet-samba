@@ -1,5 +1,5 @@
 name 'ajjahn-samba'
-version '0.1.0'
+version '0.1.1'
 summary "Module for provisioning Samba"
 description "Module for provisioning Samba"
 author 'Adam Jahn'
