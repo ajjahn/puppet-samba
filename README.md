@@ -10,6 +10,10 @@ Clone this repo to your Puppet modules directory
 
     git clone git://github.com/ajjahn/puppet-samba.git samba
 
+or
+
+    puppet module install ajjahn/samba
+
 ## Usage
 
 Tweak and add the following to your site manifest:
