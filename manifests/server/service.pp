@@ -1,7 +1,8 @@
 class samba::server::service ($ensure = running, $enable = true) {
-  case $operatingsystem {
-      centos, redhat: { $service_name = 'smb' }
-      debian, ubuntu: { $service_name = 'smbd' }
+  case $::osfamily {
+      Redhat:  { $service_name = 'smb' }
+      Debian:  { $service_name = 'smbd' }
+      default: { fail("$::osfamily is not supported by this module.") }
     }
 
   service { "$service_name" :
