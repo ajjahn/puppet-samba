@@ -29,7 +29,7 @@ Tweak and add the following to your site manifest:
       samba::server::share {'example-share':
         comment => 'Example Share',
         path => '/path/to/share',
-        guest_only => true
+        guest_only => true,
         guest_ok => true,
         guest_account => "guest",
         browsable => false,
