@@ -2,7 +2,7 @@
 
 Module for provisioning Samba
 
-Tested on Ubuntu 12.04, patches to support other operating systems are welcome.
+Tested on Ubuntu 12.04, CentOS 6.3, patches to support other operating systems are welcome.
 
 ## Installation
 
