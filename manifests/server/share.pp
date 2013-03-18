@@ -15,10 +15,9 @@ define samba::server::share($ensure = present,
                             $read_only = '',
                             $public = '',
                             $writable = '',
-                            $printable = '',
-  ) {
+                            $printable = '') {
 
-  $context = '/files/etc/samba/smb.conf'
+  $context = $samba::server::context
   $target = "target[. = '${name}']"
 
   augeas { "${name}-section":
