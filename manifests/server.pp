@@ -18,53 +18,27 @@ class samba::server($interfaces = '',
     notify  => Class['samba::server::service']
   }
 
-  augeas { 'global-interfaces':
-    context => $context,
-    changes => $interfaces ? {
-      default => ["set \"${target}/interfaces\" '${interfaces}'", "set \"${target}/bind interfaces only\" yes"],
-      ''      => ["rm \"${target}/interfaces\"", "rm \"${target}/bind interfaces only\""],
-    },
-    require => Augeas['global-section'],
-    notify  => Class['samba::server::service']
-  }
 
-  augeas { 'global-security':
-    context => $context,
-    changes => $security ? {
-      default => "set \"${target}/security\" '${security}'",
-      ''      => "rm \"${target}/security\"",
-    },
-    require => Augeas['global-section'],
-    notify  => Class['samba::server::service']
+  set_samba_option {
+    'bind interfaces only': value => 'yes';
+    'security':             value => $security;
+    'server string':        value => $server_string;
+    'unix password sync':   value => $unix_password_sync;
+    'workgroup':            value => $workgroup;
   }
+}
 
-  augeas { 'global-server_string':
-    context => $context,
-    changes => $server_string ? {
-      default => "set \"${target}/server string\" '${server_string}'",
-      ''      => "rm \"${target}/server string\"",
-    },
-    require => Augeas['global-section'],
-    notify  => Class['samba::server::service']
+define set_samba_option ( $value = '', $signal = 'samba::server::service' ) {
+  $context = $samba::server::context
+  $target = $samba::server::target
+  $changes = $value ? {
+    default => "set \"${target}/$name\" $value",
+    ''      => "rm ${target}/$name",
   }
-
-  augeas { 'global-unix_password_sync':
+  augeas { "samba-$name":
     context => $context,
-    changes => $unix_password_sync ? {
-      default => "set \"${target}/unix password sync\" '$unix_password_sync'",
-      '' => "rm \"${target}/unix_password_sync\"",
-    },
+    changes => $changes,
     require => Augeas['global-section'],
-    notify => Class['samba::server::service']
-  }
-
-  augeas { 'global-workgroup':
-    context => $context,
-    changes => $workgroup ? {
-      default => "set ${target}/workgroup '${workgroup}'",
-      ''      => "rm ${target}/workgroup",
-    },
-    require => Augeas['global-section'],
-    notify  => Class['samba::server::service']
+    notify  => Class[$signal]
   }
 }

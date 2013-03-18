@@ -12,9 +12,10 @@ define samba::server::share($ensure = present,
                             $guest_ok = '',
                             $guest_only = '',
                             $path = '',
-                            $read_only = '') {
+                            $read_only = '',
+                            $writeable = '') {
 
-  $context = '/files/etc/samba/smb.conf'
+  $context = $samba::server::context
   $target = "target[. = '${name}']"
 
   augeas { "${name}-section":
@@ -34,6 +35,17 @@ define samba::server::share($ensure = present,
         true    => "set ${target}/browsable yes",
         false   => "set ${target}/browsable no",
         default => "rm ${target}/browsable",
+      },
+      require => Augeas["${name}-section"],
+      notify  => Class['samba::server::service']
+    }
+
+    augeas { "${name}-writeable ":
+      context => $context,
+      changes => $writeable ? {
+        true    => "set ${target}/writeable  yes",
+        false   => "set ${target}/writeable  no",
+        default => "rm ${target}/writeable",
       },
       require => Augeas["${name}-section"],
       notify  => Class['samba::server::service']
