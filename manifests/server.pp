@@ -20,6 +20,7 @@ class samba::server($interfaces = '',
 
 
   set_samba_option {
+    'interfaces':           value => $interfaces;
     'bind interfaces only': value => 'yes';
     'security':             value => $security;
     'server string':        value => $server_string;
@@ -32,9 +33,10 @@ define set_samba_option ( $value = '', $signal = 'samba::server::service' ) {
   $context = $samba::server::context
   $target = $samba::server::target
   $changes = $value ? {
-    default => "set \"${target}/$name\" $value",
+    default => "set \"${target}/$name\" \"$value\"",
     ''      => "rm ${target}/$name",
   }
+
   augeas { "samba-$name":
     context => $context,
     changes => $changes,
