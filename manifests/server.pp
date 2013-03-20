@@ -2,7 +2,8 @@ class samba::server($interfaces = '',
                     $security = '',
                     $server_string = '',
                     $unix_password_sync = '',
-                    $workgroup = '') {
+                    $workgroup = '',
+                    $options = {}) {
 
   include samba::server::install
   include samba::server::config
@@ -10,6 +11,27 @@ class samba::server($interfaces = '',
 
   $context = '/files/etc/samba/smb.conf'
   $target = "target[. = 'global']"
+
+  $keys = split(inline_template("<%= options.keys.join(',') %>"), ",")
+  augeas_option {
+    $keys: 
+      options => $options
+  }
+
+  define augeas_option ($options) {
+    $context = '/files/etc/samba/smb.conf'
+    $target = "target[. = 'global']"
+    $value = $options[$name]
+    augeas { "samba-global-${name}":
+      context => $context,
+      changes => $value ? {
+        default => ["set \"${target}/${name}\" '${value}'"],
+        ''      => ["rm \"${target}/${name}\""],
+      },
+      require => Augeas['global-section'],
+      notify  => Class['samba::server::service']
+    }
+  }
 
   augeas { 'global-section':
     context => $context,
