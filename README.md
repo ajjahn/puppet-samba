@@ -44,6 +44,7 @@ Tweak and add the following to your site manifest:
     }
 
 If you want join Samba server to Active Directory. Tested on Ubuntu 12.04.
+
     node 'server.example.com' {
       class {'samba::server':
         workgroup => 'example',
@@ -56,7 +57,7 @@ If you want join Samba server to Active Directory. Tested on Ubuntu 12.04.
         comment           => 'RBTH User Storage',
         path              => "$smb_share",
         browsable         => true,
-        writeable         => true,
+        writable          => true,
         create_mask       => 0770,
         directory_mask    => 0770,
       }

@@ -13,7 +13,9 @@ define samba::server::share($ensure = present,
                             $guest_only = '',
                             $path = '',
                             $read_only = '',
-                            $writeable = '') {
+                            $public = '',
+                            $writable = '',
+                            $printable = '') {
 
   $context = $samba::server::context
   $target = "target[. = '${name}']"
@@ -35,17 +37,6 @@ define samba::server::share($ensure = present,
         true    => "set ${target}/browsable yes",
         false   => "set ${target}/browsable no",
         default => "rm ${target}/browsable",
-      },
-      require => Augeas["${name}-section"],
-      notify  => Class['samba::server::service']
-    }
-
-    augeas { "${name}-writeable ":
-      context => $context,
-      changes => $writeable ? {
-        true    => "set ${target}/writeable  yes",
-        false   => "set ${target}/writeable  no",
-        default => "rm ${target}/writeable",
       },
       require => Augeas["${name}-section"],
       notify  => Class['samba::server::service']
@@ -179,6 +170,39 @@ define samba::server::share($ensure = present,
         true    => "set \"${target}/read only\" yes",
         false   => "set \"${target}/read only\" no",
         default => "rm \"${target}/read_only\"",
+      },
+      require => Augeas["${name}-section"],
+      notify  => Class['samba::server::service']
+    }
+
+    augeas { "${name}-public":
+      context => $context,
+      changes => $public ? {
+        true    => "set \"${target}/public\" yes",
+        false   => "set \"${target}/public\" no",
+        default => "rm \"${target}/public\"",
+      },
+      require => Augeas["${name}-section"],
+      notify  => Class['samba::server::service']
+    }
+
+    augeas { "${name}-writable":
+      context => $context,
+      changes => $writable ? {
+        true    => "set \"${target}/writable\" yes",
+        false   => "set \"${target}/writable\" no",
+        default => "rm \"${target}/writable\"",
+      },
+      require => Augeas["${name}-section"],
+      notify  => Class['samba::server::service']
+    }
+
+    augeas { "${name}-printable":
+      context => $context,
+      changes => $printable ? {
+        true    => "set \"${target}/printable\" yes",
+        false   => "set \"${target}/printable\" no",
+        default => "rm \"${target}/printable\"",
       },
       require => Augeas["${name}-section"],
       notify  => Class['samba::server::service']

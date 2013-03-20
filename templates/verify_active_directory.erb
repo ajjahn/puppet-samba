@@ -61,9 +61,9 @@ export KRB5CCNAME=$(umask 0077; mktemp -q winbind_cache.XXXXXXXX)
 get_tgt() {
   (
   $EXPECT -c "spawn -noecho kinit -c $KRB5CCNAME ${winbind_acct}@${default_realm};
-	expect :; 
-	send ${password}\n; 
-	expect eof" 
+	expect :;
+	send ${password}\n;
+	expect eof"
   ) &> /dev/null
   klist -c $KRB5CCNAME &> /dev/null
   return $?
@@ -97,7 +97,7 @@ else
     echo "ERROR: return user list from AD is empty" >&2
     success=false
   fi
-  
+
   # get rid of cred cache
   kdestroy -c $KRB5CCNAME &> /dev/null
 fi

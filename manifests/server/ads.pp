@@ -3,7 +3,7 @@
 # Copyright (c) 2013 Lebedev Vadim, abraham1901 at g mail dot c o m
 # Licensed under the MIT License, http://opensource.org/licenses/MIT
 
-class samba::server::ads($ensure                     = present,
+class samba::server::ads($ensure = present,
   $winbind_acct               = 'admin',
   $winbind_pass               = 'SecretPass',
   $realm                      = 'domain.com',
@@ -101,7 +101,7 @@ class samba::server::ads($ensure                     = present,
     group   => root,
     mode    => "0755",
     content => template("${module_name}/configure_active_directory.erb"),
-    require => [ Package['krb5-user', 'winbind', 'expect'], 
+    require => [ Package['krb5-user', 'winbind', 'expect'],
       Augeas['samba-realm', 'samba-security', 'samba-winbind enum users',
         'samba-winbind enum groups', 'samba-winbind uid', 'samba-winbind gid',
         'samba-winbind use default domain'] ],

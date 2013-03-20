@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# This script can cause a host to join or leave 
+# This script can cause a host to join or leave
 # the Windows Active Directory domain
 
 # variables
@@ -120,15 +120,15 @@ for attempt in $(seq 1 $max_attempts); do
     ad_settle
     echo "Getting TGT for ${winbind_acct}@${my_realm}" >&2
     $EXPECT -c "spawn -noecho kinit -c $KRB5CCNAME ${winbind_acct}@${my_realm};
-        expect :; 
-        send ${password}\n; 
+        expect :;
+        send ${password}\n;
         expect eof"
     klist -c $KRB5CCNAME &> /dev/null && break
 done
 
-if [ $(wbinfo -u|wc -l) != 0 ]; then 
-	success=true 
-else 
+if [ $(wbinfo -u|wc -l) != 0 ]; then
+	success=true
+else
 	echo "ERROR: return user list from AD is empty" >&2
 	success=false
 fi
