@@ -91,7 +91,7 @@ class samba::server::ads($ensure = present,
     require => [ Package['krb5-user', 'winbind', 'expect'],
       Augeas['samba-realm', 'samba-security', 'samba-winbind enum users',
         'samba-winbind enum groups', 'samba-winbind uid', 'samba-winbind gid',
-        'samba-winbind use default domain'] ],
+        'samba-winbind use default domain'], Service['winbind'] ],
   }
 
   file {'configure_active_directory':
@@ -104,13 +104,13 @@ class samba::server::ads($ensure = present,
     require => [ Package['krb5-user', 'winbind', 'expect'],
       Augeas['samba-realm', 'samba-security', 'samba-winbind enum users',
         'samba-winbind enum groups', 'samba-winbind uid', 'samba-winbind gid',
-        'samba-winbind use default domain'] ],
+        'samba-winbind use default domain'], Service['winbind'] ],
   }
 
   exec {'join-active-directory':
     # join the domain configured in samba.conf
     command => '/sbin/configure_active_directory -j',
     unless  => '/sbin/verify_active_directory',
-    require => [ File['configure_active_directory', 'verify_active_directory'], Class['samba::server::winbind'] ],
+    require => [ File['configure_active_directory', 'verify_active_directory'], Service['winbind'] ],
   }
 }
