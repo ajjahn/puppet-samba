@@ -3,6 +3,7 @@ class samba::server::service ($ensure = running, $enable = true) {
       Redhat: { $service_name = 'smb' }
       Debian: { $service_name = 'smbd' }
       Gentoo: { $service_name = 'samba' }
+      Archlinux: { $service_name = 'smbd' }
 
       # Currently Gentoo has $::osfamily = "Linux". This should change in
       # Factor 1.7.0 <http://projects.puppetlabs.com/issues/17029>, so
