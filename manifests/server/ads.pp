@@ -25,10 +25,19 @@ class samba::server::ads($ensure = present,
   $map_readonly               = 'no',
   $target_ou                  = 'Nix_Mashine') {
 
+  $krb5_user_package = $osfamily ? {
+    'RedHat' => 'krb5-workstation',
+    default  => 'krb5-user',
+  }
+  $winbind_package = $osfamily ? {
+    'RedHat' => 'samba-winbind',
+    default  => 'winbind',
+  }
+
   package{
-    'krb5-user': ensure => installed;
-    'winbind':   ensure => installed;
-    'expect':    ensure => installed;
+    $krb5_user_package: ensure => installed;
+    $winbind_package:   ensure => installed;
+    'expect':           ensure => installed;
   }
 
   include samba::server::config
@@ -88,7 +97,7 @@ class samba::server::ads($ensure = present,
     group   => root,
     mode    => "0755",
     content => template("${module_name}/verify_active_directory.erb"),
-    require => [ Package['krb5-user', 'winbind', 'expect'],
+    require => [ Package[$krb5_user_package, $winbind_package, 'expect'],
       Augeas['samba-realm', 'samba-security', 'samba-winbind enum users',
         'samba-winbind enum groups', 'samba-winbind uid', 'samba-winbind gid',
         'samba-winbind use default domain'] ],
@@ -101,7 +110,7 @@ class samba::server::ads($ensure = present,
     group   => root,
     mode    => "0755",
     content => template("${module_name}/configure_active_directory.erb"),
-    require => [ Package['krb5-user', 'winbind', 'expect'],
+    require => [ Package[$krb5_user_package, $winbind_package, 'expect'],
       Augeas['samba-realm', 'samba-security', 'samba-winbind enum users',
         'samba-winbind enum groups', 'samba-winbind uid', 'samba-winbind gid',
         'samba-winbind use default domain'] ],
