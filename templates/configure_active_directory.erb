@@ -54,7 +54,7 @@ do
   esac
 done
 
-password="<%= scope.lookupvar('samba::server::ads::winbind_pass') -%>"
+password='<%= scope.lookupvar('samba::server::ads::winbind_pass') -%>'
 
 # short hostname from facter
 my_hostname="<%= hostname -%>"
@@ -80,7 +80,7 @@ echo "Please do not kill me; I may be slow" >&2
 
 if [ "$action" = "leave" ]; then
   logger -st $PROG "Leaving AD domain"
-  $NET ads $action -U ${winbind_acct}%${password} | grep Deleted && success=true || success=false
+  $NET ads $action -U "${winbind_acct}%${password}" | grep Deleted && success=true || success=false
   kdestroy
   rm -f /etc/krb5.keytab
   if [ $success = "true" ]; then
@@ -105,8 +105,14 @@ ad_settle() {
 export KRB5CCNAME=$(umask 0077; mktemp -q winbind_cache.XXXXXXXX)
 
 if [ "$action" = "join" ]; then
+    if [ "${target_ou}" != "" ]; then
+    	ou_parameter="createcomputer=\"${target_ou}\""
+    else
+        ou_parameter=""
+    fi
+
     logger -st $PROG "Joining AD domain" >&2
-    $NET ads $action -U ${winbind_acct}%${password} createcomputer="${target_ou}"\
+    $NET ads $action -U "${winbind_acct}%${password}" ${ou_parameter} \
 	| grep Joined && success=true || success=false
 
 if [ $success = "false" ]; then
@@ -119,10 +125,10 @@ for attempt in $(seq 1 $max_attempts); do
     echo "$attempt of $max_attempts:"
     ad_settle
     echo "Getting TGT for ${winbind_acct}@${my_realm}" >&2
-    $EXPECT -c "spawn -noecho kinit -c $KRB5CCNAME ${winbind_acct}@${my_realm};
+    $EXPECT -c spawn -noecho kinit -c $KRB5CCNAME '${winbind_acct}@${my_realm};
         expect :;
         send ${password}\n;
-        expect eof"
+        expect eof'
     klist -c $KRB5CCNAME &> /dev/null && break
 done
 
