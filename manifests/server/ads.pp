@@ -31,7 +31,7 @@ class samba::server::ads($ensure = present,
   }
 
   if $osfamily == "RedHat" {
-    if $operatingsystemrelease =~ /^6\./) {
+    if $operatingsystemrelease =~ /^6\./ {
       $winbind_package = 'samba-winbind'
     } else {
       $winbind_package = 'samba-common'
