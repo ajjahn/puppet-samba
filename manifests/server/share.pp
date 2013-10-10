@@ -95,7 +95,7 @@ define samba::server::share($ensure = present,
       $read_only ? {
         true    => "set \"${target}/read only\" yes",
         false   => "set \"${target}/read only\" no",
-        default => "rm  \"${target}/read_only\"",
+        default => "rm \"${target}/read only\"",
       },
       $public ? {
         true    => "set \"${target}/public\" yes",
