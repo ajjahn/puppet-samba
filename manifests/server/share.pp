@@ -171,7 +171,7 @@ define samba::server::share($ensure = present,
       changes => $read_only ? {
         true    => "set \"${target}/read only\" yes",
         false   => "set \"${target}/read only\" no",
-        default => "rm \"${target}/read_only\"",
+        default => "rm \"${target}/read only\"",
       },
       require => Augeas["${name}-section"],
       notify  => Class['samba::server::service']
