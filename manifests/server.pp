@@ -30,6 +30,24 @@ class samba::server($interfaces = '',
     'unix password sync':   value => $unix_password_sync;
     'workgroup':            value => $workgroup;
   }
+
+  file {'check_samba_user':
+    # script checks to see if a samba account exists for a given user
+    path    => '/sbin/check_samba_user',
+    owner   => root,
+    group   => root,
+    mode    => "0755",
+    content => template("${module_name}/check_samba_user"),
+  }
+
+  file {'add_samba_user':
+    # script creates a new samba account for a given user and password
+    path    => '/sbin/add_samba_user',
+    owner   => root,
+    group   => root,
+    mode    => "0755",
+    content => template("${module_name}/add_samba_user"),
+  }
 }
 
 define set_samba_option ( $value = '', $signal = 'samba::server::service' ) {
