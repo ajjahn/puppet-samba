@@ -15,7 +15,9 @@ define samba::server::share($ensure = present,
                             $read_only = '',
                             $public = '',
                             $writable = '',
-                            $printable = '') {
+                            $printable = '',
+                            $valid_users = '',
+                            ) {
 
   $context = $samba::server::context
   $target = "target[. = '${name}']"
@@ -203,6 +205,16 @@ define samba::server::share($ensure = present,
         true    => "set \"${target}/printable\" yes",
         false   => "set \"${target}/printable\" no",
         default => "rm \"${target}/printable\"",
+      },
+      require => Augeas["${name}-section"],
+      notify  => Class['samba::server::service']
+    }
+
+    augeas { "${name}-valid_users":
+      context => $context,
+      changes => $printable ? {
+        default => "set ${target}/valid users '${valid_users}'",
+        ''      => "rm ${target}/valid users",
       },
       require => Augeas["${name}-section"],
       notify  => Class['samba::server::service']
