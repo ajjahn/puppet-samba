@@ -212,7 +212,7 @@ define samba::server::share($ensure = present,
 
     augeas { "${name}-valid_users":
       context => $context,
-      changes => $printable ? {
+      changes => $valid_users ? {
         default => "set ${target}/valid users '${valid_users}'",
         ''      => "rm ${target}/valid users",
       },
