@@ -126,8 +126,8 @@ define samba::server::share($ensure = present,
     augeas { "${name}-valid_users":
       context => $context,
       changes => $valid_users ? {
-        default => "set ${target}/valid users '${valid_users}'",
-        ''      => "rm ${target}/valid users",
+        default => "set \"${target}/valid users\" '${valid_users}'",
+        ''      => "rm \"${target}/valid users\"",
       },
       require => Augeas["${name}-section"],
       notify  => Class['samba::server::service']
