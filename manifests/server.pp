@@ -2,7 +2,8 @@ class samba::server($interfaces = '',
                     $security = '',
                     $server_string = '',
                     $unix_password_sync = '',
-                    $workgroup = '') {
+                    $workgroup = '',
+                    $bind_interfaces_only = 'yes',) {
 
   include samba::server::install
   include samba::server::config
@@ -21,7 +22,7 @@ class samba::server($interfaces = '',
 
   set_samba_option {
     'interfaces':           value => $interfaces;
-    'bind interfaces only': value => 'yes';
+    'bind interfaces only': value => $bind_interfaces_only;
     'security':             value => $security;
     'server string':        value => $server_string;
     'unix password sync':   value => $unix_password_sync;
