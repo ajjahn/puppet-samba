@@ -8,10 +8,13 @@ class samba::server($interfaces = '',
   include samba::server::config
   include samba::server::service
 
-  $context = '/files/etc/samba/smb.conf'
-  $target = "target[. = 'global']"
+  $incl    = '/etc/samba/smb.conf'
+  $context = "/files/etc/samba/smb.conf"
+  $target  = "target[. = 'global']"
 
   augeas { 'global-section':
+    incl    => $incl,
+    lens    => 'Samba.lns',
     context => $context,
     changes => "set ${target} global",
     require => Class['samba::server::config'],
@@ -30,14 +33,18 @@ class samba::server($interfaces = '',
 }
 
 define set_samba_option ( $value = '', $signal = 'samba::server::service' ) {
+  $incl    = $samba::server::incl
   $context = $samba::server::context
-  $target = $samba::server::target
+  $target  = $samba::server::target
+
   $changes = $value ? {
     default => "set \"${target}/$name\" \"$value\"",
     ''      => "rm ${target}/$name",
   }
 
   augeas { "samba-$name":
+    incl    => $incl,
+    lens    => 'Samba.lns',
     context => $context,
     changes => $changes,
     require => Augeas['global-section'],
