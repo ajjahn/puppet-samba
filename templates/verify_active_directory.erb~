@@ -105,4 +105,3 @@ fi
 [[ $success == "false" ]] && exit 1
 
 exit 0
-

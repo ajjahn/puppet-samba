@@ -1,19 +1,19 @@
-class samba::server::config inherits samba {
+class samba::server::config {
 
-  file { "${samba_config_dir}":
+  file { '/etc/samba':
     ensure  => directory,
     owner   => 'root',
     group   => 'root',
     mode    => '0755',
   }
 
-  file { "${samba_config_file}":
+  file { '/etc/samba/smb.conf':
     ensure  => present,
     owner   => 'root',
     group   => 'root',
-    mode    => '0444',
+    mode    => '0644',
     require => [File['/etc/samba'], Class['samba::server::install']],
     notify  => Class['samba::server::service']
   }
-}
 
+}

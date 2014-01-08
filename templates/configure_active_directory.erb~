@@ -146,4 +146,3 @@ rm -f $KRB5CCNAME &> /dev/null || :
 fi
 
 [ "$success" = "true" ] && exit 0 || exit 1
-
