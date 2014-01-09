@@ -14,3 +14,4 @@ class samba::server::winbind ($ensure = running, $enable = true) {
   }
 
 }
+

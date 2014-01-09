@@ -2,18 +2,21 @@ class samba::server($interfaces = '',
                     $security = '',
                     $server_string = '',
                     $unix_password_sync = '',
-                    $workgroup = '') {
+                    $workgroup = '',
+                    $bind_interfaces_only = true,
+                    $realm = '',
+                    $machine_password_timeout = '',
+                    $unix_extensions = '') inherits samba {
 
   include samba::server::install
   include samba::server::config
   include samba::server::service
 
-  $incl    = '/etc/samba/smb.conf'
-  $context = "/files/etc/samba/smb.conf"
-  $target  = "target[. = 'global']"
+  $context     = "/files${samba_config_file}"
+  $target      = "target[. = 'global']"
 
   augeas { 'global-section':
-    incl    => $incl,
+    incl    => "${samba_config_file}",
     lens    => 'Samba.lns',
     context => $context,
     changes => "set ${target} global",
@@ -21,29 +24,38 @@ class samba::server($interfaces = '',
     notify  => Class['samba::server::service']
   }
 
-
   set_samba_option {
-    'interfaces':           value => $interfaces;
-    'bind interfaces only': value => 'yes';
-    'security':             value => $security;
-    'server string':        value => $server_string;
-    'unix password sync':   value => $unix_password_sync;
-    'workgroup':            value => $workgroup;
+    'interfaces':                value => $interfaces;
+    'bind interfaces only':      value => $bind_interfaces_only, bool => true;
+    'security':                  value => $security;
+    'server string':             value => $server_string;
+    'unix password sync':        value => $unix_password_sync;
+    'workgroup':                 value => $workgroup;
+    'realm':                     value => $realm;
+    'machine password timeout':  value => $machine_password_timeout;
+    'unix extensions':           value => $unix_extensions, bool => true;
   }
 }
 
-define set_samba_option ( $value = '', $signal = 'samba::server::service' ) {
-  $incl    = $samba::server::incl
+define set_samba_option ( $value = '', $signal = 'samba::server::service', $bool = false ) {
   $context = $samba::server::context
   $target  = $samba::server::target
-
-  $changes = $value ? {
-    default => "set \"${target}/$name\" \"$value\"",
-    ''      => "rm ${target}/$name",
+  if ($bool) {
+    $changes = $value ? {
+      true    => "set \"${target}/$name\" yes",
+      false   => "set \"${target}/$name\" no",
+      default => "rm ${target}/$name"
+    }
+  }
+  else {
+    $changes = $value ? {
+      default => "set \"${target}/$name\" \"$value\"",
+      ''      => "rm ${target}/$name",
+    }
   }
 
   augeas { "samba-$name":
-    incl    => $incl,
+    incl    => "${samba_config_file}",
     lens    => 'Samba.lns',
     context => $context,
     changes => $changes,

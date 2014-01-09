@@ -2,7 +2,7 @@
 
 Module for provisioning Samba
 
-Tested on Ubuntu 12.04, CentOS 6.3, patches to support other operating systems are welcome.
+Tested on Ubuntu 12.04, CentOS 6.3, SLES 11 SP2 patches to support other operating systems are welcome.
 
 ## Installation
 
@@ -34,7 +34,7 @@ Tweak and add the following to your site manifest:
         guest_account => "guest",
         browsable => false,
         create_mask => 0777,
-        force_create_mask => 0777,
+        force_create_mode => 0777,
         directory_mask => 0777,
         force_directory_mask => 0777,
         force_group => 'group',
@@ -86,3 +86,4 @@ Most configuration options are optional.
 This module is released under the MIT license:
 
 * [http://www.opensource.org/licenses/MIT](http://www.opensource.org/licenses/MIT)
+

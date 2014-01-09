@@ -4,8 +4,8 @@ define samba::server::share($ensure = present,
                             $copy = '',
                             $create_mask = '',
                             $directory_mask = '',
-                            $force_create_mask = '',
-                            $force_directory_mask = '',
+                            $force_create_mode = '',
+                            $force_directory_mode = '',
                             $force_group = '',
                             $force_user = '',
                             $guest_account = '',
@@ -15,13 +15,16 @@ define samba::server::share($ensure = present,
                             $read_only = '',
                             $public = '',
                             $writable = '',
-                            $printable = '') {
-  $incl    = $samba::server::incl
-  $context = $samba::server::context
-  $target  = "target[. = '${name}']"
+                            $printable = '',
+                            $wide_links = '',
+                            $follow_symlinks = '',
+                            $valid_users = '') {
+  $config_file = $samba::params::samba_config_file
+  $target      = "target[. = '${name}']"
+  $context     = $samba::server::context
 
   augeas { "${name}-section":
-    incl    => $incl,
+    incl    => "${config_file}",
     lens    => 'Samba.lns',
     context => $context,
     changes => $ensure ? {
@@ -35,17 +38,17 @@ define samba::server::share($ensure = present,
   if $ensure == 'present' {
     $changes = [
       $browsable ? {
-          true    => "set \"${target}/browsable\" yes",
-          false   => "set \"${target}/browsable\" no",
-          default => "rm  \"${target}/browsable\"",
+        true    => "set \"${target}/browsable\" yes",
+        false   => "set \"${target}/browsable\" no",
+        default => "rm  \"${target}/browsable\"",
       },
       $comment ? {
-          default => "set \"${target}/comment\" '${comment}'",
-          ''      => "rm  \"${target}/comment\"",
+        default => "set \"${target}/comment\" '${comment}'",
+        ''      => "rm  \"${target}/comment\"",
       },
       $copy ? {
-          default => "set \"${target}/copy\" '${copy}'",
-          ''      => "rm  \"${target}/copy\"",
+        default => "set \"${target}/copy\" '${copy}'",
+        ''      => "rm  \"${target}/copy\"",
       },
       $create_mask ? {
         default => "set \"${target}/create mask\" '${create_mask}'",
@@ -55,13 +58,13 @@ define samba::server::share($ensure = present,
         default => "set \"${target}/directory mask\" '${directory_mask}'",
         ''      => "rm  \"${target}/directory mask\"",
       },
-      $force_create_mask ? {
-        default => "set \"${target}/force create mask\" '${force_create_mask}'",
-        ''      => "rm  \"${target}/force create mask\"",
+      $force_create_mode ? {
+        default => "set \"${target}/force create mode\" '${force_create_mode}'",
+        ''      => "rm  \"${target}/force create mode\"",
       },
-      $force_directory_mask ? {
-        default => "set \"${target}/force directory mask\" '${force_directory_mask}'",
-        ''      => "rm  \"${target}/force directory mask\"",
+      $force_directory_mode ? {
+        default => "set \"${target}/force directory mode\" '${force_directory_mode}'",
+        ''      => "rm  \"${target}/force directory mode\"",
       },
       $force_group ? {
         default => "set \"${target}/force group\" '${force_group}'",
@@ -109,10 +112,24 @@ define samba::server::share($ensure = present,
         false   => "set \"${target}/printable\" no",
         default => "rm  \"${target}/printable\"",
       },
+      $wide_links ? {
+        true    => "set \"${target}/wide links\" yes",
+        false   => "set \"${target}/wide links\" no",
+        default => "rm  \"${target}/wide links\"",
+      },
+      $follow_symlinks ? {
+        true    => "set \"${target}/follow symlinks\" yes",
+        false   => "set \"${target}/follow symlinks\" no",
+        default => "rm  \"${target}/follow symlinks\"",
+      },
+      $valid_users ? {
+        default => "set \"${target}/valid users\" '${valid_users}'",
+        ''      => "rm  \"${target}/valid users\"",
+      },
     ]
 
     augeas { "${name}-changes":
-      incl    => $incl,
+      incl    => "${config_file}",
       lens    => 'Samba.lns',
       context => $context,
       changes => $changes,
@@ -121,3 +138,4 @@ define samba::server::share($ensure = present,
     }
   }
 }
+
