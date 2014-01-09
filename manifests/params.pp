@@ -23,7 +23,6 @@ class samba::params {
 
   $samba_config_dir  = '/etc/samba'
   $samba_config_file = '/etc/samba/smb.conf'
-  $lense             = 'Samba.lns'
 }
 
 
