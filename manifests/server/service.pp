@@ -1,7 +1,16 @@
 class samba::server::service ($ensure = running, $enable = true) {
   case $::osfamily {
       Redhat: { $service_name = 'smb' }
-      Debian: { $service_name = 'smbd' }
+
+      #On Debian family: Debian 7 => samba , Ubuntu => smbd
+      #Others, I don't know, hope 'samba' will works
+      Debian: {
+        case $::operatingsystem{
+                Debian: { $service_name = 'samba' }
+                Ubuntu: { $service_name = 'smbd'}
+                default: { $service_name='samba'}
+        }
+      }
       Gentoo: { $service_name = 'samba' }
 
       # Currently Gentoo has $::osfamily = "Linux". This should change in
