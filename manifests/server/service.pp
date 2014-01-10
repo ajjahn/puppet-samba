@@ -12,6 +12,7 @@ class samba::server::service ($ensure = running, $enable = true) {
         }
       }
       Gentoo: { $service_name = 'samba' }
+      Archlinux: { $service_name = 'smbd' }
 
       # Currently Gentoo has $::osfamily = "Linux". This should change in
       # Factor 1.7.0 <http://projects.puppetlabs.com/issues/17029>, so
