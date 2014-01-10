@@ -21,7 +21,7 @@ fi
 #  } >&2
 #fi
 
-password="<%= scope.lookupvar('samba::server::ads::winbind_pass') -%>"
+password='<%= scope.lookupvar('samba::server::ads::winbind_pass') -%>'
 
 # short hostname from facter
 my_hostname="<%= hostname -%>"
@@ -62,7 +62,8 @@ get_tgt() {
   (
   $EXPECT -c "spawn -noecho kinit -c $KRB5CCNAME ${winbind_acct}@${default_realm};
 	expect :;
-	send ${password}\n;
+	send {${password}};
+	send \n;
 	expect eof"
   ) &> /dev/null
   klist -c $KRB5CCNAME &> /dev/null

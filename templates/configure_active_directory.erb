@@ -125,10 +125,11 @@ for attempt in $(seq 1 $max_attempts); do
     echo "$attempt of $max_attempts:"
     ad_settle
     echo "Getting TGT for ${winbind_acct}@${my_realm}" >&2
-    $EXPECT -c spawn -noecho kinit -c $KRB5CCNAME '${winbind_acct}@${my_realm};
+    $EXPECT -c "spawn -noecho kinit -c $KRB5CCNAME ${winbind_acct}@${my_realm};
         expect :;
-        send ${password}\n;
-        expect eof'
+        send {${password}};
+        send \n;
+        expect eof"
     klist -c $KRB5CCNAME &> /dev/null && break
 done
 
