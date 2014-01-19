@@ -12,8 +12,12 @@ define samba::server::share($ensure = present,
                             $guest_ok = '',
                             $guest_only = '',
                             $path = '',
+                            $op_locks = '',
+                            $level2_oplocks = '',
+                            $veto_oplock_files = '',
                             $read_only = '',
                             $public = '',
+                            $write_list = '',
                             $writable = '',
                             $printable = '',
                             $valid_users = '',
@@ -132,5 +136,52 @@ define samba::server::share($ensure = present,
       require => Augeas["${name}-section"],
       notify  => Class['samba::server::service']
     }
+
+    augeas { "${name}-op_locks":
+      context => $context,
+      changes => $op_locks ? {
+        default => "set \"${target}/oplocks\" '${op_locks}'",
+        ''      => "rm \"${target}/oplocks\"",
+      },
+      require => Augeas["${name}-section"],
+      notify  => Class['samba::server::service']
+    }
+    augeas { "${name}-level2_oplocks":
+      context => $context,
+      changes => $level2_oplocks ? {
+        default => "set \"${target}/level2 oplocks\" '${level2_oplocks}'",
+        ''      => "rm \"${target}/level2 oplocks\"",
+      },
+      require => Augeas["${name}-section"],
+      notify  => Class['samba::server::service']
+    }
+    augeas { "${name}-veto_oplock_files":
+      context => $context,
+      changes => $veto_oplock_files ? {
+        default => "set \"${target}/veto oplock files\" '${veto_oplock_files}'",
+        ''      => "rm \"${target}/veto oplock files\"",
+      },
+      require => Augeas["${name}-section"],
+      notify  => Class['samba::server::service']
+    }
+    augeas { "${name}-valid_users":
+      context => $context,
+      changes => $valid_users ? {
+        default => "set \"${target}/valid users\" '${valid_users}'",
+        ''      => "rm \"${target}/valid users\"",
+      },
+      require => Augeas["${name}-section"],
+      notify  => Class['samba::server::service']
+    }
+    augeas { "${name}-write_list":
+      context => $context,
+      changes => $write_list ? {
+        default => "set \"${target}/write list\" '${write_list}'",
+        ''      => "rm \"${target}/write list\"",
+      },
+      require => Augeas["${name}-section"],
+      notify  => Class['samba::server::service']
+    }
+
   }
 }
