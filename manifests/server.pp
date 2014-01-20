@@ -22,8 +22,7 @@ class samba::server($interfaces = '',
     notify  => Class['samba::server::service']
   }
 
-
-  set_samba_option {
+  samba::server::option {
     'interfaces':           value => $interfaces;
     'bind interfaces only': value => $bind_interfaces_only;
     'security':             value => $security;
@@ -49,24 +48,5 @@ class samba::server($interfaces = '',
     mode    => "0755",
     content => template("${module_name}/add_samba_user"),
   }
-}
 
-define set_samba_option ( $value = '', $signal = 'samba::server::service' ) {
-  $incl    = $samba::server::incl
-  $context = $samba::server::context
-  $target  = $samba::server::target
-
-  $changes = $value ? {
-    default => "set \"${target}/$name\" \"$value\"",
-    ''      => "rm ${target}/$name",
-  }
-
-  augeas { "samba-$name":
-    incl    => $incl,
-    lens    => 'Samba.lns',
-    context => $context,
-    changes => $changes,
-    require => Augeas['global-section'],
-    notify  => Class[$signal]
-  }
 }

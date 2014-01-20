@@ -49,21 +49,23 @@ class samba::server::ads($ensure = present,
   include samba::server::config
   include samba::server::winbind
 
-  $signal = 'samba::server::winbind'
+  # notify winbind
+  samba::server::option {
+    'realm':                        value => $realm,
+    notify                                => Class['Samba::Server::Winbind'];
+    'winbind uid':                  value => $winbind_uid,
+    notify                                => Class['Samba::Server::Winbind'];
+    'winbind gid':                  value => $winbind_gid,
+    notify                                => Class['Samba::Server::Winbind'];
+    'winbind enum groups':          value => $winbind_enum_groups,
+    notify                                => Class['Samba::Server::Winbind'];
+    'winbind enum users':           value => $winbind_enum_users,
+    notify                                => Class['Samba::Server::Winbind'];
+    'winbind use default domain':   value => $winbind_use_default_domain,
+    notify                                => Class['Samba::Server::Winbind'];
+  }
 
-  set_samba_option {
-    'realm':                        value   => $realm,
-                                    signal  => $signal;
-    'winbind uid':                  value   => $winbind_uid,
-                                    signal  => $signal;
-    'winbind gid':                  value   => $winbind_gid,
-                                    signal  => $signal;
-    'winbind enum groups':          value   => $winbind_enum_groups,
-                                    signal  => $signal;
-    'winbind enum users':           value   => $winbind_enum_users,
-                                    signal  => $signal;
-    'winbind use default domain':   value   => $winbind_use_default_domain,
-                                    signal  => $signal;
+  samba::server::option {
     'acl group control':            value => $acl_group_control;
     'map acl inherit':              value => $map_acl_inherit;
     'inherit acls':                 value => $inherit_acls;
