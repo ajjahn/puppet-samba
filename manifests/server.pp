@@ -3,6 +3,13 @@ class samba::server($interfaces = '',
                     $server_string = '',
                     $unix_password_sync = '',
                     $workgroup = '',
+                    $socket_options = '',
+                    $deadtime = '',
+                    $keepalive = '',
+                    $load_printers = '',
+                    $printing = '',
+                    $printcap_name = '',
+                    $disable_spoolss = '',
                     $bind_interfaces_only = 'yes',) {
 
   include samba::server::install
@@ -29,6 +36,13 @@ class samba::server($interfaces = '',
     'server string':        value => $server_string;
     'unix password sync':   value => $unix_password_sync;
     'workgroup':            value => $workgroup;
+    'socket_options':       value => $socket_options;
+    'deadtime':             value => $deadtime;
+    'keepalive':            value => $keepalive;
+    'load_printers':        value => $load_printers;
+    'printing':             value => $printing;
+    'printcap_name':        value => $printcap_name;
+    'disable_spoolss':      value => $disable_spoolss;
   }
 
   file {'check_samba_user':
