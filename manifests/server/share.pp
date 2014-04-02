@@ -1,4 +1,5 @@
 define samba::server::share($ensure = present,
+                            $available = '',
                             $browsable = '',
                             $comment = '',
                             $copy = '',
@@ -22,7 +23,7 @@ define samba::server::share($ensure = present,
                             $printable = '',
                             $valid_users = '',
                             ) {
-                              
+
   $incl    = $samba::server::incl
   $context = $samba::server::context
   $target  = "target[. = '${name}']"
@@ -41,6 +42,11 @@ define samba::server::share($ensure = present,
 
   if $ensure == 'present' {
     $changes = [
+      $available ? {
+          true    => "set \"${target}/available\" yes",
+          false   => "set \"${target}/available\" no",
+          default => "rm  \"${target}/available\"",
+          },
       $browsable ? {
           true    => "set \"${target}/browsable\" yes",
           false   => "set \"${target}/browsable\" no",
