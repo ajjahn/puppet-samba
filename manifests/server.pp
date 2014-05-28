@@ -10,11 +10,17 @@ class samba::server($interfaces = '',
                     $printing = '',
                     $printcap_name = '',
                     $disable_spoolss = '',
-                    $bind_interfaces_only = 'yes',) {
+                    $bind_interfaces_only = 'yes',
+                    $manage_service = true,) {
 
   include samba::server::install
   include samba::server::config
-  include samba::server::service
+
+  # in case this is a service on a clustered node which is managed by - for
+  # example - pacemaker you can set this to <false>
+  if $manage_service {
+    include samba::server::service
+  }
 
   $incl    = '/etc/samba/smb.conf'
   $context = "/files/etc/samba/smb.conf"
