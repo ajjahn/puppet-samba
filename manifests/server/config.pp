@@ -13,7 +13,7 @@ class samba::server::config {
     group   => 'root',
     mode    => '0644',
     require => [File['/etc/samba'], Class['samba::server::install']],
-    notify  => Class['samba::server::service']
+    notify  => $::samba::server::notify_service,
   }
 
 }

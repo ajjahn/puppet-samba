@@ -37,7 +37,7 @@ define samba::server::share($ensure = present,
       default => "rm ${target} '${name}'",
     },
     require => Class['samba::server::config'],
-    notify  => Class['samba::server::service']
+    notify  => $::samba::server::notify_service,
   }
 
   if $ensure == 'present' {
@@ -130,7 +130,7 @@ define samba::server::share($ensure = present,
       context => $context,
       changes => $changes,
       require => Augeas["${name}-section"],
-      notify  => Class['samba::server::service']
+      notify  => $notify_service,
     }
 
     augeas { "${name}-valid_users":
@@ -140,7 +140,7 @@ define samba::server::share($ensure = present,
         ''      => "rm \"${target}/valid users\"",
       },
       require => Augeas["${name}-section"],
-      notify  => Class['samba::server::service']
+      notify  => $notify_service
     }
 
     augeas { "${name}-op_locks":
@@ -150,7 +150,7 @@ define samba::server::share($ensure = present,
         ''      => "rm \"${target}/oplocks\"",
       },
       require => Augeas["${name}-section"],
-      notify  => Class['samba::server::service']
+      notify  => $notify_service,
     }
     augeas { "${name}-level2_oplocks":
       context => $context,
@@ -159,7 +159,7 @@ define samba::server::share($ensure = present,
         ''      => "rm \"${target}/level2 oplocks\"",
       },
       require => Augeas["${name}-section"],
-      notify  => Class['samba::server::service']
+      notify  => $notify_service,
     }
     augeas { "${name}-veto_oplock_files":
       context => $context,
@@ -168,7 +168,7 @@ define samba::server::share($ensure = present,
         ''      => "rm \"${target}/veto oplock files\"",
       },
       require => Augeas["${name}-section"],
-      notify  => Class['samba::server::service']
+      notify  => $notify_service,
     }
     augeas { "${name}-write_list":
       context => $context,
@@ -177,7 +177,7 @@ define samba::server::share($ensure = present,
         ''      => "rm \"${target}/write list\"",
       },
       require => Augeas["${name}-section"],
-      notify  => Class['samba::server::service']
+      notify  => $notify_service,
     }
 
   }
