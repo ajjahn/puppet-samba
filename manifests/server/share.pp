@@ -57,36 +57,36 @@ define samba::server::share($ensure = present,
           ''      => "rm  \"${target}/comment\"",
       },
       $copy ? {
-          default => "set \"${target}/copy\" '${copy}'",
           ''      => "rm  \"${target}/copy\"",
+          default => "set \"${target}/copy\" '${copy}'",
       },
       $create_mask ? {
-        default => "set \"${target}/create mask\" '${create_mask}'",
         ''      => "rm  \"${target}/create mask\"",
+        default => "set \"${target}/create mask\" '${create_mask}'",
       },
       $directory_mask ? {
-        default => "set \"${target}/directory mask\" '${directory_mask}'",
         ''      => "rm  \"${target}/directory mask\"",
+        default => "set \"${target}/directory mask\" '${directory_mask}'",
       },
       $force_create_mask ? {
-        default => "set \"${target}/force create mask\" '${force_create_mask}'",
         ''      => "rm  \"${target}/force create mask\"",
+        default => "set \"${target}/force create mask\" '${force_create_mask}'",
       },
       $force_directory_mask ? {
-        default => "set \"${target}/force directory mask\" '${force_directory_mask}'",
         ''      => "rm  \"${target}/force directory mask\"",
+        default => "set \"${target}/force directory mask\" '${force_directory_mask}'",
       },
       $force_group ? {
-        default => "set \"${target}/force group\" '${force_group}'",
         ''      => "rm  \"${target}/force group\"",
+        default => "set \"${target}/force group\" '${force_group}'",
       },
       $force_user ? {
-        default => "set \"${target}/force user\" '${force_user}'",
         ''      => "rm  \"${target}/force user\"",
+        default => "set \"${target}/force user\" '${force_user}'",
       },
       $guest_account ? {
-        default => "set \"${target}/guest account\" '${guest_account}'",
         ''      => "rm  \"${target}/guest account\"",
+        default => "set \"${target}/guest account\" '${guest_account}'",
       },
       $guest_ok ? {
         true    => "set \"${target}/guest ok\" yes",
@@ -136,8 +136,8 @@ define samba::server::share($ensure = present,
     augeas { "${name}-valid_users":
       context => $context,
       changes => $valid_users ? {
-        default => "set \"${target}/valid users\" '${valid_users}'",
         ''      => "rm \"${target}/valid users\"",
+        default => "set \"${target}/valid users\" '${valid_users}'",
       },
       require => Augeas["${name}-section"],
       notify  => Class['samba::server::service']
@@ -146,8 +146,8 @@ define samba::server::share($ensure = present,
     augeas { "${name}-op_locks":
       context => $context,
       changes => $op_locks ? {
-        default => "set \"${target}/oplocks\" '${op_locks}'",
         ''      => "rm \"${target}/oplocks\"",
+        default => "set \"${target}/oplocks\" '${op_locks}'",
       },
       require => Augeas["${name}-section"],
       notify  => Class['samba::server::service']
@@ -155,8 +155,8 @@ define samba::server::share($ensure = present,
     augeas { "${name}-level2_oplocks":
       context => $context,
       changes => $level2_oplocks ? {
-        default => "set \"${target}/level2 oplocks\" '${level2_oplocks}'",
         ''      => "rm \"${target}/level2 oplocks\"",
+        default => "set \"${target}/level2 oplocks\" '${level2_oplocks}'",
       },
       require => Augeas["${name}-section"],
       notify  => Class['samba::server::service']
@@ -164,8 +164,8 @@ define samba::server::share($ensure = present,
     augeas { "${name}-veto_oplock_files":
       context => $context,
       changes => $veto_oplock_files ? {
-        default => "set \"${target}/veto oplock files\" '${veto_oplock_files}'",
         ''      => "rm \"${target}/veto oplock files\"",
+        default => "set \"${target}/veto oplock files\" '${veto_oplock_files}'",
       },
       require => Augeas["${name}-section"],
       notify  => Class['samba::server::service']
@@ -173,8 +173,8 @@ define samba::server::share($ensure = present,
     augeas { "${name}-write_list":
       context => $context,
       changes => $write_list ? {
-        default => "set \"${target}/write list\" '${write_list}'",
         ''      => "rm \"${target}/write list\"",
+        default => "set \"${target}/write list\" '${write_list}'",
       },
       require => Augeas["${name}-section"],
       notify  => Class['samba::server::service']
