@@ -118,6 +118,10 @@ if [ "$action" = "join" ]; then
 if [ $success = "false" ]; then
   echo ERROR: failed to join domain >&2
   exit 2
+else
+  service winbind stop
+  service smbd restart
+  service winbind start
 fi
 
 max_attempts=5
