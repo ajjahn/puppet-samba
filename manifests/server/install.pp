@@ -1,5 +1,15 @@
 class samba::server::install {
-  package { 'samba':
-    ensure => installed
+
+  case $::operatingsystem {
+    'gentoo': {
+      package { 'net-fs/samba':
+        ensure => installed,
+      }
+    }
+    default: {
+      package { 'samba':
+        ensure => installed
+      }
+    }
   }
 }

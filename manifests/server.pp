@@ -2,6 +2,7 @@ class samba::server($interfaces = '',
                     $security = '',
                     $server_string = '',
                     $unix_password_sync = '',
+                    $encrypt_passwords = '',
                     $workgroup = '',
                     $socket_options = '',
                     $deadtime = '',
@@ -10,7 +11,14 @@ class samba::server($interfaces = '',
                     $printing = '',
                     $printcap_name = '',
                     $disable_spoolss = '',
-                    $bind_interfaces_only = 'yes',) {
+                    $bind_interfaces_only = 'yes',
+                    $netbios_name = $::hostname,
+                    $name_resolve_order = '',
+                    $log_file = '/var/log/samba.log',
+                    $log_level = '1',
+                    $include = '',
+                    $wide_links = ''
+) {
 
   include samba::server::install
   include samba::server::config
@@ -35,14 +43,21 @@ class samba::server($interfaces = '',
     'security':             value => $security;
     'server string':        value => $server_string;
     'unix password sync':   value => $unix_password_sync;
+    'encrypt passwords':    value => $encrypt_passwords;
     'workgroup':            value => $workgroup;
-    'socket_options':       value => $socket_options;
+    'socket options':       value => $socket_options;
     'deadtime':             value => $deadtime;
     'keepalive':            value => $keepalive;
     'load_printers':        value => $load_printers;
     'printing':             value => $printing;
     'printcap_name':        value => $printcap_name;
     'disable_spoolss':      value => $disable_spoolss;
+    'netbios name':         value => $netbios_name;
+    'name resolve order':   value => $name_resolve_order;
+    'log file':             value => $log_file;
+    'log level':            value => $log_level;
+    'include':              value => $include;
+    'wide links':           value => $wide_links;
   }
 
   file {'check_samba_user':
