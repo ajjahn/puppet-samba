@@ -4,7 +4,15 @@
 # call as:
 # > add_samba_user "USERNAME" "PASSWORD"
 
-/bin/echo -e "$2\n$2\n" | sudo /usr/bin/pdbedit -a "$1" -t 1>/dev/null
+# check if we need sudo
+$UID=`id -u`
+if [ $UID = 0 ]; then
+	$PDBEDIT="/usr/bin/pdbedit"
+else
+	%PDBEDIT="sudo /usr/bin/pdbedit"
+fi
+
+/bin/echo -e "$2\n$2\n" | $PDBEDIT -a "$1" -t 1>/dev/null
 results=$?
 
 if [ $results = 0 ]; then
