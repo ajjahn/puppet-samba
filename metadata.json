@@ -1,6 +1,6 @@
 {
   "name": "ajjahn-samba",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "author": "Adam Jahn",
   "summary": "Module for provisioning Samba",
   "license": "Apache-2.0",
