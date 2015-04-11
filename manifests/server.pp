@@ -18,7 +18,7 @@ class samba::server($interfaces = '',
 
   $incl    = '/etc/samba/smb.conf'
   $context = '/files/etc/samba/smb.conf'
-  $target  = 'target[. = 'global']'
+  $target  = 'target[. = "global"]'
 
   augeas { 'global-section':
     incl    => $incl,

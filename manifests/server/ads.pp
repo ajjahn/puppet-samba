@@ -82,10 +82,10 @@ class samba::server::ads($ensure = present,
 
   $changes=$nsswitch ? {
       true => [
-        'set database[. = 'passwd']/service[1] compat',
-        'set database[. = 'passwd']/service[2] winbind',
-        'set database[. = 'group']/service[1] compat',
-        'set database[. = 'group']/service[2] winbind',
+        'set database[. = "passwd"]/service[1] compat',
+        'set database[. = "passwd"]/service[2] winbind',
+        'set database[. = "group"]/service[1] compat',
+        'set database[. = "group"]/service[2] winbind',
       ],
       false => [
         "rm /files/${nss_file}/database[. = 'passwd']/service[. = 'winbind']",
