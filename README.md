@@ -1,5 +1,7 @@
 # Puppet Samba Module
 
+[![Build Status](https://travis-ci.org/ajjahn/puppet-samba.png?branch=master)](https://travis-ci.org/ajjahn/puppet-samba)
+
 Module for provisioning Samba
 
 Tested on Ubuntu 12.04, CentOS 6.3, patches to support other operating systems are welcome.
@@ -20,26 +22,26 @@ Tweak and add the following to your site manifest:
 
     node 'server.example.com' {
       class {'samba::server':
-        workgroup => 'example',
+        workgroup     => 'example',
         server_string => "Example Samba Server",
-        interfaces => "eth0 lo",
-        security => 'share'
+        interfaces    => "eth0 lo",
+        security      => 'share'
       }
 
       samba::server::share {'example-share':
-        comment => 'Example Share',
-        path => '/path/to/share',
-        guest_only => true,
-        guest_ok => true,
-        guest_account => "guest",
-        browsable => false,
-        create_mask => 0777,
-        force_create_mask => 0777,
-        directory_mask => 0777,
+        comment              => 'Example Share',
+        path                 => '/path/to/share',
+        guest_only           => true,
+        guest_ok             => true,
+        guest_account        => "guest",
+        browsable            => false,
+        create_mask          => 0777,
+        force_create_mask    => 0777,
+        directory_mask       => 0777,
         force_directory_mask => 0777,
-        force_group => 'group',
-        force_user => 'user',
-        copy => 'some-other-share',
+        force_group          => 'group',
+        force_user           => 'user',
+        copy                 => 'some-other-share',
       }
     }
 
