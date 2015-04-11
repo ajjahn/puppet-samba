@@ -17,8 +17,8 @@ class samba::server($interfaces = '',
   include samba::server::service
 
   $incl    = '/etc/samba/smb.conf'
-  $context = "/files/etc/samba/smb.conf"
-  $target  = "target[. = 'global']"
+  $context = '/files/etc/samba/smb.conf'
+  $target  = 'target[. = 'global']'
 
   augeas { 'global-section':
     incl    => $incl,
@@ -50,7 +50,7 @@ class samba::server($interfaces = '',
     path    => '/sbin/check_samba_user',
     owner   => root,
     group   => root,
-    mode    => "0755",
+    mode    => '0755',
     content => template("${module_name}/check_samba_user"),
   }
 
@@ -59,7 +59,7 @@ class samba::server($interfaces = '',
     path    => '/sbin/add_samba_user',
     owner   => root,
     group   => root,
-    mode    => "0755",
+    mode    => '0755',
     content => template("${module_name}/add_samba_user"),
   }
 

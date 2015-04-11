@@ -7,8 +7,8 @@ class samba::server::service ($ensure = running, $enable = true) {
       'Debian': {
         case $::operatingsystem{
                 'Debian': { $service_name = 'samba' }
-                'Ubuntu': { $service_name = 'smbd'}
-                default: { $service_name='samba'}
+                'Ubuntu': { $service_name = 'smbd' }
+                default: { $service_name = 'samba' }
         }
       }
       'Gentoo': { $service_name = 'samba' }
@@ -20,13 +20,13 @@ class samba::server::service ($ensure = running, $enable = true) {
       'Linux': {
         case $::operatingsystem {
           'Gentoo':  { $service_name = 'samba' }
-          default: { fail("$::operatingsystem is not supported by this module.") }
+          default: { fail("${::operatingsystem} is not supported by this module.") }
         }
       }
-      default: { fail("$::osfamily is not supported by this module.") }
+      default: { fail("${::osfamily} is not supported by this module.") }
     }
 
-  service { "$service_name" :
+  service { $service_name :
     ensure      => $ensure,
     hasstatus   => true,
     hasrestart  => true,

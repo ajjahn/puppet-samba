@@ -4,11 +4,11 @@ define samba::server::option ( $value = '' ) {
   $target  = $samba::server::target
 
   $changes = $value ? {
-    ''      => "rm ${target}/$name",
-    default => "set \"${target}/$name\" \"$value\"",
+    ''      => "rm ${target}/${name}",
+    default => "set \"${target}/${name}\" \"${value}\"",
   }
 
-  augeas { "samba-$name":
+  augeas { "samba-${name}":
     incl    => $incl,
     lens    => 'Samba.lns',
     context => $context,
