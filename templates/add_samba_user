@@ -8,7 +8,7 @@
 results=$?
 
 if [ $results = 0 ]; then
-	echo "added samba account for '$1'"	
+	echo "added samba account for '$1'"
 else
 	echo "could not add samba account for '$1'"
 fi
