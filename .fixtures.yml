@@ -1,0 +1,4 @@
+fixtures:
+  repositories:
+  symlinks:
+    samba: "#{source_dir}"
