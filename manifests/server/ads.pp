@@ -1,8 +1,6 @@
+# == Class samba::server::ads
 # This module join samba server to Active Dirctory
 #
-# Copyright (c) 2013 Lebedev Vadim, abraham1901 at g mail dot c o m
-# Licensed under the MIT License, http://opensource.org/licenses/MIT
-
 class samba::server::ads($ensure = present,
   $winbind_acct               = 'admin',
   $winbind_pass               = 'SecretPass',

@@ -1,3 +1,5 @@
+# == Define samba::server::share
+#
 define samba::server::share($ensure = present,
                             $available = '',
                             $browsable = '',

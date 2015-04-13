@@ -1,3 +1,5 @@
+# == Class samba::server::config
+#
 class samba::server::config {
 
   file { '/etc/samba':

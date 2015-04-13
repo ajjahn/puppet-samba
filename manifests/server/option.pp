@@ -1,3 +1,5 @@
+# == Define samba::server::option
+#
 define samba::server::option ( $value = '' ) {
   $incl    = $samba::server::incl
   $context = $samba::server::context

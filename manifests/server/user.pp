@@ -1,4 +1,6 @@
-define samba::server::user(
+# == Class samba::server::user
+#
+define samba::server::user (
   $password,
   $user_name = $name,
 ) {

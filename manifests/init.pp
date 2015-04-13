@@ -1,3 +1,5 @@
+# == Class samba
+#
 class samba {
   include samba::server
 

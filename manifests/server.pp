@@ -1,3 +1,5 @@
+# == Class samba::server
+#
 class samba::server($interfaces = '',
                     $security = '',
                     $server_string = '',
