@@ -4,8 +4,7 @@ describe 'samba::server::service' do
   context 'on a Debian os family' do
     let(:facts) {{ :osfamily => 'Debian' }}
 
-    it { should contain_service('samba')
-      .with_require('Class[Samba::Server::Config]') }
+    it { should contain_service('samba').with_require('Class[Samba::Server::Config]') }
 
     context 'Debian' do
       let(:facts) {{ :osfamily => 'Debian', :operatingsystem => 'Debian' }}
