@@ -27,9 +27,14 @@ describe 'samba::server::service' do
     it { should contain_service('smbd') }
   end
 
-  context 'on a Gentoo os family' do
-    let(:facts) {{ :osfamily => 'Linux', :operatingsystem => 'Gentoo' }}
-    it { should contain_service('samba') }
+  context 'on Linux os family' do
+    let(:facts) {{ :osfamily => 'Linux' }}
+    it { should raise_error(/is not supported by this module./) }
+
+    context 'Gentoo' do
+      let(:facts) {{ :osfamily => 'Linux', :operatingsystem => 'Gentoo' }}
+      it { should contain_service('samba') }
+    end
   end
 
   context 'on an unsupported OS' do
