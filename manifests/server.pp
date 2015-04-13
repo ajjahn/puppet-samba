@@ -45,18 +45,16 @@ class samba::server($interfaces = '',
     'disable_spoolss':      value => $disable_spoolss;
   }
 
-  file {'check_samba_user':
+  file {'/sbin/check_samba_user':
     # script checks to see if a samba account exists for a given user
-    path    => '/sbin/check_samba_user',
     owner   => root,
     group   => root,
     mode    => '0755',
     content => template("${module_name}/check_samba_user"),
   }
 
-  file {'add_samba_user':
+  file {'/sbin/add_samba_user':
     # script creates a new samba account for a given user and password
-    path    => '/sbin/add_samba_user',
     owner   => root,
     group   => root,
     mode    => '0755',
