@@ -12,6 +12,8 @@ class samba::server($interfaces = '',
                     $printing = '',
                     $printcap_name = '',
                     $disable_spoolss = '',
+                    $kernel_oplocks = '',
+                    $pam_password_change = '',
                     $bind_interfaces_only = 'yes',) {
 
   include samba::server::install
@@ -45,6 +47,8 @@ class samba::server($interfaces = '',
     'printing':             value => $printing;
     'printcap_name':        value => $printcap_name;
     'disable_spoolss':      value => $disable_spoolss;
+    'kernel oplocks':       value => $kernel_oplocks;
+    'pam password change':  value => $pam_password_change,
   }
 
   file {'/sbin/check_samba_user':
