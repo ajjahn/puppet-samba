@@ -25,6 +25,8 @@ define samba::server::share($ensure = present,
                             $writable = '',
                             $printable = '',
                             $valid_users = '',
+                            $follow_symlinks = '',
+                            $wide_links = '',
                             ) {
 
   $incl    = $samba::server::incl
@@ -129,6 +131,16 @@ define samba::server::share($ensure = present,
         true    => "set \"${target}/printable\" yes",
         false   => "set \"${target}/printable\" no",
         default => "rm  \"${target}/printable\"",
+      },
+      $follow_symlinks ? {
+        true    => "set \"${target}/follow symlinks\" yes",
+        false   => "set \"${target}/follow symlinks\" no",
+        default => "rm  \"${target}/follow symlinks\"",
+      },
+      $wide_links ? {
+        true    => "set \"${target}/wide links\" yes",
+        false   => "set \"${target}/wide links\" no",
+        default => "rm  \"${target}/wide links\"",
       },
     ]
 
