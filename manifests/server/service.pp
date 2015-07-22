@@ -12,4 +12,14 @@ class samba::server::service (
     enable      => $enable,
     require     => Class['samba::server::config']
   }
+
+  if $nmbd_name != undef {
+    service { $nmbd_name :
+      ensure     => $ensure,
+      hasrestart => false,
+      enable     => $enable,
+      require    => Class['samba::server::config'],
+    }
+  }
+
 }
