@@ -9,12 +9,14 @@ class samba::server::params {
     'Debian': {
       case $::operatingsystem{
         'Debian': { $service_name = 'samba' }
-        'Ubuntu': { $service_name = 'smbd' }
+        'Ubuntu': { $service_name = 'smbd'
+                    $nmbd_name = 'nmbd' }
         default: { $service_name = 'samba' }
       }
     }
     'Gentoo': { $service_name = 'samba' }
-    'Archlinux': { $service_name = 'smbd' }
+    'Archlinux': { $service_name = 'smbd'
+                   $nmbd_name = 'nmbd' }
 
     # Currently Gentoo has $::osfamily = "Linux". This should change in
     # Factor 1.7.0 <http://projects.puppetlabs.com/issues/17029>, so
