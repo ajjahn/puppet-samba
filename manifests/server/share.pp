@@ -27,6 +27,9 @@ define samba::server::share($ensure = present,
                             $valid_users = '',
                             $follow_symlinks = '',
                             $wide_links = '',
+                            $map_acl_inherit = '',
+                            $store_dos_attributes = '',
+                            $strict_allocate = '',
                             ) {
 
   $incl    = $samba::server::incl
@@ -141,6 +144,21 @@ define samba::server::share($ensure = present,
         true    => "set \"${target}/wide links\" yes",
         false   => "set \"${target}/wide links\" no",
         default => "rm  \"${target}/wide links\"",
+      },
+      $map_acl_inherit ? {
+        true    => "set \"${target}/map acl inherit\" yes",
+        false   => "set \"${target}/map acl inherit\" no",
+        default => "rm  \"${target}/map acl inherit\"",
+      },
+      $store_dos_attributes ? {
+        true    => "set \"${target}/store dos attributes\" yes",
+        false   => "set \"${target}/store dos attributes\" no",
+        default => "rm  \"${target}/store dos attributes\"",
+      },
+      $strict_allocate ? {
+        true    => "set \"${target}/strict allocate\" yes",
+        false   => "set \"${target}/strict allocate\" no",
+        default => "rm  \"${target}/strict allocate\"",
       },
     ]
 
