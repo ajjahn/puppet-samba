@@ -84,6 +84,7 @@ Most configuration options are optional.
 5. Create new Pull Request
 
 ## Module modified
+
 Added "map to guest" in samba::server
 
 ## License
