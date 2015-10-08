@@ -83,6 +83,10 @@ Most configuration options are optional.
 4. Push to the branch (`git push origin my-new-feature`)
 5. Create new Pull Request
 
+## Module modified
+
+Added "map to guest" in samba::server
+
 ## License
 
 This module is released under the MIT license:
