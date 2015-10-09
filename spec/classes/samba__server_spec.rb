@@ -13,13 +13,13 @@ describe 'samba::server' do
   it { should contain_samba__server__option('server string') }
   it { should contain_samba__server__option('unix password sync') }
   it { should contain_samba__server__option('workgroup') }
-  it { should contain_samba__server__option('socket_options') }
+  it { should contain_samba__server__option('socket options') }
   it { should contain_samba__server__option('deadtime') }
   it { should contain_samba__server__option('keepalive') }
-  it { should contain_samba__server__option('load_printers') }
+  it { should contain_samba__server__option('load printers') }
   it { should contain_samba__server__option('printing') }
-  it { should contain_samba__server__option('printcap_name') }
-  it { should contain_samba__server__option('disable_spoolss') }
+  it { should contain_samba__server__option('printcap name') }
+  it { should contain_samba__server__option('disable spoolss') }
 
   it { should contain_file('/sbin/check_samba_user').with_owner('root') }
   it { should contain_file('/sbin/add_samba_user').with_owner('root') }
