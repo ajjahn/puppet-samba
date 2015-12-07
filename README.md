@@ -53,7 +53,7 @@ node 'server.example.com' {
 }
 ```
 
-If you want join Samba server to Active Directory. Tested on Ubuntu 12.04.
+If you want join Samba server to Active Directory.
 
 ```puppet
 node 'server.example.com' {
@@ -92,10 +92,6 @@ Most configuration options are optional.
 3. Commit your changes (`git commit -am 'Added some feature'`)
 4. Push to the branch (`git push origin my-new-feature`)
 5. Create new Pull Request
-
-## Module modified
-
-Added "map to guest" in samba::server
 
 ## License
 
