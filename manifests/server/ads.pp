@@ -76,9 +76,9 @@ class samba::server::ads($ensure = present,
     'map readonly':                 value => $map_readonly;
   }
 
-  $nss_file='etc/nsswitch.conf'
+  $nss_file = 'etc/nsswitch.conf'
 
-  $changes=$nsswitch ? {
+  $changes = $nsswitch ? {
       true => [
         'set database[. = "passwd"]/service[1] compat',
         'set database[. = "passwd"]/service[2] winbind',
