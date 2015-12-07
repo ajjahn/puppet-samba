@@ -14,7 +14,7 @@ group :test do
   gem "rake"
   gem "puppet", ENV['PUPPET_VERSION'] || '~> 3.7.0'
   gem "puppet-lint", :github => 'rodjek/puppet-lint',
-    ref: '2546fed6be894bbcff15c3f48d4b6f6bc15d94d1'
+    :ref => '2546fed6be894bbcff15c3f48d4b6f6bc15d94d1'
 
   # Pin for 1.8.7 compatibility for now
   gem "rspec", '< 3.2.0'
