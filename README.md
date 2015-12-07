@@ -4,7 +4,7 @@
 
 Module for provisioning Samba
 
-Tested on:
+Supports:
 
 * Ubuntu: 14.04, 12.04
 * Debian: 8.x, 7.x
