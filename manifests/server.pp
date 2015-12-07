@@ -74,5 +74,4 @@ class samba::server($interfaces = '',
     mode    => '0755',
     content => template("${module_name}/add_samba_user"),
   }
-
 }
