@@ -1,5 +1,5 @@
 GIT
-  remote: https://github.com/rodjek/puppet-lint.git
+  remote: git://github.com/rodjek/puppet-lint.git
   revision: 2546fed6be894bbcff15c3f48d4b6f6bc15d94d1
   ref: 2546fed6be894bbcff15c3f48d4b6f6bc15d94d1
   specs:
