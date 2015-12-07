@@ -1,12 +1,11 @@
 # == Class samba::server::config
 #
 class samba::server::config {
-
   file { '/etc/samba':
-    ensure  => directory,
-    owner   => 'root',
-    group   => 'root',
-    mode    => '0755',
+    ensure => directory,
+    owner  => 'root',
+    group  => 'root',
+    mode   => '0755',
   }
 
   file { '/etc/samba/smb.conf':
@@ -17,5 +16,4 @@ class samba::server::config {
     require => [File['/etc/samba'], Class['samba::server::install']],
     notify  => Class['samba::server::service']
   }
-
 }

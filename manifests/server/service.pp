@@ -5,21 +5,20 @@ class samba::server::service (
   $enable = true
 ) inherits samba::server::params {
 
-  service { $service_name :
-    ensure      => $ensure,
-    hasstatus   => true,
-    hasrestart  => true,
-    enable      => $enable,
-    require     => Class['samba::server::config']
+  service { $samba::server::params::service_name :
+    ensure     => $ensure,
+    hasstatus  => true,
+    hasrestart => true,
+    enable     => $enable,
+    require    => Class['samba::server::config']
   }
 
-  if $nmbd_name != undef {
-    service { $nmbd_name :
+  if $samba::server::params::nmbd_name != undef {
+    service { $samba::server::params::nmbd_name :
       ensure     => $ensure,
       hasrestart => false,
       enable     => $enable,
       require    => Class['samba::server::config'],
     }
   }
-
 }

@@ -23,13 +23,13 @@ class samba::server::ads($ensure = present,
   $map_readonly               = 'no',
   $target_ou                  = 'Nix_Mashine') {
 
-  $krb5_user_package = $osfamily ? {
+  $krb5_user_package = $::osfamily ? {
     'RedHat' => 'krb5-workstation',
     default  => 'krb5-user',
   }
 
-  if $osfamily == 'RedHat' {
-    if $operatingsystemrelease =~ /^6\./ {
+  if $::osfamily == 'RedHat' {
+    if $::operatingsystemrelease =~ /^6\./ {
       $winbind_package = 'samba-winbind'
     } else {
       $winbind_package = 'samba-common'
