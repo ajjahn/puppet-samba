@@ -7,8 +7,18 @@ describe 'samba::server::service' do
     it { should contain_service('samba').with_require('Class[Samba::Server::Config]') }
 
     context 'Debian' do
-      let(:facts) {{ :osfamily => 'Debian', :operatingsystem => 'Debian' }}
-      it { should contain_service('samba') }
+      context 'wheezy' do
+        let(:facts) {{ :osfamily => 'Debian',
+                       :operatingsystem => 'Debian',
+                       :operatingsystemmajrelease => '7' }}
+        it { should contain_service('samba') }
+      end
+      context 'jessie' do
+        let(:facts) {{ :osfamily => 'Debian',
+                       :operatingsystem => 'Debian',
+                       :operatingsystemmajrelease => '8' }}
+        it { should contain_service('smbd') }
+      end
     end
 
     context 'Ubuntu' do

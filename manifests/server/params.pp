@@ -3,12 +3,14 @@
 class samba::server::params {
   case $::osfamily {
     'Redhat': { $service_name = 'smb' }
-
-    #On Debian family: Debian 7 => samba , Ubuntu => smbd
-    #Others, I don't know, hope 'samba' will works
     'Debian': {
-      case $::operatingsystem{
-        'Debian': { $service_name = 'samba' }
+      case $::operatingsystem {
+        'Debian': {
+          case $::operatingsystemmajrelease {
+            '8' : { $service_name = 'smbd' }
+            default: { $service_name = 'samba' }
+          }
+        }
         'Ubuntu': { $service_name = 'smbd'
                     $nmbd_name = 'nmbd' }
         default: { $service_name = 'samba' }
