@@ -1,3 +1,10 @@
+GIT
+  remote: git://github.com/rodjek/puppet-lint.git
+  revision: 2546fed6be894bbcff15c3f48d4b6f6bc15d94d1
+  ref: 2546fed6be894bbcff15c3f48d4b6f6bc15d94d1
+  specs:
+    puppet-lint (1.1.0)
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -230,7 +237,6 @@ GEM
     puppet-blacksmith (3.3.1)
       puppet (>= 2.7.16)
       rest-client
-    puppet-lint (1.1.0)
     puppet-syntax (2.0.0)
       rake
     puppetlabs_spec_helper (1.0.1)
@@ -307,7 +313,7 @@ DEPENDENCIES
   pry
   puppet (~> 3.7.0)
   puppet-blacksmith
-  puppet-lint
+  puppet-lint!
   puppet-syntax
   puppetlabs_spec_helper
   rake
