@@ -4,7 +4,15 @@
 # if so, it returns 0
 # otherwise it returns 1
 
-sudo /usr/bin/pdbedit -L | egrep -q "^$1:"
+# check if we need sudo
+$UID=`id -u`
+if [ $UID = 0 ]; then
+	$PDBEDIT="/usr/bin/pdbedit"
+else
+	%PDBEDIT="sudo /usr/bin/pdbedit"
+fi
+
+$PDBEDIT -L | egrep -q "^$1:"
 exists=$?
 
 if [ $exists = 0 ]; then
