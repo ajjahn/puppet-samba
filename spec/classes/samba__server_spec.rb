@@ -20,7 +20,4 @@ describe 'samba::server' do
   it { should contain_samba__server__option('printing') }
   it { should contain_samba__server__option('printcap name') }
   it { should contain_samba__server__option('disable spoolss') }
-
-  it { should contain_file('/sbin/check_samba_user').with_owner('root') }
-  it { should contain_file('/sbin/add_samba_user').with_owner('root') }
 end
