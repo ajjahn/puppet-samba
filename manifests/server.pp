@@ -58,20 +58,4 @@ class samba::server($interfaces = '',
     'os level':             value => $os_level;
     'preferred master':     value => $preferred_master;
   }
-
-  file {'/sbin/check_samba_user':
-    # script checks to see if a samba account exists for a given user
-    owner   => root,
-    group   => root,
-    mode    => '0755',
-    content => template("${module_name}/check_samba_user"),
-  }
-
-  file {'/sbin/add_samba_user':
-    # script creates a new samba account for a given user and password
-    owner   => root,
-    group   => root,
-    mode    => '0755',
-    content => template("${module_name}/add_samba_user"),
-  }
 }
