@@ -11,7 +11,6 @@ define samba::server::share($ensure = present,
                             $force_directory_mask = '',
                             $force_group = '',
                             $force_user = '',
-                            $guest_account = '',
                             $guest_ok = '',
                             $guest_only = '',
                             $hide_unreadable = '',
@@ -93,10 +92,6 @@ define samba::server::share($ensure = present,
       $force_user ? {
         ''      => "rm  \"${target}/force user\"",
         default => "set \"${target}/force user\" '${force_user}'",
-      },
-      $guest_account ? {
-        ''      => "rm  \"${target}/guest account\"",
-        default => "set \"${target}/guest account\" '${guest_account}'",
       },
       $guest_ok ? {
         true    => "set \"${target}/guest ok\" yes",
