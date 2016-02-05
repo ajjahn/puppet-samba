@@ -1,6 +1,6 @@
 # Puppet Samba Module
 
-[![Build Status](https://travis-ci.org/lilliputz/puppet-samba.png?branch=fix-global_guest_account)](https://travis-ci.org/lilliputz/puppet-samba)
+[![Build Status](https://travis-ci.org/ajjahn/puppet-samba.png?branch=master)](https://travis-ci.org/ajjahn/puppet-samba)
 
 Module for provisioning Samba
 
