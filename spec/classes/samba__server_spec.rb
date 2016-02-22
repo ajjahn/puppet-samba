@@ -20,4 +20,24 @@ describe 'samba::server' do
   it { should contain_samba__server__option('printing') }
   it { should contain_samba__server__option('printcap name') }
   it { should contain_samba__server__option('disable spoolss') }
+
+  context 'with hiera shares hash' do
+    let(:params) {{
+        'shares' => {
+          'testShare' => {
+            'path' => '/path/to/some/share',
+            'browsable' => true,
+            'writable' => true,
+            'guest_ok' => true,
+            'guest_only' => true,
+         },
+         'testShare2' => {
+            'path' => '/some/other/path'
+         }
+       }
+    }}
+    it { should contain_samba__server__share( 'testShare' ) }
+    it { should contain_samba__server__share( 'testShare2' ) }
+  end
+
 end
