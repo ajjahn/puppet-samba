@@ -19,7 +19,9 @@ class samba::server($interfaces = '',
                     $pam_password_change = '',
                     $os_level = '',
                     $preferred_master = '',
-                    $bind_interfaces_only = 'yes',) {
+                    $bind_interfaces_only = 'yes',
+                    $shares = {},
+                    $users = {}, ) {
 
   include samba::server::install
   include samba::server::config
@@ -60,4 +62,7 @@ class samba::server($interfaces = '',
     'os level':             value => $os_level;
     'preferred master':     value => $preferred_master;
   }
+
+  create_resources(samba::server::share, $shares)
+  create_resources(samba::server::user, $users)
 }
