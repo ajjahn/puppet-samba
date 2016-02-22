@@ -20,7 +20,8 @@ class samba::server($interfaces = '',
                     $os_level = '',
                     $preferred_master = '',
                     $bind_interfaces_only = 'yes',
-                    $shares = {},) {
+                    $shares = {},
+                    $users = {}, ) {
 
   include samba::server::install
   include samba::server::config
@@ -63,4 +64,5 @@ class samba::server($interfaces = '',
   }
 
   create_resources(samba::server::share, $shares)
+  create_resources(samba::server::user, $users)
 }

@@ -36,8 +36,31 @@ describe 'samba::server' do
          }
        }
     }}
-    it { should contain_samba__server__share( 'testShare' ) }
-    it { should contain_samba__server__share( 'testShare2' ) }
+    it { 
+      should contain_samba__server__share( 'testShare' ).with({
+          'path' => '/path/to/some/share',
+          'browsable' => true,
+          'writable' => true,
+          'guest_ok' => true,
+          'guest_only' => true,
+      })
+    }
+    it { should contain_samba__server__share( 'testShare2' ).with_path('/some/other/path') }
+  end
+
+  context 'with hiera users hash' do
+    let(:params) {{
+        'users' => {
+          'testUser' => {
+            'password' => 'testpass01'
+         },
+         'testUser2' => {
+            'password' => 'testpass02'
+         }
+       }
+    }}
+    it { should contain_samba__server__user( 'testUser' ).with_password('testpass01') }
+    it { should contain_samba__server__user( 'testUser2' ).with_password('testpass02') }
   end
 
 end
