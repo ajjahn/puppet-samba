@@ -29,6 +29,7 @@ define samba::server::share($ensure = present,
                             $map_acl_inherit = '',
                             $store_dos_attributes = '',
                             $strict_allocate = '',
+                            $hide_dot_files = '',
                             ) {
 
   $incl    = $samba::server::incl
@@ -176,6 +177,11 @@ define samba::server::share($ensure = present,
       $write_list ? {
         ''      => "rm \"${target}/write list\"",
         default => "set \"${target}/write list\" '${write_list}'",
+      },
+      $hide_dot_files ? {
+        true    => "set \"${target}/hide dot files\" yes",
+        false   => "set \"${target}/hide dot files\" no",
+        default => "rm  \"${target}/hide dot files\"",
       },
     ]
 
