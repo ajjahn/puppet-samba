@@ -30,6 +30,7 @@ define samba::server::share($ensure = present,
                             $store_dos_attributes = '',
                             $strict_allocate = '',
                             $hide_dot_files = '',
+                            $msdfs_root = '',
                             ) {
 
   $incl    = $samba::server::incl
@@ -182,6 +183,11 @@ define samba::server::share($ensure = present,
         true    => "set \"${target}/hide dot files\" yes",
         false   => "set \"${target}/hide dot files\" no",
         default => "rm  \"${target}/hide dot files\"",
+      },
+      $msdfs_root ? {
+        default => "rm \"${target}/msdfs root\"",
+        true    => "set \"${target}/msdfs root\" yes",
+        false   => "set \"${target}/msdfs root\" no",
       },
     ]
 
