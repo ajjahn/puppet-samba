@@ -38,6 +38,7 @@ define samba::server::share($ensure = present,
                             $inherit_acls = '',
                             $delete_readonly = '',
                             $printer_name = '',
+                            $msdfs_root = '',
                             ) {
 
   $incl    = $samba::server::incl
@@ -227,6 +228,11 @@ define samba::server::share($ensure = present,
       $printer_name ? {
         ''      => "rm  \"${target}/printer name\"",
         default => "set \"${target}/printer name\" '${printer_name}'",
+      },
+      $msdfs_root ? {
+        true    => "set \"${target}/msdfs root\" yes",
+        false   => "set \"${target}/msdfs root\" no",
+        default => "rm  \"${target}/msdfs root\"",
       },
     ]
 
