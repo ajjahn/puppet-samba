@@ -11,7 +11,7 @@ group :development do
 end
 
 group :test do
-  gem "rake"
+  gem "rake", '< 11.0'
   gem "puppet", ENV['PUPPET_VERSION'] || '~> 3.7.0'
   gem "puppet-lint", :github => 'rodjek/puppet-lint',
     :ref => '2546fed6be894bbcff15c3f48d4b6f6bc15d94d1'

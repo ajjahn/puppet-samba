@@ -21,6 +21,7 @@ describe 'basic samba' do
         force_directory_mode => 0777,
         force_group          => 'group',
         force_user           => 'user',
+        hide_dot_files       => false,
       }
     "}
 
