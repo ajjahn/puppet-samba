@@ -30,6 +30,7 @@ describe 'samba::server' do
             'writable' => true,
             'guest_ok' => true,
             'guest_only' => true,
+            'msdfs_root' => true,
          },
          'testShare2' => {
             'path' => '/some/other/path'
@@ -43,6 +44,7 @@ describe 'samba::server' do
           'writable' => true,
           'guest_ok' => true,
           'guest_only' => true,
+          'msdfs_root' => true,
       })
     }
     it { should contain_samba__server__share( 'testShare2' ).with_path('/some/other/path') }
