@@ -22,6 +22,7 @@ describe 'basic samba' do
         force_group          => 'group',
         force_user           => 'user',
         hide_dot_files       => false,
+        msdfs_root           => true,
       }
     "}
 
