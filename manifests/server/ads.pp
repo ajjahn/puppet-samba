@@ -21,7 +21,8 @@ class samba::server::ads($ensure = present,
   $map_system                 = 'no',
   $map_archive                = 'no',
   $map_readonly               = 'no',
-  $target_ou                  = 'Nix_Mashine') {
+  $target_ou                  = 'Nix_Mashine',
+  $verify_query_users         = true) {
 
   $krb5_user_package = $::osfamily ? {
     'RedHat' => 'krb5-workstation',
