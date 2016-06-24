@@ -57,16 +57,16 @@ done
 password='<%= scope.lookupvar('samba::server::ads::winbind_pass') -%>'
 
 # short hostname from facter
-my_hostname="<%= hostname -%>"
+my_hostname='<%= @hostname -%>'
 
 # what account do we use for net ads commands?
-winbind_acct="<%= scope.lookupvar('samba::server::ads::winbind_acct') -%>"
+winbind_acct='<%= scope.lookupvar('samba::server::ads::winbind_acct') -%>'
 
 # which realm will we be joining?
-my_realm="<%= scope.lookupvar('samba::server::ads::realm') -%>"
+my_realm='<%= scope.lookupvar('samba::server::ads::realm') -%>'
 
 # where should we create computer accounts?
-target_ou="<%= scope.lookupvar('samba::server::ads::target_ou') -%>"
+target_ou='<%= scope.lookupvar('samba::server::ads::target_ou') -%>'
 
 echo "Please do not kill me; I may be slow" >&2
 
@@ -106,9 +106,9 @@ export KRB5CCNAME=$(umask 0077; mktemp -q winbind_cache.XXXXXXXX)
 
 if [ "$action" = "join" ]; then
     if [ "${target_ou}" != "" ]; then
-    	ou_parameter="createcomputer=\"${target_ou}\""
+        ou_parameter="createcomputer='${target_ou}'"
     else
-        ou_parameter=""
+        ou_parameter=''
     fi
 
     logger -st $PROG "Joining AD domain" >&2

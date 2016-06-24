@@ -24,7 +24,7 @@ fi
 password='<%= scope.lookupvar('samba::server::ads::winbind_pass') -%>'
 
 # short hostname from facter
-my_hostname="<%= hostname -%>"
+my_hostname="<%= @hostname -%>"
 
 winbind_acct="<%= scope.lookupvar('samba::server::ads::winbind_acct') -%>"
 
@@ -92,12 +92,14 @@ if [ $has_tgt -ne 0 ]; then
   logger -st $PROG "ERROR: failed to get TGT from AD"
   success=false
 else
+<% if @verify_query_users -%>
   if [ $(wbinfo -u|wc -l) != 0 ]; then
     success=true
   else
     echo "ERROR: return user list from AD is empty" >&2
     success=false
   fi
+<% end -%>
 
   # get rid of cred cache
   kdestroy -c $KRB5CCNAME &> /dev/null
