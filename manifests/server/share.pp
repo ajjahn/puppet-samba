@@ -36,6 +36,7 @@ define samba::server::share($ensure = present,
                             $root_preexec = '',
                             $inherit_permissions = '',
                             $inherit_acls = '',
+                            $delete_readonly = '',
                             ) {
 
   $incl    = $samba::server::incl
@@ -216,6 +217,11 @@ define samba::server::share($ensure = present,
         true    => "set \"${target}/inherit acls\" yes",
         false   => "set \"${target}/inherit acls\" no",
         default => "rm  \"${target}/inherit acls\"",
+      },
+      $delete_readonly ? {
+        true    => "set \"${target}/delete read only\" yes",
+        false   => "set \"${target}/delete read only\" no",
+        default => "rm  \"${target}/delete read only\"",
       },
     ]
 
