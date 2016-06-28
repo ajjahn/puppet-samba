@@ -185,9 +185,9 @@ define samba::server::share($ensure = present,
         default => "rm  \"${target}/hide dot files\"",
       },
       $delete_readonly ? {
-        true    => "set \"${target}/delete read only\" yes",
-        false   => "set \"${target}/delete read only\" no",
-        default => "rm  \"${target}/delete read only\"",
+        true    => "set \"${target}/delete readonly\" yes",
+        false   => "set \"${target}/delete readonly\" no",
+        default => "rm  \"${target}/delete readonly\"",
       },
     ]
 
