@@ -30,6 +30,7 @@ define samba::server::share($ensure = present,
                             $store_dos_attributes = '',
                             $strict_allocate = '',
                             $hide_dot_files = '',
+                            $inherit_permissions = '',
                             ) {
 
   $incl    = $samba::server::incl
@@ -182,6 +183,11 @@ define samba::server::share($ensure = present,
         true    => "set \"${target}/hide dot files\" yes",
         false   => "set \"${target}/hide dot files\" no",
         default => "rm  \"${target}/hide dot files\"",
+      },
+      $inherit_permissions ? {
+        true    => "set \"${target}/inherit permissions\" yes",
+        false   => "set \"${target}/inherit permissions\" no",
+        default => "rm  \"${target}/inherit permissions\"",
       },
     ]
 
