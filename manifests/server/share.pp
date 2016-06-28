@@ -35,6 +35,7 @@ define samba::server::share($ensure = present,
                             $hide_dot_files = '',
                             $root_preexec = '',
                             $inherit_permissions = '',
+                            $inherit_acls = '',
                             ) {
 
   $incl    = $samba::server::incl
@@ -210,6 +211,11 @@ define samba::server::share($ensure = present,
         true    => "set \"${target}/inherit permissions\" yes",
         false   => "set \"${target}/inherit permissions\" no",
         default => "rm  \"${target}/inherit permissions\"",
+      },
+      $inherit_acls ? {
+        true    => "set \"${target}/inherit acls\" yes",
+        false   => "set \"${target}/inherit acls\" no",
+        default => "rm  \"${target}/inherit acls\"",
       },
     ]
 
