@@ -30,6 +30,7 @@ define samba::server::share($ensure = present,
                             $store_dos_attributes = '',
                             $strict_allocate = '',
                             $hide_dot_files = '',
+                            $root_preexec = '',
                             ) {
 
   $incl    = $samba::server::incl
@@ -182,6 +183,10 @@ define samba::server::share($ensure = present,
         true    => "set \"${target}/hide dot files\" yes",
         false   => "set \"${target}/hide dot files\" no",
         default => "rm  \"${target}/hide dot files\"",
+      },
+      $root_preexec ? {
+        ''      => "rm \"${target}/root preexec\"",
+        default => "set \"${target}/root preexec\" '${root_preexec}'",
       },
     ]
 
