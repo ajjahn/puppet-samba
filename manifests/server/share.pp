@@ -37,6 +37,7 @@ define samba::server::share($ensure = present,
                             $inherit_permissions = '',
                             $inherit_acls = '',
                             $delete_readonly = '',
+                            $printer_name = '',
                             ) {
 
   $incl    = $samba::server::incl
@@ -222,6 +223,10 @@ define samba::server::share($ensure = present,
         true    => "set \"${target}/delete readonly\" yes",
         false   => "set \"${target}/delete readonly\" no",
         default => "rm  \"${target}/delete readonly\"",
+      },
+      $printer_name ? {
+        default => "set \"${target}/printer name\" '${printer_name}'",
+        ''      => "rm  \"${target}/printer name\"",
       },
     ]
 
