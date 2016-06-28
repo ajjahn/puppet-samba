@@ -30,6 +30,7 @@ define samba::server::share($ensure = present,
                             $store_dos_attributes = '',
                             $strict_allocate = '',
                             $hide_dot_files = '',
+                            $printer_name = '',
                             ) {
 
   $incl    = $samba::server::incl
@@ -182,6 +183,10 @@ define samba::server::share($ensure = present,
         true    => "set \"${target}/hide dot files\" yes",
         false   => "set \"${target}/hide dot files\" no",
         default => "rm  \"${target}/hide dot files\"",
+      },
+      $printer_name ? {
+        default => "set \"${target}/printer name\" '${printer_name}'",
+        ''      => "rm  \"${target}/printer name\"",
       },
     ]
 
