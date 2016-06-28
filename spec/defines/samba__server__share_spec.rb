@@ -26,6 +26,7 @@ shared_examples "default share" do
     set.with("follow symlinks")
     set.with("wide links")
     set.with("map acl inherit")
+    set.with("profile acls")
     set.with("store dos attributes")
     set.with("strict allocate")
     set.with("valid users")
@@ -429,6 +430,24 @@ describe 'samba::server::share', :type => :define do
           :map_acl_inherit => false,
         }}
         let(:change_set) { default_changes.with("map acl inherit", "no") }
+      end
+
+      context 'with profile_acls set to true' do
+        include_examples "default share"
+        let(:params) {{
+          :ensure          => 'present',
+          :profile_acls    => true,
+        }}
+        let(:change_set) { default_changes.with("profile acls", "yes") }
+      end
+
+      context 'with profile_acls set to false' do
+        include_examples "default share"
+        let(:params) {{
+          :ensure          => 'present',
+          :profile_acls    => false,
+        }}
+        let(:change_set) { default_changes.with("profile acls", "no") }
       end
 
       context 'with store_dos_attributes set to true' do
