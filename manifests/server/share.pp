@@ -34,6 +34,7 @@ define samba::server::share($ensure = present,
                             $strict_allocate = '',
                             $hide_dot_files = '',
                             $root_preexec = '',
+                            $inherit_permissions = '',
                             ) {
 
   $incl    = $samba::server::incl
@@ -204,6 +205,11 @@ define samba::server::share($ensure = present,
       $root_preexec ? {
         ''      => "rm  \"${target}/root preexec\"",
         default => "set \"${target}/root preexec\" '${root_preexec}'",
+      },
+      $inherit_permissions ? {
+        true    => "set \"${target}/inherit permissions\" yes",
+        false   => "set \"${target}/inherit permissions\" no",
+        default => "rm  \"${target}/inherit permissions\"",
       },
     ]
 
