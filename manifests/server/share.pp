@@ -30,6 +30,7 @@ define samba::server::share($ensure = present,
                             $store_dos_attributes = '',
                             $strict_allocate = '',
                             $hide_dot_files = '',
+                            $delete_readonly = '',
                             ) {
 
   $incl    = $samba::server::incl
@@ -182,6 +183,11 @@ define samba::server::share($ensure = present,
         true    => "set \"${target}/hide dot files\" yes",
         false   => "set \"${target}/hide dot files\" no",
         default => "rm  \"${target}/hide dot files\"",
+      },
+      $delete_readonly ? {
+        true    => "set \"${target}/delete read only\" yes",
+        false   => "set \"${target}/delete read only\" no",
+        default => "rm  \"${target}/delete read only\"",
       },
     ]
 
