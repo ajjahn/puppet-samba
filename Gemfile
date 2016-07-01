@@ -20,6 +20,7 @@ group :test do
   gem "rspec", '< 3.2.0'
   gem "rspec-core", "3.1.7"
   gem "rspec-puppet", "~> 2.1"
+  gem "json_pure", "< 2.0.0"
 
   gem "puppet-syntax"
   gem "puppetlabs_spec_helper"
