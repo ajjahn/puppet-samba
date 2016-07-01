@@ -57,7 +57,7 @@ done
 password='<%= scope.lookupvar('samba::server::ads::winbind_pass') -%>'
 
 # short hostname from facter
-my_hostname="<%= hostname -%>"
+my_hostname="<%= @hostname -%>"
 
 # what account do we use for net ads commands?
 winbind_acct="<%= scope.lookupvar('samba::server::ads::winbind_acct') -%>"
