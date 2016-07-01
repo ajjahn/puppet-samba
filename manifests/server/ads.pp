@@ -21,7 +21,8 @@ class samba::server::ads($ensure = present,
   $map_system                 = 'no',
   $map_archive                = 'no',
   $map_readonly               = 'no',
-  $target_ou                  = 'Nix_Mashine') {
+  $target_ou                  = 'Nix_Mashine',
+  $perform_join               = true) {
 
   $krb5_user_package = $::osfamily ? {
     'RedHat' => 'krb5-workstation',
@@ -122,10 +123,12 @@ class samba::server::ads($ensure = present,
         'samba-winbind use default domain'], Service['winbind'] ],
   }
 
-  exec {'join-active-directory':
-    # join the domain configured in samba.conf
-    command => '/sbin/configure_active_directory -j',
-    unless  => '/sbin/verify_active_directory',
-    require => [ File['configure_active_directory', 'verify_active_directory'], Service['winbind'] ],
+  if ($perform_join) {
+    exec {'join-active-directory':
+      # join the domain configured in samba.conf
+      command => '/sbin/configure_active_directory -j',
+      unless  => '/sbin/verify_active_directory',
+      require => [ File['configure_active_directory', 'verify_active_directory'], Service['winbind'] ],
+    }
   }
 }
