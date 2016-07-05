@@ -160,23 +160,23 @@ define samba::server::share($ensure = present,
         default => "rm  \"${target}/strict allocate\"",
       },
       $valid_users ? {
-        ''      => "rm \"${target}/valid users\"",
+        ''      => "rm  \"${target}/valid users\"",
         default => "set \"${target}/valid users\" '${valid_users}'",
       },
       $op_locks ? {
-        ''      => "rm \"${target}/oplocks\"",
+        ''      => "rm  \"${target}/oplocks\"",
         default => "set \"${target}/oplocks\" '${op_locks}'",
       },
       $level2_oplocks ? {
-        ''      => "rm \"${target}/level2 oplocks\"",
+        ''      => "rm  \"${target}/level2 oplocks\"",
         default => "set \"${target}/level2 oplocks\" '${level2_oplocks}'",
       },
       $veto_oplock_files ? {
-        ''      => "rm \"${target}/veto oplock files\"",
+        ''      => "rm  \"${target}/veto oplock files\"",
         default => "set \"${target}/veto oplock files\" '${veto_oplock_files}'",
       },
       $write_list ? {
-        ''      => "rm \"${target}/write list\"",
+        ''      => "rm  \"${target}/write list\"",
         default => "set \"${target}/write list\" '${write_list}'",
       },
       $hide_dot_files ? {
@@ -185,7 +185,7 @@ define samba::server::share($ensure = present,
         default => "rm  \"${target}/hide dot files\"",
       },
       $root_preexec ? {
-        ''      => "rm \"${target}/root preexec\"",
+        ''      => "rm  \"${target}/root preexec\"",
         default => "set \"${target}/root preexec\" '${root_preexec}'",
       },
     ]
