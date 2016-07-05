@@ -22,16 +22,16 @@ describe 'samba::server::share', :type => :define do
           :incl    => '/etc/samba/smb.conf',
           :lens    => 'Samba.lns',
           :context => '/files/etc/samba/smb.conf',
-          :changes => ["set target[. = 'test_share'] 'test_share'"]
-          ).that_requires('Class[Samba::Server::Config]'
-          ).that_notifies('Class[Samba::Server::Service]')
+          :changes => ["set target[. = 'test_share'] 'test_share'"],
+          :requires => 'Class[Samba::Server::Config]',
+          :notify   => 'Class[Samba::Server::Service]')
         }
         it { is_expected.to contain_augeas('test_share-changes').with(
-          :incl    => '/etc/samba/smb.conf',
-          :lens    => 'Samba.lns',
-          :context => '/files/etc/samba/smb.conf',
-          ).that_requires('Class[Samba::Server::Config]'
-          ).that_notifies('Class[Samba::Server::Service]')
+          :incl     => '/etc/samba/smb.conf',
+          :lens     => 'Samba.lns',
+          :context  => '/files/etc/samba/smb.conf',
+          :requires => 'Augeas[test_share-section]',
+          :notify   => 'Class[Samba::Server::Service]')
         }
       end#no params
 
@@ -58,17 +58,17 @@ describe 'samba::server::share', :type => :define do
           :incl    => '/etc/samba/smb.conf',
           :lens    => 'Samba.lns',
           :context => '/files/etc/samba/smb.conf',
-          :changes => ["set target[. = 'test_share'] 'test_share'"]
-          ).that_requires('Class[Samba::Server::Config]'
-          ).that_notifies('Class[Samba::Server::Service]')
+          :changes => ["set target[. = 'test_share'] 'test_share'"],
+          :requires => 'Class[Samba::Server::Config]',
+          :notify   => 'Class[Samba::Server::Service]')
         }
         it { is_expected.to contain_augeas('test_share-changes').with(
           :incl    => '/etc/samba/smb.conf',
           :lens    => 'Samba.lns',
           :context => '/files/etc/samba/smb.conf',
-          :changes => ["set \"target[. = 'test_share']/available\" yes"]
-          ).that_requires('Class[Samba::Server::Config]'
-          ).that_notifies('Class[Samba::Server::Service]')
+          :changes => ["set \"target[. = 'test_share']/available\" yes"],
+          :requires => 'Augeas[test_share-section]',
+          :notify   => 'Class[Samba::Server::Service]')
         }
       end#no params
 
@@ -83,17 +83,17 @@ describe 'samba::server::share', :type => :define do
           :incl    => '/etc/samba/smb.conf',
           :lens    => 'Samba.lns',
           :context => '/files/etc/samba/smb.conf',
-          :changes => ["set target[. = 'test_share'] 'test_share'"]
-          ).that_requires('Class[Samba::Server::Config]'
-          ).that_notifies('Class[Samba::Server::Service]')
+          :changes => ["set target[. = 'test_share'] 'test_share'"],
+          :requires => 'Class[Samba::Server::Config]',
+          :notify   => 'Class[Samba::Server::Service]')
         }
         it { is_expected.to contain_augeas('test_share-changes').with(
           :incl    => '/etc/samba/smb.conf',
           :lens    => 'Samba.lns',
           :context => '/files/etc/samba/smb.conf',
-          :changes => ["set \"target[. = 'test_share']/root_preexec\" /bin/true"]
-          ).that_requires('Class[Samba::Server::Config]'
-          ).that_notifies('Class[Samba::Server::Service]')
+          :changes => ["set \"target[. = 'test_share']/root_preexec\" /bin/true"],
+          :requires => 'Augeas[test_share-section]',
+          :notify   => 'Class[Samba::Server::Service]')
         }
       end#no params
 
