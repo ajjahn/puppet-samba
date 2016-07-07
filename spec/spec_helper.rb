@@ -9,3 +9,5 @@ RSpec.configure do |c|
     Puppet.features.stubs(:root? => true)
   end
 end
+
+at_exit { RSpec::Puppet::Coverage.report! }
