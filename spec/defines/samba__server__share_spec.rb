@@ -1,5 +1,63 @@
 require 'spec_helper'
 
+shared_examples "default share" do
+  let(:title) { "test_share" }
+  let(:params) {{ :ensure => 'present' }}
+  let(:default_changes) do
+    set = Augeas::TargetedChangeSet.new(title)
+    set.with("available")
+    set.with("browsable")
+    set.with("comment")
+    set.with("copy")
+    set.with("create mask")
+    set.with("directory mask")
+    set.with("force create mask")
+    set.with("force directory mode")
+    set.with("force group")
+    set.with("force user")
+    set.with("guest ok")
+    set.with("guest only")
+    set.with("hide unreadable")
+    set.with("path", nil, nil)
+    set.with("read only")
+    set.with("public")
+    set.with("writable")
+    set.with("printable")
+    set.with("follow symlinks")
+    set.with("wide links")
+    set.with("map acl inherit")
+    set.with("store dos attributes")
+    set.with("strict allocate")
+    set.with("valid users")
+    set.with("oplocks")
+    set.with("level2 oplocks")
+    set.with("veto oplock files")
+    set.with("write list")
+    set.with("hide dot files")
+    set.with("root preexec")
+  end
+  let(:change_set) { default_changes }
+  let(:changes) { change_set.to_a }
+
+  it { is_expected.to contain_samba__server__share(title) }
+  it { is_expected.to contain_augeas("#{title}-section").with(
+    :incl    => '/etc/samba/smb.conf',
+    :lens    => 'Samba.lns',
+    :context => '/files/etc/samba/smb.conf',
+    :changes => ["set target[. = '#{title}'] '#{title}'"],
+    :require => 'Class[Samba::Server::Config]',
+    :notify  => 'Class[Samba::Server::Service]')
+  }
+  it { is_expected.to contain_augeas("#{title}-changes").with(
+    :incl    => '/etc/samba/smb.conf',
+    :lens    => 'Samba.lns',
+    :context => '/files/etc/samba/smb.conf',
+    :changes => changes,
+    :require => 'Augeas[test_share-section]',
+    :notify  => 'Class[Samba::Server::Service]')
+  }
+end
+
 describe 'samba::server::share', :type => :define do
   let(:pre_condition){ 'class{"samba::server":}'}
   on_supported_os({
@@ -68,2582 +126,418 @@ describe 'samba::server::share', :type => :define do
       end#no params
 
       context 'when called with available set to true' do
-        let(:title) { 'test_share' }
+        include_examples "default share"
         let(:params) {{
           :ensure    => 'present',
           :available => true,
         }}
-        it { is_expected.to contain_samba__server__share('test_share') }
-        it { is_expected.to contain_augeas('test_share-section').with(
-          :incl    => '/etc/samba/smb.conf',
-          :lens    => 'Samba.lns',
-          :context => '/files/etc/samba/smb.conf',
-          :changes => ["set target[. = 'test_share'] 'test_share'"],
-          :require => 'Class[Samba::Server::Config]',
-          :notify  => 'Class[Samba::Server::Service]')
-        }
-        it { is_expected.to contain_augeas('test_share-changes').with(
-          :incl    => '/etc/samba/smb.conf',
-          :lens    => 'Samba.lns',
-          :context => '/files/etc/samba/smb.conf',
-          :changes => [
-            "set \"target[. = 'test_share']/available\" yes",
-            "rm  \"target[. = 'test_share']/browsable\"",
-            "rm  \"target[. = 'test_share']/comment\"",
-            "rm  \"target[. = 'test_share']/copy\"",
-            "rm  \"target[. = 'test_share']/create mask\"",
-            "rm  \"target[. = 'test_share']/directory mask\"",
-            "rm  \"target[. = 'test_share']/force create mask\"",
-            "rm  \"target[. = 'test_share']/force directory mode\"",
-            "rm  \"target[. = 'test_share']/force group\"",
-            "rm  \"target[. = 'test_share']/force user\"",
-            "rm  \"target[. = 'test_share']/guest ok\"",
-            "rm  \"target[. = 'test_share']/guest only\"",
-            "rm  \"target[. = 'test_share']/hide unreadable\"",
-            "rm  target[. = 'test_share']/path",
-            "rm  \"target[. = 'test_share']/read only\"",
-            "rm  \"target[. = 'test_share']/public\"",
-            "rm  \"target[. = 'test_share']/writable\"",
-            "rm  \"target[. = 'test_share']/printable\"",
-            "rm  \"target[. = 'test_share']/follow symlinks\"",
-            "rm  \"target[. = 'test_share']/wide links\"",
-            "rm  \"target[. = 'test_share']/map acl inherit\"",
-            "rm  \"target[. = 'test_share']/store dos attributes\"",
-            "rm  \"target[. = 'test_share']/strict allocate\"",
-            "rm  \"target[. = 'test_share']/valid users\"",
-            "rm  \"target[. = 'test_share']/oplocks\"",
-            "rm  \"target[. = 'test_share']/level2 oplocks\"",
-            "rm  \"target[. = 'test_share']/veto oplock files\"",
-            "rm  \"target[. = 'test_share']/write list\"",
-            "rm  \"target[. = 'test_share']/hide dot files\"",
-            "rm  \"target[. = 'test_share']/root preexec\""
-          ],
-          :require => 'Augeas[test_share-section]',
-          :notify  => 'Class[Samba::Server::Service]')
-        }
+        let(:change_set) { default_changes.with("available", "yes") }
       end#available true
 
       context 'when called with available set to false' do
-        let(:title) { 'test_share' }
+        include_examples "default share"
         let(:params) {{
           :ensure    => 'present',
           :available => false,
         }}
-        it { is_expected.to contain_samba__server__share('test_share') }
-        it { is_expected.to contain_augeas('test_share-section').with(
-          :incl    => '/etc/samba/smb.conf',
-          :lens    => 'Samba.lns',
-          :context => '/files/etc/samba/smb.conf',
-          :changes => ["set target[. = 'test_share'] 'test_share'"],
-          :require => 'Class[Samba::Server::Config]',
-          :notify  => 'Class[Samba::Server::Service]')
-        }
-        it { is_expected.to contain_augeas('test_share-changes').with(
-          :incl    => '/etc/samba/smb.conf',
-          :lens    => 'Samba.lns',
-          :context => '/files/etc/samba/smb.conf',
-          :changes => [
-            "set \"target[. = 'test_share']/available\" no",
-            "rm  \"target[. = 'test_share']/browsable\"",
-            "rm  \"target[. = 'test_share']/comment\"",
-            "rm  \"target[. = 'test_share']/copy\"",
-            "rm  \"target[. = 'test_share']/create mask\"",
-            "rm  \"target[. = 'test_share']/directory mask\"",
-            "rm  \"target[. = 'test_share']/force create mask\"",
-            "rm  \"target[. = 'test_share']/force directory mode\"",
-            "rm  \"target[. = 'test_share']/force group\"",
-            "rm  \"target[. = 'test_share']/force user\"",
-            "rm  \"target[. = 'test_share']/guest ok\"",
-            "rm  \"target[. = 'test_share']/guest only\"",
-            "rm  \"target[. = 'test_share']/hide unreadable\"",
-            "rm  target[. = 'test_share']/path",
-            "rm  \"target[. = 'test_share']/read only\"",
-            "rm  \"target[. = 'test_share']/public\"",
-            "rm  \"target[. = 'test_share']/writable\"",
-            "rm  \"target[. = 'test_share']/printable\"",
-            "rm  \"target[. = 'test_share']/follow symlinks\"",
-            "rm  \"target[. = 'test_share']/wide links\"",
-            "rm  \"target[. = 'test_share']/map acl inherit\"",
-            "rm  \"target[. = 'test_share']/store dos attributes\"",
-            "rm  \"target[. = 'test_share']/strict allocate\"",
-            "rm  \"target[. = 'test_share']/valid users\"",
-            "rm  \"target[. = 'test_share']/oplocks\"",
-            "rm  \"target[. = 'test_share']/level2 oplocks\"",
-            "rm  \"target[. = 'test_share']/veto oplock files\"",
-            "rm  \"target[. = 'test_share']/write list\"",
-            "rm  \"target[. = 'test_share']/hide dot files\"",
-            "rm  \"target[. = 'test_share']/root preexec\""
-          ],
-          :require => 'Augeas[test_share-section]',
-          :notify  => 'Class[Samba::Server::Service]')
-        }
+        let(:change_set) { default_changes.with("available", "no") }
       end#available false
 
       context 'when called with browsable set to true' do
-        let(:title) { 'test_share' }
+        include_examples "default share"
         let(:params) {{
           :ensure    => 'present',
           :browsable => true,
         }}
-        it { is_expected.to contain_samba__server__share('test_share') }
-        it { is_expected.to contain_augeas('test_share-section').with(
-          :incl    => '/etc/samba/smb.conf',
-          :lens    => 'Samba.lns',
-          :context => '/files/etc/samba/smb.conf',
-          :changes => ["set target[. = 'test_share'] 'test_share'"],
-          :require => 'Class[Samba::Server::Config]',
-          :notify  => 'Class[Samba::Server::Service]')
-        }
-        it { is_expected.to contain_augeas('test_share-changes').with(
-          :incl    => '/etc/samba/smb.conf',
-          :lens    => 'Samba.lns',
-          :context => '/files/etc/samba/smb.conf',
-          :changes => [
-            "rm  \"target[. = 'test_share']/available\"",
-            "set \"target[. = 'test_share']/browsable\" yes",
-            "rm  \"target[. = 'test_share']/comment\"",
-            "rm  \"target[. = 'test_share']/copy\"",
-            "rm  \"target[. = 'test_share']/create mask\"",
-            "rm  \"target[. = 'test_share']/directory mask\"",
-            "rm  \"target[. = 'test_share']/force create mask\"",
-            "rm  \"target[. = 'test_share']/force directory mode\"",
-            "rm  \"target[. = 'test_share']/force group\"",
-            "rm  \"target[. = 'test_share']/force user\"",
-            "rm  \"target[. = 'test_share']/guest ok\"",
-            "rm  \"target[. = 'test_share']/guest only\"",
-            "rm  \"target[. = 'test_share']/hide unreadable\"",
-            "rm  target[. = 'test_share']/path",
-            "rm  \"target[. = 'test_share']/read only\"",
-            "rm  \"target[. = 'test_share']/public\"",
-            "rm  \"target[. = 'test_share']/writable\"",
-            "rm  \"target[. = 'test_share']/printable\"",
-            "rm  \"target[. = 'test_share']/follow symlinks\"",
-            "rm  \"target[. = 'test_share']/wide links\"",
-            "rm  \"target[. = 'test_share']/map acl inherit\"",
-            "rm  \"target[. = 'test_share']/store dos attributes\"",
-            "rm  \"target[. = 'test_share']/strict allocate\"",
-            "rm  \"target[. = 'test_share']/valid users\"",
-            "rm  \"target[. = 'test_share']/oplocks\"",
-            "rm  \"target[. = 'test_share']/level2 oplocks\"",
-            "rm  \"target[. = 'test_share']/veto oplock files\"",
-            "rm  \"target[. = 'test_share']/write list\"",
-            "rm  \"target[. = 'test_share']/hide dot files\"",
-            "rm  \"target[. = 'test_share']/root preexec\""
-          ],
-          :require => 'Augeas[test_share-section]',
-          :notify  => 'Class[Samba::Server::Service]')
-        }
+        let(:change_set) { default_changes.with("browsable", "yes") }
       end#browsable false
 
       context 'when called with browsable set to false' do
-        let(:title) { 'test_share' }
+        include_examples "default share"
         let(:params) {{
           :ensure    => 'present',
           :browsable => false,
         }}
-        it { is_expected.to contain_samba__server__share('test_share') }
-        it { is_expected.to contain_augeas('test_share-section').with(
-          :incl    => '/etc/samba/smb.conf',
-          :lens    => 'Samba.lns',
-          :context => '/files/etc/samba/smb.conf',
-          :changes => ["set target[. = 'test_share'] 'test_share'"],
-          :require => 'Class[Samba::Server::Config]',
-          :notify  => 'Class[Samba::Server::Service]')
-        }
-        it { is_expected.to contain_augeas('test_share-changes').with(
-          :incl    => '/etc/samba/smb.conf',
-          :lens    => 'Samba.lns',
-          :context => '/files/etc/samba/smb.conf',
-          :changes => [
-            "rm  \"target[. = 'test_share']/available\"",
-            "set \"target[. = 'test_share']/browsable\" no",
-            "rm  \"target[. = 'test_share']/comment\"",
-            "rm  \"target[. = 'test_share']/copy\"",
-            "rm  \"target[. = 'test_share']/create mask\"",
-            "rm  \"target[. = 'test_share']/directory mask\"",
-            "rm  \"target[. = 'test_share']/force create mask\"",
-            "rm  \"target[. = 'test_share']/force directory mode\"",
-            "rm  \"target[. = 'test_share']/force group\"",
-            "rm  \"target[. = 'test_share']/force user\"",
-            "rm  \"target[. = 'test_share']/guest ok\"",
-            "rm  \"target[. = 'test_share']/guest only\"",
-            "rm  \"target[. = 'test_share']/hide unreadable\"",
-            "rm  target[. = 'test_share']/path",
-            "rm  \"target[. = 'test_share']/read only\"",
-            "rm  \"target[. = 'test_share']/public\"",
-            "rm  \"target[. = 'test_share']/writable\"",
-            "rm  \"target[. = 'test_share']/printable\"",
-            "rm  \"target[. = 'test_share']/follow symlinks\"",
-            "rm  \"target[. = 'test_share']/wide links\"",
-            "rm  \"target[. = 'test_share']/map acl inherit\"",
-            "rm  \"target[. = 'test_share']/store dos attributes\"",
-            "rm  \"target[. = 'test_share']/strict allocate\"",
-            "rm  \"target[. = 'test_share']/valid users\"",
-            "rm  \"target[. = 'test_share']/oplocks\"",
-            "rm  \"target[. = 'test_share']/level2 oplocks\"",
-            "rm  \"target[. = 'test_share']/veto oplock files\"",
-            "rm  \"target[. = 'test_share']/write list\"",
-            "rm  \"target[. = 'test_share']/hide dot files\"",
-            "rm  \"target[. = 'test_share']/root preexec\""
-          ],
-          :require => 'Augeas[test_share-section]',
-          :notify  => 'Class[Samba::Server::Service]')
-        }
+        let(:change_set) { default_changes.with("browsable", "no") }
       end#browsable false
 
       context 'when called with root_preexec set to /bin/true' do
-        let(:title) { 'test_share' }
+        include_examples "default share"
         let(:params) {{
           :ensure    => 'present',
           :root_preexec => '/bin/true',
         }}
-        it { is_expected.to contain_samba__server__share('test_share') }
-        it { is_expected.to contain_augeas('test_share-section').with(
-          :incl    => '/etc/samba/smb.conf',
-          :lens    => 'Samba.lns',
-          :context => '/files/etc/samba/smb.conf',
-          :changes => ["set target[. = 'test_share'] 'test_share'"],
-          :require => 'Class[Samba::Server::Config]',
-          :notify  => 'Class[Samba::Server::Service]')
-        }
-        it { is_expected.to contain_augeas('test_share-changes').with(
-          :incl    => '/etc/samba/smb.conf',
-          :lens    => 'Samba.lns',
-          :context => '/files/etc/samba/smb.conf',
-          :changes => [
-            "rm  \"target[. = 'test_share']/available\"",
-            "rm  \"target[. = 'test_share']/browsable\"",
-            "rm  \"target[. = 'test_share']/comment\"",
-            "rm  \"target[. = 'test_share']/copy\"",
-            "rm  \"target[. = 'test_share']/create mask\"",
-            "rm  \"target[. = 'test_share']/directory mask\"",
-            "rm  \"target[. = 'test_share']/force create mask\"",
-            "rm  \"target[. = 'test_share']/force directory mode\"",
-            "rm  \"target[. = 'test_share']/force group\"",
-            "rm  \"target[. = 'test_share']/force user\"",
-            "rm  \"target[. = 'test_share']/guest ok\"",
-            "rm  \"target[. = 'test_share']/guest only\"",
-            "rm  \"target[. = 'test_share']/hide unreadable\"",
-            "rm  target[. = 'test_share']/path",
-            "rm  \"target[. = 'test_share']/read only\"",
-            "rm  \"target[. = 'test_share']/public\"",
-            "rm  \"target[. = 'test_share']/writable\"",
-            "rm  \"target[. = 'test_share']/printable\"",
-            "rm  \"target[. = 'test_share']/follow symlinks\"",
-            "rm  \"target[. = 'test_share']/wide links\"",
-            "rm  \"target[. = 'test_share']/map acl inherit\"",
-            "rm  \"target[. = 'test_share']/store dos attributes\"",
-            "rm  \"target[. = 'test_share']/strict allocate\"",
-            "rm  \"target[. = 'test_share']/valid users\"",
-            "rm  \"target[. = 'test_share']/oplocks\"",
-            "rm  \"target[. = 'test_share']/level2 oplocks\"",
-            "rm  \"target[. = 'test_share']/veto oplock files\"",
-            "rm  \"target[. = 'test_share']/write list\"",
-            "rm  \"target[. = 'test_share']/hide dot files\"",
-            "set \"target[. = 'test_share']/root preexec\" '/bin/true'"
-          ],
-          :require => 'Augeas[test_share-section]',
-          :notify  => 'Class[Samba::Server::Service]')
-        }
+        let(:change_set) { default_changes.with("root preexec", "'/bin/true'") }
       end#root_preexec
 
       context 'when called with comment set to "testing testing"' do
-        let(:title) { 'test_share' }
+        include_examples "default share"
         let(:params) {{
           :ensure    => 'present',
           :comment => 'testing testing',
         }}
-        it { is_expected.to contain_samba__server__share('test_share') }
-        it { is_expected.to contain_augeas('test_share-section').with(
-          :incl    => '/etc/samba/smb.conf',
-          :lens    => 'Samba.lns',
-          :context => '/files/etc/samba/smb.conf',
-          :changes => ["set target[. = 'test_share'] 'test_share'"],
-          :require => 'Class[Samba::Server::Config]',
-          :notify  => 'Class[Samba::Server::Service]')
-        }
-        it { is_expected.to contain_augeas('test_share-changes').with(
-          :incl    => '/etc/samba/smb.conf',
-          :lens    => 'Samba.lns',
-          :context => '/files/etc/samba/smb.conf',
-          :changes => [
-            "rm  \"target[. = 'test_share']/available\"",
-            "rm  \"target[. = 'test_share']/browsable\"",
-            "set \"target[. = 'test_share']/comment\" 'testing testing'",
-            "rm  \"target[. = 'test_share']/copy\"",
-            "rm  \"target[. = 'test_share']/create mask\"",
-            "rm  \"target[. = 'test_share']/directory mask\"",
-            "rm  \"target[. = 'test_share']/force create mask\"",
-            "rm  \"target[. = 'test_share']/force directory mode\"",
-            "rm  \"target[. = 'test_share']/force group\"",
-            "rm  \"target[. = 'test_share']/force user\"",
-            "rm  \"target[. = 'test_share']/guest ok\"",
-            "rm  \"target[. = 'test_share']/guest only\"",
-            "rm  \"target[. = 'test_share']/hide unreadable\"",
-            "rm  target[. = 'test_share']/path",
-            "rm  \"target[. = 'test_share']/read only\"",
-            "rm  \"target[. = 'test_share']/public\"",
-            "rm  \"target[. = 'test_share']/writable\"",
-            "rm  \"target[. = 'test_share']/printable\"",
-            "rm  \"target[. = 'test_share']/follow symlinks\"",
-            "rm  \"target[. = 'test_share']/wide links\"",
-            "rm  \"target[. = 'test_share']/map acl inherit\"",
-            "rm  \"target[. = 'test_share']/store dos attributes\"",
-            "rm  \"target[. = 'test_share']/strict allocate\"",
-            "rm  \"target[. = 'test_share']/valid users\"",
-            "rm  \"target[. = 'test_share']/oplocks\"",
-            "rm  \"target[. = 'test_share']/level2 oplocks\"",
-            "rm  \"target[. = 'test_share']/veto oplock files\"",
-            "rm  \"target[. = 'test_share']/write list\"",
-            "rm  \"target[. = 'test_share']/hide dot files\"",
-            "rm  \"target[. = 'test_share']/root preexec\""
-          ],
-          :require => 'Augeas[test_share-section]',
-          :notify  => 'Class[Samba::Server::Service]')
-        }
+        let(:change_set) { default_changes.with("comment", "'testing testing'") }
       end#comment
 
       context 'when called with copy set to "testing testing"' do
-        let(:title) { 'test_share' }
+        include_examples "default share"
         let(:params) {{
           :ensure    => 'present',
           :copy => 'testing testing',
         }}
-        it { is_expected.to contain_samba__server__share('test_share') }
-        it { is_expected.to contain_augeas('test_share-section').with(
-          :incl    => '/etc/samba/smb.conf',
-          :lens    => 'Samba.lns',
-          :context => '/files/etc/samba/smb.conf',
-          :changes => ["set target[. = 'test_share'] 'test_share'"],
-          :require => 'Class[Samba::Server::Config]',
-          :notify  => 'Class[Samba::Server::Service]')
-        }
-        it { is_expected.to contain_augeas('test_share-changes').with(
-          :incl    => '/etc/samba/smb.conf',
-          :lens    => 'Samba.lns',
-          :context => '/files/etc/samba/smb.conf',
-          :changes => [
-            "rm  \"target[. = 'test_share']/available\"",
-            "rm  \"target[. = 'test_share']/browsable\"",
-            "rm  \"target[. = 'test_share']/comment\"",
-            "set \"target[. = 'test_share']/copy\" 'testing testing'",
-            "rm  \"target[. = 'test_share']/create mask\"",
-            "rm  \"target[. = 'test_share']/directory mask\"",
-            "rm  \"target[. = 'test_share']/force create mask\"",
-            "rm  \"target[. = 'test_share']/force directory mode\"",
-            "rm  \"target[. = 'test_share']/force group\"",
-            "rm  \"target[. = 'test_share']/force user\"",
-            "rm  \"target[. = 'test_share']/guest ok\"",
-            "rm  \"target[. = 'test_share']/guest only\"",
-            "rm  \"target[. = 'test_share']/hide unreadable\"",
-            "rm  target[. = 'test_share']/path",
-            "rm  \"target[. = 'test_share']/read only\"",
-            "rm  \"target[. = 'test_share']/public\"",
-            "rm  \"target[. = 'test_share']/writable\"",
-            "rm  \"target[. = 'test_share']/printable\"",
-            "rm  \"target[. = 'test_share']/follow symlinks\"",
-            "rm  \"target[. = 'test_share']/wide links\"",
-            "rm  \"target[. = 'test_share']/map acl inherit\"",
-            "rm  \"target[. = 'test_share']/store dos attributes\"",
-            "rm  \"target[. = 'test_share']/strict allocate\"",
-            "rm  \"target[. = 'test_share']/valid users\"",
-            "rm  \"target[. = 'test_share']/oplocks\"",
-            "rm  \"target[. = 'test_share']/level2 oplocks\"",
-            "rm  \"target[. = 'test_share']/veto oplock files\"",
-            "rm  \"target[. = 'test_share']/write list\"",
-            "rm  \"target[. = 'test_share']/hide dot files\"",
-            "rm  \"target[. = 'test_share']/root preexec\""
-          ],
-          :require => 'Augeas[test_share-section]',
-          :notify  => 'Class[Samba::Server::Service]')
-        }
+        let(:change_set) { default_changes.with("copy", "'testing testing'") }
       end#copy
 
       context 'when called with create_mask set to "755"' do
-        let(:title) { 'test_share' }
+        include_examples "default share"
         let(:params) {{
           :ensure    => 'present',
           :create_mask => '755',
         }}
-        it { is_expected.to contain_samba__server__share('test_share') }
-        it { is_expected.to contain_augeas('test_share-section').with(
-          :incl    => '/etc/samba/smb.conf',
-          :lens    => 'Samba.lns',
-          :context => '/files/etc/samba/smb.conf',
-          :changes => ["set target[. = 'test_share'] 'test_share'"],
-          :require => 'Class[Samba::Server::Config]',
-          :notify  => 'Class[Samba::Server::Service]')
-        }
-        it { is_expected.to contain_augeas('test_share-changes').with(
-          :incl    => '/etc/samba/smb.conf',
-          :lens    => 'Samba.lns',
-          :context => '/files/etc/samba/smb.conf',
-          :changes => [
-            "rm  \"target[. = 'test_share']/available\"",
-            "rm  \"target[. = 'test_share']/browsable\"",
-            "rm  \"target[. = 'test_share']/comment\"",
-            "rm  \"target[. = 'test_share']/copy\"",
-            "set \"target[. = 'test_share']/create mask\" '755'",
-            "rm  \"target[. = 'test_share']/directory mask\"",
-            "rm  \"target[. = 'test_share']/force create mask\"",
-            "rm  \"target[. = 'test_share']/force directory mode\"",
-            "rm  \"target[. = 'test_share']/force group\"",
-            "rm  \"target[. = 'test_share']/force user\"",
-            "rm  \"target[. = 'test_share']/guest ok\"",
-            "rm  \"target[. = 'test_share']/guest only\"",
-            "rm  \"target[. = 'test_share']/hide unreadable\"",
-            "rm  target[. = 'test_share']/path",
-            "rm  \"target[. = 'test_share']/read only\"",
-            "rm  \"target[. = 'test_share']/public\"",
-            "rm  \"target[. = 'test_share']/writable\"",
-            "rm  \"target[. = 'test_share']/printable\"",
-            "rm  \"target[. = 'test_share']/follow symlinks\"",
-            "rm  \"target[. = 'test_share']/wide links\"",
-            "rm  \"target[. = 'test_share']/map acl inherit\"",
-            "rm  \"target[. = 'test_share']/store dos attributes\"",
-            "rm  \"target[. = 'test_share']/strict allocate\"",
-            "rm  \"target[. = 'test_share']/valid users\"",
-            "rm  \"target[. = 'test_share']/oplocks\"",
-            "rm  \"target[. = 'test_share']/level2 oplocks\"",
-            "rm  \"target[. = 'test_share']/veto oplock files\"",
-            "rm  \"target[. = 'test_share']/write list\"",
-            "rm  \"target[. = 'test_share']/hide dot files\"",
-            "rm  \"target[. = 'test_share']/root preexec\""
-          ],
-          :require => 'Augeas[test_share-section]',
-          :notify  => 'Class[Samba::Server::Service]')
-        }
+        let(:change_set) { default_changes.with("create mask", "'755'") }
       end#create mask
 
       context 'when called with directory_mask set to "755"' do
-        let(:title) { 'test_share' }
+        include_examples "default share"
         let(:params) {{
           :ensure    => 'present',
           :directory_mask => '755',
         }}
-        it { is_expected.to contain_samba__server__share('test_share') }
-        it { is_expected.to contain_augeas('test_share-section').with(
-          :incl    => '/etc/samba/smb.conf',
-          :lens    => 'Samba.lns',
-          :context => '/files/etc/samba/smb.conf',
-          :changes => ["set target[. = 'test_share'] 'test_share'"],
-          :require => 'Class[Samba::Server::Config]',
-          :notify  => 'Class[Samba::Server::Service]')
-        }
-        it { is_expected.to contain_augeas('test_share-changes').with(
-          :incl    => '/etc/samba/smb.conf',
-          :lens    => 'Samba.lns',
-          :context => '/files/etc/samba/smb.conf',
-          :changes => [
-            "rm  \"target[. = 'test_share']/available\"",
-            "rm  \"target[. = 'test_share']/browsable\"",
-            "rm  \"target[. = 'test_share']/comment\"",
-            "rm  \"target[. = 'test_share']/copy\"",
-            "rm  \"target[. = 'test_share']/create mask\"",
-            "set \"target[. = 'test_share']/directory mask\" '755'",
-            "rm  \"target[. = 'test_share']/force create mask\"",
-            "rm  \"target[. = 'test_share']/force directory mode\"",
-            "rm  \"target[. = 'test_share']/force group\"",
-            "rm  \"target[. = 'test_share']/force user\"",
-            "rm  \"target[. = 'test_share']/guest ok\"",
-            "rm  \"target[. = 'test_share']/guest only\"",
-            "rm  \"target[. = 'test_share']/hide unreadable\"",
-            "rm  target[. = 'test_share']/path",
-            "rm  \"target[. = 'test_share']/read only\"",
-            "rm  \"target[. = 'test_share']/public\"",
-            "rm  \"target[. = 'test_share']/writable\"",
-            "rm  \"target[. = 'test_share']/printable\"",
-            "rm  \"target[. = 'test_share']/follow symlinks\"",
-            "rm  \"target[. = 'test_share']/wide links\"",
-            "rm  \"target[. = 'test_share']/map acl inherit\"",
-            "rm  \"target[. = 'test_share']/store dos attributes\"",
-            "rm  \"target[. = 'test_share']/strict allocate\"",
-            "rm  \"target[. = 'test_share']/valid users\"",
-            "rm  \"target[. = 'test_share']/oplocks\"",
-            "rm  \"target[. = 'test_share']/level2 oplocks\"",
-            "rm  \"target[. = 'test_share']/veto oplock files\"",
-            "rm  \"target[. = 'test_share']/write list\"",
-            "rm  \"target[. = 'test_share']/hide dot files\"",
-            "rm  \"target[. = 'test_share']/root preexec\""
-          ],
-          :require => 'Augeas[test_share-section]',
-          :notify  => 'Class[Samba::Server::Service]')
-        }
+        let(:change_set) { default_changes.with("directory mask", "'755'") }
       end#directory_mask
 
       context 'when called with force_create_mask set to "755"' do
-        let(:title) { 'test_share' }
+        include_examples "default share"
         let(:params) {{
           :ensure    => 'present',
           :force_create_mask => '755',
         }}
-        it { is_expected.to contain_samba__server__share('test_share') }
-        it { is_expected.to contain_augeas('test_share-section').with(
-          :incl    => '/etc/samba/smb.conf',
-          :lens    => 'Samba.lns',
-          :context => '/files/etc/samba/smb.conf',
-          :changes => ["set target[. = 'test_share'] 'test_share'"],
-          :require => 'Class[Samba::Server::Config]',
-          :notify  => 'Class[Samba::Server::Service]')
-        }
-        it { is_expected.to contain_augeas('test_share-changes').with(
-          :incl    => '/etc/samba/smb.conf',
-          :lens    => 'Samba.lns',
-          :context => '/files/etc/samba/smb.conf',
-          :changes => [
-            "rm  \"target[. = 'test_share']/available\"",
-            "rm  \"target[. = 'test_share']/browsable\"",
-            "rm  \"target[. = 'test_share']/comment\"",
-            "rm  \"target[. = 'test_share']/copy\"",
-            "rm  \"target[. = 'test_share']/create mask\"",
-            "rm  \"target[. = 'test_share']/directory mask\"",
-            "set \"target[. = 'test_share']/force create mask\" '755'",
-            "rm  \"target[. = 'test_share']/force directory mode\"",
-            "rm  \"target[. = 'test_share']/force group\"",
-            "rm  \"target[. = 'test_share']/force user\"",
-            "rm  \"target[. = 'test_share']/guest ok\"",
-            "rm  \"target[. = 'test_share']/guest only\"",
-            "rm  \"target[. = 'test_share']/hide unreadable\"",
-            "rm  target[. = 'test_share']/path",
-            "rm  \"target[. = 'test_share']/read only\"",
-            "rm  \"target[. = 'test_share']/public\"",
-            "rm  \"target[. = 'test_share']/writable\"",
-            "rm  \"target[. = 'test_share']/printable\"",
-            "rm  \"target[. = 'test_share']/follow symlinks\"",
-            "rm  \"target[. = 'test_share']/wide links\"",
-            "rm  \"target[. = 'test_share']/map acl inherit\"",
-            "rm  \"target[. = 'test_share']/store dos attributes\"",
-            "rm  \"target[. = 'test_share']/strict allocate\"",
-            "rm  \"target[. = 'test_share']/valid users\"",
-            "rm  \"target[. = 'test_share']/oplocks\"",
-            "rm  \"target[. = 'test_share']/level2 oplocks\"",
-            "rm  \"target[. = 'test_share']/veto oplock files\"",
-            "rm  \"target[. = 'test_share']/write list\"",
-            "rm  \"target[. = 'test_share']/hide dot files\"",
-            "rm  \"target[. = 'test_share']/root preexec\""
-          ],
-          :require => 'Augeas[test_share-section]',
-          :notify  => 'Class[Samba::Server::Service]')
-        }
+        let(:change_set) { default_changes.with("force create mask", "'755'") }
       end#force_create_mask
 
       context 'when called with force_directory_mode set to "755"' do
-        let(:title) { 'test_share' }
+        include_examples "default share"
         let(:params) {{
           :ensure    => 'present',
           :force_directory_mode => '755',
         }}
-        it { is_expected.to contain_samba__server__share('test_share') }
-        it { is_expected.to contain_augeas('test_share-section').with(
-          :incl    => '/etc/samba/smb.conf',
-          :lens    => 'Samba.lns',
-          :context => '/files/etc/samba/smb.conf',
-          :changes => ["set target[. = 'test_share'] 'test_share'"],
-          :require => 'Class[Samba::Server::Config]',
-          :notify  => 'Class[Samba::Server::Service]')
-        }
-        it { is_expected.to contain_augeas('test_share-changes').with(
-          :incl    => '/etc/samba/smb.conf',
-          :lens    => 'Samba.lns',
-          :context => '/files/etc/samba/smb.conf',
-          :changes => [
-            "rm  \"target[. = 'test_share']/available\"",
-            "rm  \"target[. = 'test_share']/browsable\"",
-            "rm  \"target[. = 'test_share']/comment\"",
-            "rm  \"target[. = 'test_share']/copy\"",
-            "rm  \"target[. = 'test_share']/create mask\"",
-            "rm  \"target[. = 'test_share']/directory mask\"",
-            "rm  \"target[. = 'test_share']/force create mask\"",
-            "set \"target[. = 'test_share']/force directory mode\" '755'",
-            "rm  \"target[. = 'test_share']/force group\"",
-            "rm  \"target[. = 'test_share']/force user\"",
-            "rm  \"target[. = 'test_share']/guest ok\"",
-            "rm  \"target[. = 'test_share']/guest only\"",
-            "rm  \"target[. = 'test_share']/hide unreadable\"",
-            "rm  target[. = 'test_share']/path",
-            "rm  \"target[. = 'test_share']/read only\"",
-            "rm  \"target[. = 'test_share']/public\"",
-            "rm  \"target[. = 'test_share']/writable\"",
-            "rm  \"target[. = 'test_share']/printable\"",
-            "rm  \"target[. = 'test_share']/follow symlinks\"",
-            "rm  \"target[. = 'test_share']/wide links\"",
-            "rm  \"target[. = 'test_share']/map acl inherit\"",
-            "rm  \"target[. = 'test_share']/store dos attributes\"",
-            "rm  \"target[. = 'test_share']/strict allocate\"",
-            "rm  \"target[. = 'test_share']/valid users\"",
-            "rm  \"target[. = 'test_share']/oplocks\"",
-            "rm  \"target[. = 'test_share']/level2 oplocks\"",
-            "rm  \"target[. = 'test_share']/veto oplock files\"",
-            "rm  \"target[. = 'test_share']/write list\"",
-            "rm  \"target[. = 'test_share']/hide dot files\"",
-            "rm  \"target[. = 'test_share']/root preexec\""
-          ],
-          :require => 'Augeas[test_share-section]',
-          :notify  => 'Class[Samba::Server::Service]')
-        }
+        let(:change_set) { default_changes.with("force directory mode", "'755'") }
       end#force_directory_mode
 
       context 'when called with force_group set to "nogroup"' do
-        let(:title) { 'test_share' }
+        include_examples "default share"
         let(:params) {{
           :ensure    => 'present',
           :force_group => 'nogroup',
         }}
-        it { is_expected.to contain_samba__server__share('test_share') }
-        it { is_expected.to contain_augeas('test_share-section').with(
-          :incl    => '/etc/samba/smb.conf',
-          :lens    => 'Samba.lns',
-          :context => '/files/etc/samba/smb.conf',
-          :changes => ["set target[. = 'test_share'] 'test_share'"],
-          :require => 'Class[Samba::Server::Config]',
-          :notify  => 'Class[Samba::Server::Service]')
-        }
-        it { is_expected.to contain_augeas('test_share-changes').with(
-          :incl    => '/etc/samba/smb.conf',
-          :lens    => 'Samba.lns',
-          :context => '/files/etc/samba/smb.conf',
-          :changes => [
-            "rm  \"target[. = 'test_share']/available\"",
-            "rm  \"target[. = 'test_share']/browsable\"",
-            "rm  \"target[. = 'test_share']/comment\"",
-            "rm  \"target[. = 'test_share']/copy\"",
-            "rm  \"target[. = 'test_share']/create mask\"",
-            "rm  \"target[. = 'test_share']/directory mask\"",
-            "rm  \"target[. = 'test_share']/force create mask\"",
-            "rm  \"target[. = 'test_share']/force directory mode\"",
-            "set \"target[. = 'test_share']/force group\" 'nogroup'",
-            "rm  \"target[. = 'test_share']/force user\"",
-            "rm  \"target[. = 'test_share']/guest ok\"",
-            "rm  \"target[. = 'test_share']/guest only\"",
-            "rm  \"target[. = 'test_share']/hide unreadable\"",
-            "rm  target[. = 'test_share']/path",
-            "rm  \"target[. = 'test_share']/read only\"",
-            "rm  \"target[. = 'test_share']/public\"",
-            "rm  \"target[. = 'test_share']/writable\"",
-            "rm  \"target[. = 'test_share']/printable\"",
-            "rm  \"target[. = 'test_share']/follow symlinks\"",
-            "rm  \"target[. = 'test_share']/wide links\"",
-            "rm  \"target[. = 'test_share']/map acl inherit\"",
-            "rm  \"target[. = 'test_share']/store dos attributes\"",
-            "rm  \"target[. = 'test_share']/strict allocate\"",
-            "rm  \"target[. = 'test_share']/valid users\"",
-            "rm  \"target[. = 'test_share']/oplocks\"",
-            "rm  \"target[. = 'test_share']/level2 oplocks\"",
-            "rm  \"target[. = 'test_share']/veto oplock files\"",
-            "rm  \"target[. = 'test_share']/write list\"",
-            "rm  \"target[. = 'test_share']/hide dot files\"",
-            "rm  \"target[. = 'test_share']/root preexec\""
-          ],
-          :require => 'Augeas[test_share-section]',
-          :notify  => 'Class[Samba::Server::Service]')
-        }
+        let(:change_set) { default_changes.with("force group", "'nogroup'") }
       end#force_group
 
       context 'when called with force_user set to "nobody"' do
-        let(:title) { 'test_share' }
+        include_examples "default share"
         let(:params) {{
           :ensure    => 'present',
           :force_user => 'nobody',
         }}
-        it { is_expected.to contain_samba__server__share('test_share') }
-        it { is_expected.to contain_augeas('test_share-section').with(
-          :incl    => '/etc/samba/smb.conf',
-          :lens    => 'Samba.lns',
-          :context => '/files/etc/samba/smb.conf',
-          :changes => ["set target[. = 'test_share'] 'test_share'"],
-          :require => 'Class[Samba::Server::Config]',
-          :notify  => 'Class[Samba::Server::Service]')
-        }
-        it { is_expected.to contain_augeas('test_share-changes').with(
-          :incl    => '/etc/samba/smb.conf',
-          :lens    => 'Samba.lns',
-          :context => '/files/etc/samba/smb.conf',
-          :changes => [
-            "rm  \"target[. = 'test_share']/available\"",
-            "rm  \"target[. = 'test_share']/browsable\"",
-            "rm  \"target[. = 'test_share']/comment\"",
-            "rm  \"target[. = 'test_share']/copy\"",
-            "rm  \"target[. = 'test_share']/create mask\"",
-            "rm  \"target[. = 'test_share']/directory mask\"",
-            "rm  \"target[. = 'test_share']/force create mask\"",
-            "rm  \"target[. = 'test_share']/force directory mode\"",
-            "rm  \"target[. = 'test_share']/force group\"",
-            "set \"target[. = 'test_share']/force user\" 'nobody'",
-            "rm  \"target[. = 'test_share']/guest ok\"",
-            "rm  \"target[. = 'test_share']/guest only\"",
-            "rm  \"target[. = 'test_share']/hide unreadable\"",
-            "rm  target[. = 'test_share']/path",
-            "rm  \"target[. = 'test_share']/read only\"",
-            "rm  \"target[. = 'test_share']/public\"",
-            "rm  \"target[. = 'test_share']/writable\"",
-            "rm  \"target[. = 'test_share']/printable\"",
-            "rm  \"target[. = 'test_share']/follow symlinks\"",
-            "rm  \"target[. = 'test_share']/wide links\"",
-            "rm  \"target[. = 'test_share']/map acl inherit\"",
-            "rm  \"target[. = 'test_share']/store dos attributes\"",
-            "rm  \"target[. = 'test_share']/strict allocate\"",
-            "rm  \"target[. = 'test_share']/valid users\"",
-            "rm  \"target[. = 'test_share']/oplocks\"",
-            "rm  \"target[. = 'test_share']/level2 oplocks\"",
-            "rm  \"target[. = 'test_share']/veto oplock files\"",
-            "rm  \"target[. = 'test_share']/write list\"",
-            "rm  \"target[. = 'test_share']/hide dot files\"",
-            "rm  \"target[. = 'test_share']/root preexec\""
-          ],
-          :require => 'Augeas[test_share-section]',
-          :notify  => 'Class[Samba::Server::Service]')
-        }
+        let(:change_set) { default_changes.with("force user", "'nobody'") }
       end#force_user
 
       context 'when called with guest_ok set to true' do
-        let(:title) { 'test_share' }
+        include_examples "default share"
         let(:params) {{
           :ensure   => 'present',
           :guest_ok => true,
         }}
-        it { is_expected.to contain_samba__server__share('test_share') }
-        it { is_expected.to contain_augeas('test_share-section').with(
-          :incl    => '/etc/samba/smb.conf',
-          :lens    => 'Samba.lns',
-          :context => '/files/etc/samba/smb.conf',
-          :changes => ["set target[. = 'test_share'] 'test_share'"],
-          :require => 'Class[Samba::Server::Config]',
-          :notify  => 'Class[Samba::Server::Service]')
-        }
-        it { is_expected.to contain_augeas('test_share-changes').with(
-          :incl    => '/etc/samba/smb.conf',
-          :lens    => 'Samba.lns',
-          :context => '/files/etc/samba/smb.conf',
-          :changes => [
-            "rm  \"target[. = 'test_share']/available\"",
-            "rm  \"target[. = 'test_share']/browsable\"",
-            "rm  \"target[. = 'test_share']/comment\"",
-            "rm  \"target[. = 'test_share']/copy\"",
-            "rm  \"target[. = 'test_share']/create mask\"",
-            "rm  \"target[. = 'test_share']/directory mask\"",
-            "rm  \"target[. = 'test_share']/force create mask\"",
-            "rm  \"target[. = 'test_share']/force directory mode\"",
-            "rm  \"target[. = 'test_share']/force group\"",
-            "rm  \"target[. = 'test_share']/force user\"",
-            "set \"target[. = 'test_share']/guest ok\" yes",
-            "rm  \"target[. = 'test_share']/guest only\"",
-            "rm  \"target[. = 'test_share']/hide unreadable\"",
-            "rm  target[. = 'test_share']/path",
-            "rm  \"target[. = 'test_share']/read only\"",
-            "rm  \"target[. = 'test_share']/public\"",
-            "rm  \"target[. = 'test_share']/writable\"",
-            "rm  \"target[. = 'test_share']/printable\"",
-            "rm  \"target[. = 'test_share']/follow symlinks\"",
-            "rm  \"target[. = 'test_share']/wide links\"",
-            "rm  \"target[. = 'test_share']/map acl inherit\"",
-            "rm  \"target[. = 'test_share']/store dos attributes\"",
-            "rm  \"target[. = 'test_share']/strict allocate\"",
-            "rm  \"target[. = 'test_share']/valid users\"",
-            "rm  \"target[. = 'test_share']/oplocks\"",
-            "rm  \"target[. = 'test_share']/level2 oplocks\"",
-            "rm  \"target[. = 'test_share']/veto oplock files\"",
-            "rm  \"target[. = 'test_share']/write list\"",
-            "rm  \"target[. = 'test_share']/hide dot files\"",
-            "rm  \"target[. = 'test_share']/root preexec\""
-          ],
-          :require => 'Augeas[test_share-section]',
-          :notify  => 'Class[Samba::Server::Service]')
-        }
+        let(:change_set) { default_changes.with("guest ok", "yes") }
       end#guest_ok true
 
       context 'when called with guest_ok set to false' do
-        let(:title) { 'test_share' }
+        include_examples "default share"
         let(:params) {{
           :ensure   => 'present',
           :guest_ok => false,
         }}
-        it { is_expected.to contain_samba__server__share('test_share') }
-        it { is_expected.to contain_augeas('test_share-section').with(
-          :incl    => '/etc/samba/smb.conf',
-          :lens    => 'Samba.lns',
-          :context => '/files/etc/samba/smb.conf',
-          :changes => ["set target[. = 'test_share'] 'test_share'"],
-          :require => 'Class[Samba::Server::Config]',
-          :notify  => 'Class[Samba::Server::Service]')
-        }
-        it { is_expected.to contain_augeas('test_share-changes').with(
-          :incl    => '/etc/samba/smb.conf',
-          :lens    => 'Samba.lns',
-          :context => '/files/etc/samba/smb.conf',
-          :changes => [
-            "rm  \"target[. = 'test_share']/available\"",
-            "rm  \"target[. = 'test_share']/browsable\"",
-            "rm  \"target[. = 'test_share']/comment\"",
-            "rm  \"target[. = 'test_share']/copy\"",
-            "rm  \"target[. = 'test_share']/create mask\"",
-            "rm  \"target[. = 'test_share']/directory mask\"",
-            "rm  \"target[. = 'test_share']/force create mask\"",
-            "rm  \"target[. = 'test_share']/force directory mode\"",
-            "rm  \"target[. = 'test_share']/force group\"",
-            "rm  \"target[. = 'test_share']/force user\"",
-            "set \"target[. = 'test_share']/guest ok\" no",
-            "rm  \"target[. = 'test_share']/guest only\"",
-            "rm  \"target[. = 'test_share']/hide unreadable\"",
-            "rm  target[. = 'test_share']/path",
-            "rm  \"target[. = 'test_share']/read only\"",
-            "rm  \"target[. = 'test_share']/public\"",
-            "rm  \"target[. = 'test_share']/writable\"",
-            "rm  \"target[. = 'test_share']/printable\"",
-            "rm  \"target[. = 'test_share']/follow symlinks\"",
-            "rm  \"target[. = 'test_share']/wide links\"",
-            "rm  \"target[. = 'test_share']/map acl inherit\"",
-            "rm  \"target[. = 'test_share']/store dos attributes\"",
-            "rm  \"target[. = 'test_share']/strict allocate\"",
-            "rm  \"target[. = 'test_share']/valid users\"",
-            "rm  \"target[. = 'test_share']/oplocks\"",
-            "rm  \"target[. = 'test_share']/level2 oplocks\"",
-            "rm  \"target[. = 'test_share']/veto oplock files\"",
-            "rm  \"target[. = 'test_share']/write list\"",
-            "rm  \"target[. = 'test_share']/hide dot files\"",
-            "rm  \"target[. = 'test_share']/root preexec\""
-          ],
-          :require => 'Augeas[test_share-section]',
-          :notify  => 'Class[Samba::Server::Service]')
-        }
+        let(:change_set) { default_changes.with("guest ok", "no") }
       end#guest_ok false
 
       context 'when called with guest_only set to true' do
-        let(:title) { 'test_share' }
+        include_examples "default share"
         let(:params) {{
           :ensure     => 'present',
           :guest_only => true,
         }}
-        it { is_expected.to contain_samba__server__share('test_share') }
-        it { is_expected.to contain_augeas('test_share-section').with(
-          :incl    => '/etc/samba/smb.conf',
-          :lens    => 'Samba.lns',
-          :context => '/files/etc/samba/smb.conf',
-          :changes => ["set target[. = 'test_share'] 'test_share'"],
-          :require => 'Class[Samba::Server::Config]',
-          :notify  => 'Class[Samba::Server::Service]')
-        }
-        it { is_expected.to contain_augeas('test_share-changes').with(
-          :incl    => '/etc/samba/smb.conf',
-          :lens    => 'Samba.lns',
-          :context => '/files/etc/samba/smb.conf',
-          :changes => [
-            "rm  \"target[. = 'test_share']/available\"",
-            "rm  \"target[. = 'test_share']/browsable\"",
-            "rm  \"target[. = 'test_share']/comment\"",
-            "rm  \"target[. = 'test_share']/copy\"",
-            "rm  \"target[. = 'test_share']/create mask\"",
-            "rm  \"target[. = 'test_share']/directory mask\"",
-            "rm  \"target[. = 'test_share']/force create mask\"",
-            "rm  \"target[. = 'test_share']/force directory mode\"",
-            "rm  \"target[. = 'test_share']/force group\"",
-            "rm  \"target[. = 'test_share']/force user\"",
-            "rm  \"target[. = 'test_share']/guest ok\"",
-            "set \"target[. = 'test_share']/guest only\" yes",
-            "rm  \"target[. = 'test_share']/hide unreadable\"",
-            "rm  target[. = 'test_share']/path",
-            "rm  \"target[. = 'test_share']/read only\"",
-            "rm  \"target[. = 'test_share']/public\"",
-            "rm  \"target[. = 'test_share']/writable\"",
-            "rm  \"target[. = 'test_share']/printable\"",
-            "rm  \"target[. = 'test_share']/follow symlinks\"",
-            "rm  \"target[. = 'test_share']/wide links\"",
-            "rm  \"target[. = 'test_share']/map acl inherit\"",
-            "rm  \"target[. = 'test_share']/store dos attributes\"",
-            "rm  \"target[. = 'test_share']/strict allocate\"",
-            "rm  \"target[. = 'test_share']/valid users\"",
-            "rm  \"target[. = 'test_share']/oplocks\"",
-            "rm  \"target[. = 'test_share']/level2 oplocks\"",
-            "rm  \"target[. = 'test_share']/veto oplock files\"",
-            "rm  \"target[. = 'test_share']/write list\"",
-            "rm  \"target[. = 'test_share']/hide dot files\"",
-            "rm  \"target[. = 'test_share']/root preexec\""
-          ],
-          :require => 'Augeas[test_share-section]',
-          :notify  => 'Class[Samba::Server::Service]')
-        }
+        let(:change_set) { default_changes.with("guest only", "yes") }
       end#guest_only false
 
       context 'when called with guest_only set to false' do
-        let(:title) { 'test_share' }
+        include_examples "default share"
         let(:params) {{
           :ensure     => 'present',
           :guest_only => false,
         }}
-        it { is_expected.to contain_samba__server__share('test_share') }
-        it { is_expected.to contain_augeas('test_share-section').with(
-          :incl    => '/etc/samba/smb.conf',
-          :lens    => 'Samba.lns',
-          :context => '/files/etc/samba/smb.conf',
-          :changes => ["set target[. = 'test_share'] 'test_share'"],
-          :require => 'Class[Samba::Server::Config]',
-          :notify  => 'Class[Samba::Server::Service]')
-        }
-        it { is_expected.to contain_augeas('test_share-changes').with(
-          :incl    => '/etc/samba/smb.conf',
-          :lens    => 'Samba.lns',
-          :context => '/files/etc/samba/smb.conf',
-          :changes => [
-            "rm  \"target[. = 'test_share']/available\"",
-            "rm  \"target[. = 'test_share']/browsable\"",
-            "rm  \"target[. = 'test_share']/comment\"",
-            "rm  \"target[. = 'test_share']/copy\"",
-            "rm  \"target[. = 'test_share']/create mask\"",
-            "rm  \"target[. = 'test_share']/directory mask\"",
-            "rm  \"target[. = 'test_share']/force create mask\"",
-            "rm  \"target[. = 'test_share']/force directory mode\"",
-            "rm  \"target[. = 'test_share']/force group\"",
-            "rm  \"target[. = 'test_share']/force user\"",
-            "rm  \"target[. = 'test_share']/guest ok\"",
-            "set \"target[. = 'test_share']/guest only\" no",
-            "rm  \"target[. = 'test_share']/hide unreadable\"",
-            "rm  target[. = 'test_share']/path",
-            "rm  \"target[. = 'test_share']/read only\"",
-            "rm  \"target[. = 'test_share']/public\"",
-            "rm  \"target[. = 'test_share']/writable\"",
-            "rm  \"target[. = 'test_share']/printable\"",
-            "rm  \"target[. = 'test_share']/follow symlinks\"",
-            "rm  \"target[. = 'test_share']/wide links\"",
-            "rm  \"target[. = 'test_share']/map acl inherit\"",
-            "rm  \"target[. = 'test_share']/store dos attributes\"",
-            "rm  \"target[. = 'test_share']/strict allocate\"",
-            "rm  \"target[. = 'test_share']/valid users\"",
-            "rm  \"target[. = 'test_share']/oplocks\"",
-            "rm  \"target[. = 'test_share']/level2 oplocks\"",
-            "rm  \"target[. = 'test_share']/veto oplock files\"",
-            "rm  \"target[. = 'test_share']/write list\"",
-            "rm  \"target[. = 'test_share']/hide dot files\"",
-            "rm  \"target[. = 'test_share']/root preexec\""
-          ],
-          :require => 'Augeas[test_share-section]',
-          :notify  => 'Class[Samba::Server::Service]')
-        }
+        let(:change_set) { default_changes.with("guest only", "no") }
       end#guest_only false
 
       context 'when called with hide_unreadable set to true' do
-        let(:title) { 'test_share' }
+        include_examples "default share"
         let(:params) {{
           :ensure          => 'present',
           :hide_unreadable => true,
         }}
-        it { is_expected.to contain_samba__server__share('test_share') }
-        it { is_expected.to contain_augeas('test_share-section').with(
-          :incl    => '/etc/samba/smb.conf',
-          :lens    => 'Samba.lns',
-          :context => '/files/etc/samba/smb.conf',
-          :changes => ["set target[. = 'test_share'] 'test_share'"],
-          :require => 'Class[Samba::Server::Config]',
-          :notify  => 'Class[Samba::Server::Service]')
-        }
-        it { is_expected.to contain_augeas('test_share-changes').with(
-          :incl    => '/etc/samba/smb.conf',
-          :lens    => 'Samba.lns',
-          :context => '/files/etc/samba/smb.conf',
-          :changes => [
-            "rm  \"target[. = 'test_share']/available\"",
-            "rm  \"target[. = 'test_share']/browsable\"",
-            "rm  \"target[. = 'test_share']/comment\"",
-            "rm  \"target[. = 'test_share']/copy\"",
-            "rm  \"target[. = 'test_share']/create mask\"",
-            "rm  \"target[. = 'test_share']/directory mask\"",
-            "rm  \"target[. = 'test_share']/force create mask\"",
-            "rm  \"target[. = 'test_share']/force directory mode\"",
-            "rm  \"target[. = 'test_share']/force group\"",
-            "rm  \"target[. = 'test_share']/force user\"",
-            "rm  \"target[. = 'test_share']/guest ok\"",
-            "rm  \"target[. = 'test_share']/guest only\"",
-            "set \"target[. = 'test_share']/hide unreadable\" yes",
-            "rm  target[. = 'test_share']/path",
-            "rm  \"target[. = 'test_share']/read only\"",
-            "rm  \"target[. = 'test_share']/public\"",
-            "rm  \"target[. = 'test_share']/writable\"",
-            "rm  \"target[. = 'test_share']/printable\"",
-            "rm  \"target[. = 'test_share']/follow symlinks\"",
-            "rm  \"target[. = 'test_share']/wide links\"",
-            "rm  \"target[. = 'test_share']/map acl inherit\"",
-            "rm  \"target[. = 'test_share']/store dos attributes\"",
-            "rm  \"target[. = 'test_share']/strict allocate\"",
-            "rm  \"target[. = 'test_share']/valid users\"",
-            "rm  \"target[. = 'test_share']/oplocks\"",
-            "rm  \"target[. = 'test_share']/level2 oplocks\"",
-            "rm  \"target[. = 'test_share']/veto oplock files\"",
-            "rm  \"target[. = 'test_share']/write list\"",
-            "rm  \"target[. = 'test_share']/hide dot files\"",
-            "rm  \"target[. = 'test_share']/root preexec\""
-          ],
-          :require => 'Augeas[test_share-section]',
-          :notify  => 'Class[Samba::Server::Service]')
-        }
+        let(:change_set) { default_changes.with("hide unreadable", "yes") }
       end#hide_unreadable true
 
       context 'when called with hide_unreadable set to false' do
-        let(:title) { 'test_share' }
+        include_examples "default share"
         let(:params) {{
           :ensure          => 'present',
           :hide_unreadable => false,
         }}
-        it { is_expected.to contain_samba__server__share('test_share') }
-        it { is_expected.to contain_augeas('test_share-section').with(
-          :incl    => '/etc/samba/smb.conf',
-          :lens    => 'Samba.lns',
-          :context => '/files/etc/samba/smb.conf',
-          :changes => ["set target[. = 'test_share'] 'test_share'"],
-          :require => 'Class[Samba::Server::Config]',
-          :notify  => 'Class[Samba::Server::Service]')
-        }
-        it { is_expected.to contain_augeas('test_share-changes').with(
-          :incl    => '/etc/samba/smb.conf',
-          :lens    => 'Samba.lns',
-          :context => '/files/etc/samba/smb.conf',
-          :changes => [
-            "rm  \"target[. = 'test_share']/available\"",
-            "rm  \"target[. = 'test_share']/browsable\"",
-            "rm  \"target[. = 'test_share']/comment\"",
-            "rm  \"target[. = 'test_share']/copy\"",
-            "rm  \"target[. = 'test_share']/create mask\"",
-            "rm  \"target[. = 'test_share']/directory mask\"",
-            "rm  \"target[. = 'test_share']/force create mask\"",
-            "rm  \"target[. = 'test_share']/force directory mode\"",
-            "rm  \"target[. = 'test_share']/force group\"",
-            "rm  \"target[. = 'test_share']/force user\"",
-            "rm  \"target[. = 'test_share']/guest ok\"",
-            "rm  \"target[. = 'test_share']/guest only\"",
-            "set \"target[. = 'test_share']/hide unreadable\" no",
-            "rm  target[. = 'test_share']/path",
-            "rm  \"target[. = 'test_share']/read only\"",
-            "rm  \"target[. = 'test_share']/public\"",
-            "rm  \"target[. = 'test_share']/writable\"",
-            "rm  \"target[. = 'test_share']/printable\"",
-            "rm  \"target[. = 'test_share']/follow symlinks\"",
-            "rm  \"target[. = 'test_share']/wide links\"",
-            "rm  \"target[. = 'test_share']/map acl inherit\"",
-            "rm  \"target[. = 'test_share']/store dos attributes\"",
-            "rm  \"target[. = 'test_share']/strict allocate\"",
-            "rm  \"target[. = 'test_share']/valid users\"",
-            "rm  \"target[. = 'test_share']/oplocks\"",
-            "rm  \"target[. = 'test_share']/level2 oplocks\"",
-            "rm  \"target[. = 'test_share']/veto oplock files\"",
-            "rm  \"target[. = 'test_share']/write list\"",
-            "rm  \"target[. = 'test_share']/hide dot files\"",
-            "rm  \"target[. = 'test_share']/root preexec\""
-          ],
-          :require => 'Augeas[test_share-section]',
-          :notify  => 'Class[Samba::Server::Service]')
-        }
+        let(:change_set) { default_changes.with("hide unreadable", "no") }
       end#hide_unreadable false
 
       context 'when called with path set to /tmp' do
-        let(:title) { 'test_share' }
+        include_examples "default share"
         let(:params) {{
           :ensure => 'present',
           :path   => '/tmp',
         }}
-        it { is_expected.to contain_samba__server__share('test_share') }
-        it { is_expected.to contain_augeas('test_share-section').with(
-          :incl    => '/etc/samba/smb.conf',
-          :lens    => 'Samba.lns',
-          :context => '/files/etc/samba/smb.conf',
-          :changes => ["set target[. = 'test_share'] 'test_share'"],
-          :require => 'Class[Samba::Server::Config]',
-          :notify  => 'Class[Samba::Server::Service]')
-        }
-        it { is_expected.to contain_augeas('test_share-changes').with(
-          :incl    => '/etc/samba/smb.conf',
-          :lens    => 'Samba.lns',
-          :context => '/files/etc/samba/smb.conf',
-          :changes => [
-            "rm  \"target[. = 'test_share']/available\"",
-            "rm  \"target[. = 'test_share']/browsable\"",
-            "rm  \"target[. = 'test_share']/comment\"",
-            "rm  \"target[. = 'test_share']/copy\"",
-            "rm  \"target[. = 'test_share']/create mask\"",
-            "rm  \"target[. = 'test_share']/directory mask\"",
-            "rm  \"target[. = 'test_share']/force create mask\"",
-            "rm  \"target[. = 'test_share']/force directory mode\"",
-            "rm  \"target[. = 'test_share']/force group\"",
-            "rm  \"target[. = 'test_share']/force user\"",
-            "rm  \"target[. = 'test_share']/guest ok\"",
-            "rm  \"target[. = 'test_share']/guest only\"",
-            "rm  \"target[. = 'test_share']/hide unreadable\"",
-            "set target[. = 'test_share']/path '/tmp'",
-            "rm  \"target[. = 'test_share']/read only\"",
-            "rm  \"target[. = 'test_share']/public\"",
-            "rm  \"target[. = 'test_share']/writable\"",
-            "rm  \"target[. = 'test_share']/printable\"",
-            "rm  \"target[. = 'test_share']/follow symlinks\"",
-            "rm  \"target[. = 'test_share']/wide links\"",
-            "rm  \"target[. = 'test_share']/map acl inherit\"",
-            "rm  \"target[. = 'test_share']/store dos attributes\"",
-            "rm  \"target[. = 'test_share']/strict allocate\"",
-            "rm  \"target[. = 'test_share']/valid users\"",
-            "rm  \"target[. = 'test_share']/oplocks\"",
-            "rm  \"target[. = 'test_share']/level2 oplocks\"",
-            "rm  \"target[. = 'test_share']/veto oplock files\"",
-            "rm  \"target[. = 'test_share']/write list\"",
-            "rm  \"target[. = 'test_share']/hide dot files\"",
-            "rm  \"target[. = 'test_share']/root preexec\""
-          ],
-          :require => 'Augeas[test_share-section]',
-          :notify  => 'Class[Samba::Server::Service]')
-        }
+        let(:change_set) { default_changes.with("path", "'/tmp'", nil) }
       end#path
 
       context 'when called with read_only set to true' do
-        let(:title) { 'test_share' }
+        include_examples "default share"
         let(:params) {{
           :ensure    => 'present',
           :read_only => true,
         }}
-        it { is_expected.to contain_samba__server__share('test_share') }
-        it { is_expected.to contain_augeas('test_share-section').with(
-          :incl    => '/etc/samba/smb.conf',
-          :lens    => 'Samba.lns',
-          :context => '/files/etc/samba/smb.conf',
-          :changes => ["set target[. = 'test_share'] 'test_share'"],
-          :require => 'Class[Samba::Server::Config]',
-          :notify  => 'Class[Samba::Server::Service]')
-        }
-        it { is_expected.to contain_augeas('test_share-changes').with(
-          :incl    => '/etc/samba/smb.conf',
-          :lens    => 'Samba.lns',
-          :context => '/files/etc/samba/smb.conf',
-          :changes => [
-            "rm  \"target[. = 'test_share']/available\"",
-            "rm  \"target[. = 'test_share']/browsable\"",
-            "rm  \"target[. = 'test_share']/comment\"",
-            "rm  \"target[. = 'test_share']/copy\"",
-            "rm  \"target[. = 'test_share']/create mask\"",
-            "rm  \"target[. = 'test_share']/directory mask\"",
-            "rm  \"target[. = 'test_share']/force create mask\"",
-            "rm  \"target[. = 'test_share']/force directory mode\"",
-            "rm  \"target[. = 'test_share']/force group\"",
-            "rm  \"target[. = 'test_share']/force user\"",
-            "rm  \"target[. = 'test_share']/guest ok\"",
-            "rm  \"target[. = 'test_share']/guest only\"",
-            "rm  \"target[. = 'test_share']/hide unreadable\"",
-            "rm  target[. = 'test_share']/path",
-            "set \"target[. = 'test_share']/read only\" yes",
-            "rm  \"target[. = 'test_share']/public\"",
-            "rm  \"target[. = 'test_share']/writable\"",
-            "rm  \"target[. = 'test_share']/printable\"",
-            "rm  \"target[. = 'test_share']/follow symlinks\"",
-            "rm  \"target[. = 'test_share']/wide links\"",
-            "rm  \"target[. = 'test_share']/map acl inherit\"",
-            "rm  \"target[. = 'test_share']/store dos attributes\"",
-            "rm  \"target[. = 'test_share']/strict allocate\"",
-            "rm  \"target[. = 'test_share']/valid users\"",
-            "rm  \"target[. = 'test_share']/oplocks\"",
-            "rm  \"target[. = 'test_share']/level2 oplocks\"",
-            "rm  \"target[. = 'test_share']/veto oplock files\"",
-            "rm  \"target[. = 'test_share']/write list\"",
-            "rm  \"target[. = 'test_share']/hide dot files\"",
-            "rm  \"target[. = 'test_share']/root preexec\""
-          ],
-          :require => 'Augeas[test_share-section]',
-          :notify  => 'Class[Samba::Server::Service]')
-        }
+        let(:change_set) { default_changes.with("read only", "yes") }
       end#read_only true
 
       context 'when called with read_only set to false' do
-        let(:title) { 'test_share' }
+        include_examples "default share"
         let(:params) {{
           :ensure    => 'present',
           :read_only => false,
         }}
-        it { is_expected.to contain_samba__server__share('test_share') }
-        it { is_expected.to contain_augeas('test_share-section').with(
-          :incl    => '/etc/samba/smb.conf',
-          :lens    => 'Samba.lns',
-          :context => '/files/etc/samba/smb.conf',
-          :changes => ["set target[. = 'test_share'] 'test_share'"],
-          :require => 'Class[Samba::Server::Config]',
-          :notify  => 'Class[Samba::Server::Service]')
-        }
-        it { is_expected.to contain_augeas('test_share-changes').with(
-          :incl    => '/etc/samba/smb.conf',
-          :lens    => 'Samba.lns',
-          :context => '/files/etc/samba/smb.conf',
-          :changes => [
-            "rm  \"target[. = 'test_share']/available\"",
-            "rm  \"target[. = 'test_share']/browsable\"",
-            "rm  \"target[. = 'test_share']/comment\"",
-            "rm  \"target[. = 'test_share']/copy\"",
-            "rm  \"target[. = 'test_share']/create mask\"",
-            "rm  \"target[. = 'test_share']/directory mask\"",
-            "rm  \"target[. = 'test_share']/force create mask\"",
-            "rm  \"target[. = 'test_share']/force directory mode\"",
-            "rm  \"target[. = 'test_share']/force group\"",
-            "rm  \"target[. = 'test_share']/force user\"",
-            "rm  \"target[. = 'test_share']/guest ok\"",
-            "rm  \"target[. = 'test_share']/guest only\"",
-            "rm  \"target[. = 'test_share']/hide unreadable\"",
-            "rm  target[. = 'test_share']/path",
-            "set \"target[. = 'test_share']/read only\" no",
-            "rm  \"target[. = 'test_share']/public\"",
-            "rm  \"target[. = 'test_share']/writable\"",
-            "rm  \"target[. = 'test_share']/printable\"",
-            "rm  \"target[. = 'test_share']/follow symlinks\"",
-            "rm  \"target[. = 'test_share']/wide links\"",
-            "rm  \"target[. = 'test_share']/map acl inherit\"",
-            "rm  \"target[. = 'test_share']/store dos attributes\"",
-            "rm  \"target[. = 'test_share']/strict allocate\"",
-            "rm  \"target[. = 'test_share']/valid users\"",
-            "rm  \"target[. = 'test_share']/oplocks\"",
-            "rm  \"target[. = 'test_share']/level2 oplocks\"",
-            "rm  \"target[. = 'test_share']/veto oplock files\"",
-            "rm  \"target[. = 'test_share']/write list\"",
-            "rm  \"target[. = 'test_share']/hide dot files\"",
-            "rm  \"target[. = 'test_share']/root preexec\""
-          ],
-          :require => 'Augeas[test_share-section]',
-          :notify  => 'Class[Samba::Server::Service]')
-        }
+        let(:change_set) { default_changes.with("read only", "no") }
       end#read_only false
 
       context 'when called with public set to true' do
-        let(:title) { 'test_share' }
+        include_examples "default share"
         let(:params) {{
           :ensure => 'present',
           :public => true,
         }}
-        it { is_expected.to contain_samba__server__share('test_share') }
-        it { is_expected.to contain_augeas('test_share-section').with(
-          :incl    => '/etc/samba/smb.conf',
-          :lens    => 'Samba.lns',
-          :context => '/files/etc/samba/smb.conf',
-          :changes => ["set target[. = 'test_share'] 'test_share'"],
-          :require => 'Class[Samba::Server::Config]',
-          :notify  => 'Class[Samba::Server::Service]')
-        }
-        it { is_expected.to contain_augeas('test_share-changes').with(
-          :incl    => '/etc/samba/smb.conf',
-          :lens    => 'Samba.lns',
-          :context => '/files/etc/samba/smb.conf',
-          :changes => [
-            "rm  \"target[. = 'test_share']/available\"",
-            "rm  \"target[. = 'test_share']/browsable\"",
-            "rm  \"target[. = 'test_share']/comment\"",
-            "rm  \"target[. = 'test_share']/copy\"",
-            "rm  \"target[. = 'test_share']/create mask\"",
-            "rm  \"target[. = 'test_share']/directory mask\"",
-            "rm  \"target[. = 'test_share']/force create mask\"",
-            "rm  \"target[. = 'test_share']/force directory mode\"",
-            "rm  \"target[. = 'test_share']/force group\"",
-            "rm  \"target[. = 'test_share']/force user\"",
-            "rm  \"target[. = 'test_share']/guest ok\"",
-            "rm  \"target[. = 'test_share']/guest only\"",
-            "rm  \"target[. = 'test_share']/hide unreadable\"",
-            "rm  target[. = 'test_share']/path",
-            "rm  \"target[. = 'test_share']/read only\"",
-            "set \"target[. = 'test_share']/public\" yes",
-            "rm  \"target[. = 'test_share']/writable\"",
-            "rm  \"target[. = 'test_share']/printable\"",
-            "rm  \"target[. = 'test_share']/follow symlinks\"",
-            "rm  \"target[. = 'test_share']/wide links\"",
-            "rm  \"target[. = 'test_share']/map acl inherit\"",
-            "rm  \"target[. = 'test_share']/store dos attributes\"",
-            "rm  \"target[. = 'test_share']/strict allocate\"",
-            "rm  \"target[. = 'test_share']/valid users\"",
-            "rm  \"target[. = 'test_share']/oplocks\"",
-            "rm  \"target[. = 'test_share']/level2 oplocks\"",
-            "rm  \"target[. = 'test_share']/veto oplock files\"",
-            "rm  \"target[. = 'test_share']/write list\"",
-            "rm  \"target[. = 'test_share']/hide dot files\"",
-            "rm  \"target[. = 'test_share']/root preexec\""
-          ],
-          :require => 'Augeas[test_share-section]',
-          :notify  => 'Class[Samba::Server::Service]')
-        }
+        let(:change_set) { default_changes.with("public", "yes") }
       end#public true
 
       context 'when called with public set to false' do
-        let(:title) { 'test_share' }
+        include_examples "default share"
         let(:params) {{
           :ensure => 'present',
           :public => false,
         }}
-        it { is_expected.to contain_samba__server__share('test_share') }
-        it { is_expected.to contain_augeas('test_share-section').with(
-          :incl    => '/etc/samba/smb.conf',
-          :lens    => 'Samba.lns',
-          :context => '/files/etc/samba/smb.conf',
-          :changes => ["set target[. = 'test_share'] 'test_share'"],
-          :require => 'Class[Samba::Server::Config]',
-          :notify  => 'Class[Samba::Server::Service]')
-        }
-        it { is_expected.to contain_augeas('test_share-changes').with(
-          :incl    => '/etc/samba/smb.conf',
-          :lens    => 'Samba.lns',
-          :context => '/files/etc/samba/smb.conf',
-          :changes => [
-            "rm  \"target[. = 'test_share']/available\"",
-            "rm  \"target[. = 'test_share']/browsable\"",
-            "rm  \"target[. = 'test_share']/comment\"",
-            "rm  \"target[. = 'test_share']/copy\"",
-            "rm  \"target[. = 'test_share']/create mask\"",
-            "rm  \"target[. = 'test_share']/directory mask\"",
-            "rm  \"target[. = 'test_share']/force create mask\"",
-            "rm  \"target[. = 'test_share']/force directory mode\"",
-            "rm  \"target[. = 'test_share']/force group\"",
-            "rm  \"target[. = 'test_share']/force user\"",
-            "rm  \"target[. = 'test_share']/guest ok\"",
-            "rm  \"target[. = 'test_share']/guest only\"",
-            "rm  \"target[. = 'test_share']/hide unreadable\"",
-            "rm  target[. = 'test_share']/path",
-            "rm  \"target[. = 'test_share']/read only\"",
-            "set \"target[. = 'test_share']/public\" no",
-            "rm  \"target[. = 'test_share']/writable\"",
-            "rm  \"target[. = 'test_share']/printable\"",
-            "rm  \"target[. = 'test_share']/follow symlinks\"",
-            "rm  \"target[. = 'test_share']/wide links\"",
-            "rm  \"target[. = 'test_share']/map acl inherit\"",
-            "rm  \"target[. = 'test_share']/store dos attributes\"",
-            "rm  \"target[. = 'test_share']/strict allocate\"",
-            "rm  \"target[. = 'test_share']/valid users\"",
-            "rm  \"target[. = 'test_share']/oplocks\"",
-            "rm  \"target[. = 'test_share']/level2 oplocks\"",
-            "rm  \"target[. = 'test_share']/veto oplock files\"",
-            "rm  \"target[. = 'test_share']/write list\"",
-            "rm  \"target[. = 'test_share']/hide dot files\"",
-            "rm  \"target[. = 'test_share']/root preexec\""
-          ],
-          :require => 'Augeas[test_share-section]',
-          :notify  => 'Class[Samba::Server::Service]')
-        }
+        let(:change_set) { default_changes.with("public", "no") }
       end#public false
 
       context 'when called with writable set to true' do
-        let(:title) { 'test_share' }
+        include_examples "default share"
         let(:params) {{
           :ensure   => 'present',
           :writable => true,
         }}
-        it { is_expected.to contain_samba__server__share('test_share') }
-        it { is_expected.to contain_augeas('test_share-section').with(
-          :incl    => '/etc/samba/smb.conf',
-          :lens    => 'Samba.lns',
-          :context => '/files/etc/samba/smb.conf',
-          :changes => ["set target[. = 'test_share'] 'test_share'"],
-          :require => 'Class[Samba::Server::Config]',
-          :notify  => 'Class[Samba::Server::Service]')
-        }
-        it { is_expected.to contain_augeas('test_share-changes').with(
-          :incl    => '/etc/samba/smb.conf',
-          :lens    => 'Samba.lns',
-          :context => '/files/etc/samba/smb.conf',
-          :changes => [
-            "rm  \"target[. = 'test_share']/available\"",
-            "rm  \"target[. = 'test_share']/browsable\"",
-            "rm  \"target[. = 'test_share']/comment\"",
-            "rm  \"target[. = 'test_share']/copy\"",
-            "rm  \"target[. = 'test_share']/create mask\"",
-            "rm  \"target[. = 'test_share']/directory mask\"",
-            "rm  \"target[. = 'test_share']/force create mask\"",
-            "rm  \"target[. = 'test_share']/force directory mode\"",
-            "rm  \"target[. = 'test_share']/force group\"",
-            "rm  \"target[. = 'test_share']/force user\"",
-            "rm  \"target[. = 'test_share']/guest ok\"",
-            "rm  \"target[. = 'test_share']/guest only\"",
-            "rm  \"target[. = 'test_share']/hide unreadable\"",
-            "rm  target[. = 'test_share']/path",
-            "rm  \"target[. = 'test_share']/read only\"",
-            "rm  \"target[. = 'test_share']/public\"",
-            "set \"target[. = 'test_share']/writable\" yes",
-            "rm  \"target[. = 'test_share']/printable\"",
-            "rm  \"target[. = 'test_share']/follow symlinks\"",
-            "rm  \"target[. = 'test_share']/wide links\"",
-            "rm  \"target[. = 'test_share']/map acl inherit\"",
-            "rm  \"target[. = 'test_share']/store dos attributes\"",
-            "rm  \"target[. = 'test_share']/strict allocate\"",
-            "rm  \"target[. = 'test_share']/valid users\"",
-            "rm  \"target[. = 'test_share']/oplocks\"",
-            "rm  \"target[. = 'test_share']/level2 oplocks\"",
-            "rm  \"target[. = 'test_share']/veto oplock files\"",
-            "rm  \"target[. = 'test_share']/write list\"",
-            "rm  \"target[. = 'test_share']/hide dot files\"",
-            "rm  \"target[. = 'test_share']/root preexec\""
-          ],
-          :require => 'Augeas[test_share-section]',
-          :notify  => 'Class[Samba::Server::Service]')
-        }
+        let(:change_set) { default_changes.with("writable", "yes") }
       end#writable true
 
       context 'when called with writable set to false' do
-        let(:title) { 'test_share' }
+        include_examples "default share"
         let(:params) {{
           :ensure   => 'present',
           :writable => false,
         }}
-        it { is_expected.to contain_samba__server__share('test_share') }
-        it { is_expected.to contain_augeas('test_share-section').with(
-          :incl    => '/etc/samba/smb.conf',
-          :lens    => 'Samba.lns',
-          :context => '/files/etc/samba/smb.conf',
-          :changes => ["set target[. = 'test_share'] 'test_share'"],
-          :require => 'Class[Samba::Server::Config]',
-          :notify  => 'Class[Samba::Server::Service]')
-        }
-        it { is_expected.to contain_augeas('test_share-changes').with(
-          :incl    => '/etc/samba/smb.conf',
-          :lens    => 'Samba.lns',
-          :context => '/files/etc/samba/smb.conf',
-          :changes => [
-            "rm  \"target[. = 'test_share']/available\"",
-            "rm  \"target[. = 'test_share']/browsable\"",
-            "rm  \"target[. = 'test_share']/comment\"",
-            "rm  \"target[. = 'test_share']/copy\"",
-            "rm  \"target[. = 'test_share']/create mask\"",
-            "rm  \"target[. = 'test_share']/directory mask\"",
-            "rm  \"target[. = 'test_share']/force create mask\"",
-            "rm  \"target[. = 'test_share']/force directory mode\"",
-            "rm  \"target[. = 'test_share']/force group\"",
-            "rm  \"target[. = 'test_share']/force user\"",
-            "rm  \"target[. = 'test_share']/guest ok\"",
-            "rm  \"target[. = 'test_share']/guest only\"",
-            "rm  \"target[. = 'test_share']/hide unreadable\"",
-            "rm  target[. = 'test_share']/path",
-            "rm  \"target[. = 'test_share']/read only\"",
-            "rm  \"target[. = 'test_share']/public\"",
-            "set \"target[. = 'test_share']/writable\" no",
-            "rm  \"target[. = 'test_share']/printable\"",
-            "rm  \"target[. = 'test_share']/follow symlinks\"",
-            "rm  \"target[. = 'test_share']/wide links\"",
-            "rm  \"target[. = 'test_share']/map acl inherit\"",
-            "rm  \"target[. = 'test_share']/store dos attributes\"",
-            "rm  \"target[. = 'test_share']/strict allocate\"",
-            "rm  \"target[. = 'test_share']/valid users\"",
-            "rm  \"target[. = 'test_share']/oplocks\"",
-            "rm  \"target[. = 'test_share']/level2 oplocks\"",
-            "rm  \"target[. = 'test_share']/veto oplock files\"",
-            "rm  \"target[. = 'test_share']/write list\"",
-            "rm  \"target[. = 'test_share']/hide dot files\"",
-            "rm  \"target[. = 'test_share']/root preexec\""
-          ],
-          :require => 'Augeas[test_share-section]',
-          :notify  => 'Class[Samba::Server::Service]')
-        }
+        let(:change_set) { default_changes.with("writable", "no") }
       end#writable false
 
       context 'when called with printable set to true' do
-        let(:title) { 'test_share' }
+        include_examples "default share"
         let(:params) {{
           :ensure    => 'present',
           :printable => true,
         }}
-        it { is_expected.to contain_samba__server__share('test_share') }
-        it { is_expected.to contain_augeas('test_share-section').with(
-          :incl    => '/etc/samba/smb.conf',
-          :lens    => 'Samba.lns',
-          :context => '/files/etc/samba/smb.conf',
-          :changes => ["set target[. = 'test_share'] 'test_share'"],
-          :require => 'Class[Samba::Server::Config]',
-          :notify  => 'Class[Samba::Server::Service]')
-        }
-        it { is_expected.to contain_augeas('test_share-changes').with(
-          :incl    => '/etc/samba/smb.conf',
-          :lens    => 'Samba.lns',
-          :context => '/files/etc/samba/smb.conf',
-          :changes => [
-            "rm  \"target[. = 'test_share']/available\"",
-            "rm  \"target[. = 'test_share']/browsable\"",
-            "rm  \"target[. = 'test_share']/comment\"",
-            "rm  \"target[. = 'test_share']/copy\"",
-            "rm  \"target[. = 'test_share']/create mask\"",
-            "rm  \"target[. = 'test_share']/directory mask\"",
-            "rm  \"target[. = 'test_share']/force create mask\"",
-            "rm  \"target[. = 'test_share']/force directory mode\"",
-            "rm  \"target[. = 'test_share']/force group\"",
-            "rm  \"target[. = 'test_share']/force user\"",
-            "rm  \"target[. = 'test_share']/guest ok\"",
-            "rm  \"target[. = 'test_share']/guest only\"",
-            "rm  \"target[. = 'test_share']/hide unreadable\"",
-            "rm  target[. = 'test_share']/path",
-            "rm  \"target[. = 'test_share']/read only\"",
-            "rm  \"target[. = 'test_share']/public\"",
-            "rm  \"target[. = 'test_share']/writable\"",
-            "set \"target[. = 'test_share']/printable\" yes",
-            "rm  \"target[. = 'test_share']/follow symlinks\"",
-            "rm  \"target[. = 'test_share']/wide links\"",
-            "rm  \"target[. = 'test_share']/map acl inherit\"",
-            "rm  \"target[. = 'test_share']/store dos attributes\"",
-            "rm  \"target[. = 'test_share']/strict allocate\"",
-            "rm  \"target[. = 'test_share']/valid users\"",
-            "rm  \"target[. = 'test_share']/oplocks\"",
-            "rm  \"target[. = 'test_share']/level2 oplocks\"",
-            "rm  \"target[. = 'test_share']/veto oplock files\"",
-            "rm  \"target[. = 'test_share']/write list\"",
-            "rm  \"target[. = 'test_share']/hide dot files\"",
-            "rm  \"target[. = 'test_share']/root preexec\""
-          ],
-          :require => 'Augeas[test_share-section]',
-          :notify  => 'Class[Samba::Server::Service]')
-        }
+        let(:change_set) { default_changes.with("printable", "yes") }
       end#printable true
 
       context 'when called with printable set to false' do
-        let(:title) { 'test_share' }
+        include_examples "default share"
         let(:params) {{
           :ensure    => 'present',
           :printable => false,
         }}
-        it { is_expected.to contain_samba__server__share('test_share') }
-        it { is_expected.to contain_augeas('test_share-section').with(
-          :incl    => '/etc/samba/smb.conf',
-          :lens    => 'Samba.lns',
-          :context => '/files/etc/samba/smb.conf',
-          :changes => ["set target[. = 'test_share'] 'test_share'"],
-          :require => 'Class[Samba::Server::Config]',
-          :notify  => 'Class[Samba::Server::Service]')
-        }
-        it { is_expected.to contain_augeas('test_share-changes').with(
-          :incl    => '/etc/samba/smb.conf',
-          :lens    => 'Samba.lns',
-          :context => '/files/etc/samba/smb.conf',
-          :changes => [
-            "rm  \"target[. = 'test_share']/available\"",
-            "rm  \"target[. = 'test_share']/browsable\"",
-            "rm  \"target[. = 'test_share']/comment\"",
-            "rm  \"target[. = 'test_share']/copy\"",
-            "rm  \"target[. = 'test_share']/create mask\"",
-            "rm  \"target[. = 'test_share']/directory mask\"",
-            "rm  \"target[. = 'test_share']/force create mask\"",
-            "rm  \"target[. = 'test_share']/force directory mode\"",
-            "rm  \"target[. = 'test_share']/force group\"",
-            "rm  \"target[. = 'test_share']/force user\"",
-            "rm  \"target[. = 'test_share']/guest ok\"",
-            "rm  \"target[. = 'test_share']/guest only\"",
-            "rm  \"target[. = 'test_share']/hide unreadable\"",
-            "rm  target[. = 'test_share']/path",
-            "rm  \"target[. = 'test_share']/read only\"",
-            "rm  \"target[. = 'test_share']/public\"",
-            "rm  \"target[. = 'test_share']/writable\"",
-            "set \"target[. = 'test_share']/printable\" no",
-            "rm  \"target[. = 'test_share']/follow symlinks\"",
-            "rm  \"target[. = 'test_share']/wide links\"",
-            "rm  \"target[. = 'test_share']/map acl inherit\"",
-            "rm  \"target[. = 'test_share']/store dos attributes\"",
-            "rm  \"target[. = 'test_share']/strict allocate\"",
-            "rm  \"target[. = 'test_share']/valid users\"",
-            "rm  \"target[. = 'test_share']/oplocks\"",
-            "rm  \"target[. = 'test_share']/level2 oplocks\"",
-            "rm  \"target[. = 'test_share']/veto oplock files\"",
-            "rm  \"target[. = 'test_share']/write list\"",
-            "rm  \"target[. = 'test_share']/hide dot files\"",
-            "rm  \"target[. = 'test_share']/root preexec\""
-          ],
-          :require => 'Augeas[test_share-section]',
-          :notify  => 'Class[Samba::Server::Service]')
-        }
+        let(:change_set) { default_changes.with("printable", "no") }
       end#printable false
 
       context 'when called with follow_symlinks set to true' do
-        let(:title) { 'test_share' }
+        include_examples "default share"
         let(:params) {{
           :ensure          => 'present',
           :follow_symlinks => true,
         }}
-        it { is_expected.to contain_samba__server__share('test_share') }
-        it { is_expected.to contain_augeas('test_share-section').with(
-          :incl    => '/etc/samba/smb.conf',
-          :lens    => 'Samba.lns',
-          :context => '/files/etc/samba/smb.conf',
-          :changes => ["set target[. = 'test_share'] 'test_share'"],
-          :require => 'Class[Samba::Server::Config]',
-          :notify  => 'Class[Samba::Server::Service]')
-        }
-        it { is_expected.to contain_augeas('test_share-changes').with(
-          :incl    => '/etc/samba/smb.conf',
-          :lens    => 'Samba.lns',
-          :context => '/files/etc/samba/smb.conf',
-          :changes => [
-            "rm  \"target[. = 'test_share']/available\"",
-            "rm  \"target[. = 'test_share']/browsable\"",
-            "rm  \"target[. = 'test_share']/comment\"",
-            "rm  \"target[. = 'test_share']/copy\"",
-            "rm  \"target[. = 'test_share']/create mask\"",
-            "rm  \"target[. = 'test_share']/directory mask\"",
-            "rm  \"target[. = 'test_share']/force create mask\"",
-            "rm  \"target[. = 'test_share']/force directory mode\"",
-            "rm  \"target[. = 'test_share']/force group\"",
-            "rm  \"target[. = 'test_share']/force user\"",
-            "rm  \"target[. = 'test_share']/guest ok\"",
-            "rm  \"target[. = 'test_share']/guest only\"",
-            "rm  \"target[. = 'test_share']/hide unreadable\"",
-            "rm  target[. = 'test_share']/path",
-            "rm  \"target[. = 'test_share']/read only\"",
-            "rm  \"target[. = 'test_share']/public\"",
-            "rm  \"target[. = 'test_share']/writable\"",
-            "rm  \"target[. = 'test_share']/printable\"",
-            "set \"target[. = 'test_share']/follow symlinks\" yes",
-            "rm  \"target[. = 'test_share']/wide links\"",
-            "rm  \"target[. = 'test_share']/map acl inherit\"",
-            "rm  \"target[. = 'test_share']/store dos attributes\"",
-            "rm  \"target[. = 'test_share']/strict allocate\"",
-            "rm  \"target[. = 'test_share']/valid users\"",
-            "rm  \"target[. = 'test_share']/oplocks\"",
-            "rm  \"target[. = 'test_share']/level2 oplocks\"",
-            "rm  \"target[. = 'test_share']/veto oplock files\"",
-            "rm  \"target[. = 'test_share']/write list\"",
-            "rm  \"target[. = 'test_share']/hide dot files\"",
-            "rm  \"target[. = 'test_share']/root preexec\""
-          ],
-          :require => 'Augeas[test_share-section]',
-          :notify  => 'Class[Samba::Server::Service]')
-        }
+        let(:change_set) { default_changes.with("follow symlinks", "yes") }
       end#follow_symlinks true
 
       context 'when called with follow_symlinks set to false' do
-        let(:title) { 'test_share' }
+        include_examples "default share"
         let(:params) {{
           :ensure          => 'present',
           :follow_symlinks => false,
         }}
-        it { is_expected.to contain_samba__server__share('test_share') }
-        it { is_expected.to contain_augeas('test_share-section').with(
-          :incl    => '/etc/samba/smb.conf',
-          :lens    => 'Samba.lns',
-          :context => '/files/etc/samba/smb.conf',
-          :changes => ["set target[. = 'test_share'] 'test_share'"],
-          :require => 'Class[Samba::Server::Config]',
-          :notify  => 'Class[Samba::Server::Service]')
-        }
-        it { is_expected.to contain_augeas('test_share-changes').with(
-          :incl    => '/etc/samba/smb.conf',
-          :lens    => 'Samba.lns',
-          :context => '/files/etc/samba/smb.conf',
-          :changes => [
-            "rm  \"target[. = 'test_share']/available\"",
-            "rm  \"target[. = 'test_share']/browsable\"",
-            "rm  \"target[. = 'test_share']/comment\"",
-            "rm  \"target[. = 'test_share']/copy\"",
-            "rm  \"target[. = 'test_share']/create mask\"",
-            "rm  \"target[. = 'test_share']/directory mask\"",
-            "rm  \"target[. = 'test_share']/force create mask\"",
-            "rm  \"target[. = 'test_share']/force directory mode\"",
-            "rm  \"target[. = 'test_share']/force group\"",
-            "rm  \"target[. = 'test_share']/force user\"",
-            "rm  \"target[. = 'test_share']/guest ok\"",
-            "rm  \"target[. = 'test_share']/guest only\"",
-            "rm  \"target[. = 'test_share']/hide unreadable\"",
-            "rm  target[. = 'test_share']/path",
-            "rm  \"target[. = 'test_share']/read only\"",
-            "rm  \"target[. = 'test_share']/public\"",
-            "rm  \"target[. = 'test_share']/writable\"",
-            "rm  \"target[. = 'test_share']/printable\"",
-            "set \"target[. = 'test_share']/follow symlinks\" no",
-            "rm  \"target[. = 'test_share']/wide links\"",
-            "rm  \"target[. = 'test_share']/map acl inherit\"",
-            "rm  \"target[. = 'test_share']/store dos attributes\"",
-            "rm  \"target[. = 'test_share']/strict allocate\"",
-            "rm  \"target[. = 'test_share']/valid users\"",
-            "rm  \"target[. = 'test_share']/oplocks\"",
-            "rm  \"target[. = 'test_share']/level2 oplocks\"",
-            "rm  \"target[. = 'test_share']/veto oplock files\"",
-            "rm  \"target[. = 'test_share']/write list\"",
-            "rm  \"target[. = 'test_share']/hide dot files\"",
-            "rm  \"target[. = 'test_share']/root preexec\""
-          ],
-          :require => 'Augeas[test_share-section]',
-          :notify  => 'Class[Samba::Server::Service]')
-        }
+        let(:change_set) { default_changes.with("follow symlinks", "no") }
       end#follow_symlinks false
 
       context 'when called with wide_links set to true' do
-        let(:title) { 'test_share' }
+        include_examples "default share"
         let(:params) {{
           :ensure     => 'present',
           :wide_links => true,
         }}
-        it { is_expected.to contain_samba__server__share('test_share') }
-        it { is_expected.to contain_augeas('test_share-section').with(
-          :incl    => '/etc/samba/smb.conf',
-          :lens    => 'Samba.lns',
-          :context => '/files/etc/samba/smb.conf',
-          :changes => ["set target[. = 'test_share'] 'test_share'"],
-          :require => 'Class[Samba::Server::Config]',
-          :notify  => 'Class[Samba::Server::Service]')
-        }
-        it { is_expected.to contain_augeas('test_share-changes').with(
-          :incl    => '/etc/samba/smb.conf',
-          :lens    => 'Samba.lns',
-          :context => '/files/etc/samba/smb.conf',
-          :changes => [
-            "rm  \"target[. = 'test_share']/available\"",
-            "rm  \"target[. = 'test_share']/browsable\"",
-            "rm  \"target[. = 'test_share']/comment\"",
-            "rm  \"target[. = 'test_share']/copy\"",
-            "rm  \"target[. = 'test_share']/create mask\"",
-            "rm  \"target[. = 'test_share']/directory mask\"",
-            "rm  \"target[. = 'test_share']/force create mask\"",
-            "rm  \"target[. = 'test_share']/force directory mode\"",
-            "rm  \"target[. = 'test_share']/force group\"",
-            "rm  \"target[. = 'test_share']/force user\"",
-            "rm  \"target[. = 'test_share']/guest ok\"",
-            "rm  \"target[. = 'test_share']/guest only\"",
-            "rm  \"target[. = 'test_share']/hide unreadable\"",
-            "rm  target[. = 'test_share']/path",
-            "rm  \"target[. = 'test_share']/read only\"",
-            "rm  \"target[. = 'test_share']/public\"",
-            "rm  \"target[. = 'test_share']/writable\"",
-            "rm  \"target[. = 'test_share']/printable\"",
-            "rm  \"target[. = 'test_share']/follow symlinks\"",
-            "set \"target[. = 'test_share']/wide links\" yes",
-            "rm  \"target[. = 'test_share']/map acl inherit\"",
-            "rm  \"target[. = 'test_share']/store dos attributes\"",
-            "rm  \"target[. = 'test_share']/strict allocate\"",
-            "rm  \"target[. = 'test_share']/valid users\"",
-            "rm  \"target[. = 'test_share']/oplocks\"",
-            "rm  \"target[. = 'test_share']/level2 oplocks\"",
-            "rm  \"target[. = 'test_share']/veto oplock files\"",
-            "rm  \"target[. = 'test_share']/write list\"",
-            "rm  \"target[. = 'test_share']/hide dot files\"",
-            "rm  \"target[. = 'test_share']/root preexec\""
-          ],
-          :require => 'Augeas[test_share-section]',
-          :notify  => 'Class[Samba::Server::Service]')
-        }
+        let(:change_set) { default_changes.with("wide links", "yes") }
       end#wide_links true
 
       context 'when called with wide_links set to false' do
-        let(:title) { 'test_share' }
+        include_examples "default share"
         let(:params) {{
           :ensure     => 'present',
           :wide_links => false,
         }}
-        it { is_expected.to contain_samba__server__share('test_share') }
-        it { is_expected.to contain_augeas('test_share-section').with(
-          :incl    => '/etc/samba/smb.conf',
-          :lens    => 'Samba.lns',
-          :context => '/files/etc/samba/smb.conf',
-          :changes => ["set target[. = 'test_share'] 'test_share'"],
-          :require => 'Class[Samba::Server::Config]',
-          :notify  => 'Class[Samba::Server::Service]')
-        }
-        it { is_expected.to contain_augeas('test_share-changes').with(
-          :incl    => '/etc/samba/smb.conf',
-          :lens    => 'Samba.lns',
-          :context => '/files/etc/samba/smb.conf',
-          :changes => [
-            "rm  \"target[. = 'test_share']/available\"",
-            "rm  \"target[. = 'test_share']/browsable\"",
-            "rm  \"target[. = 'test_share']/comment\"",
-            "rm  \"target[. = 'test_share']/copy\"",
-            "rm  \"target[. = 'test_share']/create mask\"",
-            "rm  \"target[. = 'test_share']/directory mask\"",
-            "rm  \"target[. = 'test_share']/force create mask\"",
-            "rm  \"target[. = 'test_share']/force directory mode\"",
-            "rm  \"target[. = 'test_share']/force group\"",
-            "rm  \"target[. = 'test_share']/force user\"",
-            "rm  \"target[. = 'test_share']/guest ok\"",
-            "rm  \"target[. = 'test_share']/guest only\"",
-            "rm  \"target[. = 'test_share']/hide unreadable\"",
-            "rm  target[. = 'test_share']/path",
-            "rm  \"target[. = 'test_share']/read only\"",
-            "rm  \"target[. = 'test_share']/public\"",
-            "rm  \"target[. = 'test_share']/writable\"",
-            "rm  \"target[. = 'test_share']/printable\"",
-            "rm  \"target[. = 'test_share']/follow symlinks\"",
-            "set \"target[. = 'test_share']/wide links\" no",
-            "rm  \"target[. = 'test_share']/map acl inherit\"",
-            "rm  \"target[. = 'test_share']/store dos attributes\"",
-            "rm  \"target[. = 'test_share']/strict allocate\"",
-            "rm  \"target[. = 'test_share']/valid users\"",
-            "rm  \"target[. = 'test_share']/oplocks\"",
-            "rm  \"target[. = 'test_share']/level2 oplocks\"",
-            "rm  \"target[. = 'test_share']/veto oplock files\"",
-            "rm  \"target[. = 'test_share']/write list\"",
-            "rm  \"target[. = 'test_share']/hide dot files\"",
-            "rm  \"target[. = 'test_share']/root preexec\""
-          ],
-          :require => 'Augeas[test_share-section]',
-          :notify  => 'Class[Samba::Server::Service]')
-        }
+        let(:change_set) { default_changes.with("wide links", "no") }
       end#wide_links false
 
       context 'when called with map_acl_inherit set to true' do
-        let(:title) { 'test_share' }
+        include_examples "default share"
         let(:params) {{
           :ensure          => 'present',
           :map_acl_inherit => true,
         }}
-        it { is_expected.to contain_samba__server__share('test_share') }
-        it { is_expected.to contain_augeas('test_share-section').with(
-          :incl    => '/etc/samba/smb.conf',
-          :lens    => 'Samba.lns',
-          :context => '/files/etc/samba/smb.conf',
-          :changes => ["set target[. = 'test_share'] 'test_share'"],
-          :require => 'Class[Samba::Server::Config]',
-          :notify  => 'Class[Samba::Server::Service]')
-        }
-        it { is_expected.to contain_augeas('test_share-changes').with(
-          :incl    => '/etc/samba/smb.conf',
-          :lens    => 'Samba.lns',
-          :context => '/files/etc/samba/smb.conf',
-          :changes => [
-            "rm  \"target[. = 'test_share']/available\"",
-            "rm  \"target[. = 'test_share']/browsable\"",
-            "rm  \"target[. = 'test_share']/comment\"",
-            "rm  \"target[. = 'test_share']/copy\"",
-            "rm  \"target[. = 'test_share']/create mask\"",
-            "rm  \"target[. = 'test_share']/directory mask\"",
-            "rm  \"target[. = 'test_share']/force create mask\"",
-            "rm  \"target[. = 'test_share']/force directory mode\"",
-            "rm  \"target[. = 'test_share']/force group\"",
-            "rm  \"target[. = 'test_share']/force user\"",
-            "rm  \"target[. = 'test_share']/guest ok\"",
-            "rm  \"target[. = 'test_share']/guest only\"",
-            "rm  \"target[. = 'test_share']/hide unreadable\"",
-            "rm  target[. = 'test_share']/path",
-            "rm  \"target[. = 'test_share']/read only\"",
-            "rm  \"target[. = 'test_share']/public\"",
-            "rm  \"target[. = 'test_share']/writable\"",
-            "rm  \"target[. = 'test_share']/printable\"",
-            "rm  \"target[. = 'test_share']/follow symlinks\"",
-            "rm  \"target[. = 'test_share']/wide links\"",
-            "set \"target[. = 'test_share']/map acl inherit\" yes",
-            "rm  \"target[. = 'test_share']/store dos attributes\"",
-            "rm  \"target[. = 'test_share']/strict allocate\"",
-            "rm  \"target[. = 'test_share']/valid users\"",
-            "rm  \"target[. = 'test_share']/oplocks\"",
-            "rm  \"target[. = 'test_share']/level2 oplocks\"",
-            "rm  \"target[. = 'test_share']/veto oplock files\"",
-            "rm  \"target[. = 'test_share']/write list\"",
-            "rm  \"target[. = 'test_share']/hide dot files\"",
-            "rm  \"target[. = 'test_share']/root preexec\""
-          ],
-          :require => 'Augeas[test_share-section]',
-          :notify  => 'Class[Samba::Server::Service]')
-        }
+        let(:change_set) { default_changes.with("map acl inherit", "yes") }
       end#map_acl_inherit true
 
       context 'when called with map_acl_inherit set to false' do
-        let(:title) { 'test_share' }
+        include_examples "default share"
         let(:params) {{
           :ensure          => 'present',
           :map_acl_inherit => false,
         }}
-        it { is_expected.to contain_samba__server__share('test_share') }
-        it { is_expected.to contain_augeas('test_share-section').with(
-          :incl    => '/etc/samba/smb.conf',
-          :lens    => 'Samba.lns',
-          :context => '/files/etc/samba/smb.conf',
-          :changes => ["set target[. = 'test_share'] 'test_share'"],
-          :require => 'Class[Samba::Server::Config]',
-          :notify  => 'Class[Samba::Server::Service]')
-        }
-        it { is_expected.to contain_augeas('test_share-changes').with(
-          :incl    => '/etc/samba/smb.conf',
-          :lens    => 'Samba.lns',
-          :context => '/files/etc/samba/smb.conf',
-          :changes => [
-            "rm  \"target[. = 'test_share']/available\"",
-            "rm  \"target[. = 'test_share']/browsable\"",
-            "rm  \"target[. = 'test_share']/comment\"",
-            "rm  \"target[. = 'test_share']/copy\"",
-            "rm  \"target[. = 'test_share']/create mask\"",
-            "rm  \"target[. = 'test_share']/directory mask\"",
-            "rm  \"target[. = 'test_share']/force create mask\"",
-            "rm  \"target[. = 'test_share']/force directory mode\"",
-            "rm  \"target[. = 'test_share']/force group\"",
-            "rm  \"target[. = 'test_share']/force user\"",
-            "rm  \"target[. = 'test_share']/guest ok\"",
-            "rm  \"target[. = 'test_share']/guest only\"",
-            "rm  \"target[. = 'test_share']/hide unreadable\"",
-            "rm  target[. = 'test_share']/path",
-            "rm  \"target[. = 'test_share']/read only\"",
-            "rm  \"target[. = 'test_share']/public\"",
-            "rm  \"target[. = 'test_share']/writable\"",
-            "rm  \"target[. = 'test_share']/printable\"",
-            "rm  \"target[. = 'test_share']/follow symlinks\"",
-            "rm  \"target[. = 'test_share']/wide links\"",
-            "set \"target[. = 'test_share']/map acl inherit\" no",
-            "rm  \"target[. = 'test_share']/store dos attributes\"",
-            "rm  \"target[. = 'test_share']/strict allocate\"",
-            "rm  \"target[. = 'test_share']/valid users\"",
-            "rm  \"target[. = 'test_share']/oplocks\"",
-            "rm  \"target[. = 'test_share']/level2 oplocks\"",
-            "rm  \"target[. = 'test_share']/veto oplock files\"",
-            "rm  \"target[. = 'test_share']/write list\"",
-            "rm  \"target[. = 'test_share']/hide dot files\"",
-            "rm  \"target[. = 'test_share']/root preexec\""
-          ],
-          :require => 'Augeas[test_share-section]',
-          :notify  => 'Class[Samba::Server::Service]')
-        }
+        let(:change_set) { default_changes.with("map acl inherit", "no") }
       end#map_acl_inherit false
 
       context 'when called with store_dos_attributes set to true' do
-        let(:title) { 'test_share' }
+        include_examples "default share"
         let(:params) {{
           :ensure               => 'present',
           :store_dos_attributes => true,
         }}
-        it { is_expected.to contain_samba__server__share('test_share') }
-        it { is_expected.to contain_augeas('test_share-section').with(
-          :incl    => '/etc/samba/smb.conf',
-          :lens    => 'Samba.lns',
-          :context => '/files/etc/samba/smb.conf',
-          :changes => ["set target[. = 'test_share'] 'test_share'"],
-          :require => 'Class[Samba::Server::Config]',
-          :notify  => 'Class[Samba::Server::Service]')
-        }
-        it { is_expected.to contain_augeas('test_share-changes').with(
-          :incl    => '/etc/samba/smb.conf',
-          :lens    => 'Samba.lns',
-          :context => '/files/etc/samba/smb.conf',
-          :changes => [
-            "rm  \"target[. = 'test_share']/available\"",
-            "rm  \"target[. = 'test_share']/browsable\"",
-            "rm  \"target[. = 'test_share']/comment\"",
-            "rm  \"target[. = 'test_share']/copy\"",
-            "rm  \"target[. = 'test_share']/create mask\"",
-            "rm  \"target[. = 'test_share']/directory mask\"",
-            "rm  \"target[. = 'test_share']/force create mask\"",
-            "rm  \"target[. = 'test_share']/force directory mode\"",
-            "rm  \"target[. = 'test_share']/force group\"",
-            "rm  \"target[. = 'test_share']/force user\"",
-            "rm  \"target[. = 'test_share']/guest ok\"",
-            "rm  \"target[. = 'test_share']/guest only\"",
-            "rm  \"target[. = 'test_share']/hide unreadable\"",
-            "rm  target[. = 'test_share']/path",
-            "rm  \"target[. = 'test_share']/read only\"",
-            "rm  \"target[. = 'test_share']/public\"",
-            "rm  \"target[. = 'test_share']/writable\"",
-            "rm  \"target[. = 'test_share']/printable\"",
-            "rm  \"target[. = 'test_share']/follow symlinks\"",
-            "rm  \"target[. = 'test_share']/wide links\"",
-            "rm  \"target[. = 'test_share']/map acl inherit\"",
-            "set \"target[. = 'test_share']/store dos attributes\" yes",
-            "rm  \"target[. = 'test_share']/strict allocate\"",
-            "rm  \"target[. = 'test_share']/valid users\"",
-            "rm  \"target[. = 'test_share']/oplocks\"",
-            "rm  \"target[. = 'test_share']/level2 oplocks\"",
-            "rm  \"target[. = 'test_share']/veto oplock files\"",
-            "rm  \"target[. = 'test_share']/write list\"",
-            "rm  \"target[. = 'test_share']/hide dot files\"",
-            "rm  \"target[. = 'test_share']/root preexec\""
-          ],
-          :require => 'Augeas[test_share-section]',
-          :notify  => 'Class[Samba::Server::Service]')
-        }
+        let(:change_set) { default_changes.with("store dos attributes", "yes") }
       end#store_dos_attributes true
 
       context 'when called with store_dos_attributes set to false' do
-        let(:title) { 'test_share' }
+        include_examples "default share"
         let(:params) {{
           :ensure               => 'present',
           :store_dos_attributes => false,
         }}
-        it { is_expected.to contain_samba__server__share('test_share') }
-        it { is_expected.to contain_augeas('test_share-section').with(
-          :incl    => '/etc/samba/smb.conf',
-          :lens    => 'Samba.lns',
-          :context => '/files/etc/samba/smb.conf',
-          :changes => ["set target[. = 'test_share'] 'test_share'"],
-          :require => 'Class[Samba::Server::Config]',
-          :notify  => 'Class[Samba::Server::Service]')
-        }
-        it { is_expected.to contain_augeas('test_share-changes').with(
-          :incl    => '/etc/samba/smb.conf',
-          :lens    => 'Samba.lns',
-          :context => '/files/etc/samba/smb.conf',
-          :changes => [
-            "rm  \"target[. = 'test_share']/available\"",
-            "rm  \"target[. = 'test_share']/browsable\"",
-            "rm  \"target[. = 'test_share']/comment\"",
-            "rm  \"target[. = 'test_share']/copy\"",
-            "rm  \"target[. = 'test_share']/create mask\"",
-            "rm  \"target[. = 'test_share']/directory mask\"",
-            "rm  \"target[. = 'test_share']/force create mask\"",
-            "rm  \"target[. = 'test_share']/force directory mode\"",
-            "rm  \"target[. = 'test_share']/force group\"",
-            "rm  \"target[. = 'test_share']/force user\"",
-            "rm  \"target[. = 'test_share']/guest ok\"",
-            "rm  \"target[. = 'test_share']/guest only\"",
-            "rm  \"target[. = 'test_share']/hide unreadable\"",
-            "rm  target[. = 'test_share']/path",
-            "rm  \"target[. = 'test_share']/read only\"",
-            "rm  \"target[. = 'test_share']/public\"",
-            "rm  \"target[. = 'test_share']/writable\"",
-            "rm  \"target[. = 'test_share']/printable\"",
-            "rm  \"target[. = 'test_share']/follow symlinks\"",
-            "rm  \"target[. = 'test_share']/wide links\"",
-            "rm  \"target[. = 'test_share']/map acl inherit\"",
-            "set \"target[. = 'test_share']/store dos attributes\" no",
-            "rm  \"target[. = 'test_share']/strict allocate\"",
-            "rm  \"target[. = 'test_share']/valid users\"",
-            "rm  \"target[. = 'test_share']/oplocks\"",
-            "rm  \"target[. = 'test_share']/level2 oplocks\"",
-            "rm  \"target[. = 'test_share']/veto oplock files\"",
-            "rm  \"target[. = 'test_share']/write list\"",
-            "rm  \"target[. = 'test_share']/hide dot files\"",
-            "rm  \"target[. = 'test_share']/root preexec\""
-          ],
-          :require => 'Augeas[test_share-section]',
-          :notify  => 'Class[Samba::Server::Service]')
-        }
+        let(:change_set) { default_changes.with("store dos attributes", "no") }
       end#store_dos_attributes false
 
       context 'when called with strict_allocate set to true' do
-        let(:title) { 'test_share' }
+        include_examples "default share"
         let(:params) {{
           :ensure          => 'present',
           :strict_allocate => true,
         }}
-        it { is_expected.to contain_samba__server__share('test_share') }
-        it { is_expected.to contain_augeas('test_share-section').with(
-          :incl    => '/etc/samba/smb.conf',
-          :lens    => 'Samba.lns',
-          :context => '/files/etc/samba/smb.conf',
-          :changes => ["set target[. = 'test_share'] 'test_share'"],
-          :require => 'Class[Samba::Server::Config]',
-          :notify  => 'Class[Samba::Server::Service]')
-        }
-        it { is_expected.to contain_augeas('test_share-changes').with(
-          :incl    => '/etc/samba/smb.conf',
-          :lens    => 'Samba.lns',
-          :context => '/files/etc/samba/smb.conf',
-          :changes => [
-            "rm  \"target[. = 'test_share']/available\"",
-            "rm  \"target[. = 'test_share']/browsable\"",
-            "rm  \"target[. = 'test_share']/comment\"",
-            "rm  \"target[. = 'test_share']/copy\"",
-            "rm  \"target[. = 'test_share']/create mask\"",
-            "rm  \"target[. = 'test_share']/directory mask\"",
-            "rm  \"target[. = 'test_share']/force create mask\"",
-            "rm  \"target[. = 'test_share']/force directory mode\"",
-            "rm  \"target[. = 'test_share']/force group\"",
-            "rm  \"target[. = 'test_share']/force user\"",
-            "rm  \"target[. = 'test_share']/guest ok\"",
-            "rm  \"target[. = 'test_share']/guest only\"",
-            "rm  \"target[. = 'test_share']/hide unreadable\"",
-            "rm  target[. = 'test_share']/path",
-            "rm  \"target[. = 'test_share']/read only\"",
-            "rm  \"target[. = 'test_share']/public\"",
-            "rm  \"target[. = 'test_share']/writable\"",
-            "rm  \"target[. = 'test_share']/printable\"",
-            "rm  \"target[. = 'test_share']/follow symlinks\"",
-            "rm  \"target[. = 'test_share']/wide links\"",
-            "rm  \"target[. = 'test_share']/map acl inherit\"",
-            "rm  \"target[. = 'test_share']/store dos attributes\"",
-            "set \"target[. = 'test_share']/strict allocate\" yes",
-            "rm  \"target[. = 'test_share']/valid users\"",
-            "rm  \"target[. = 'test_share']/oplocks\"",
-            "rm  \"target[. = 'test_share']/level2 oplocks\"",
-            "rm  \"target[. = 'test_share']/veto oplock files\"",
-            "rm  \"target[. = 'test_share']/write list\"",
-            "rm  \"target[. = 'test_share']/hide dot files\"",
-            "rm  \"target[. = 'test_share']/root preexec\""
-          ],
-          :require => 'Augeas[test_share-section]',
-          :notify  => 'Class[Samba::Server::Service]')
-        }
+        let(:change_set) { default_changes.with("strict allocate", "yes") }
       end#strict_allocate true
 
       context 'when called with strict_allocate set to false' do
-        let(:title) { 'test_share' }
+        include_examples "default share"
         let(:params) {{
           :ensure          => 'present',
           :strict_allocate => false,
         }}
-        it { is_expected.to contain_samba__server__share('test_share') }
-        it { is_expected.to contain_augeas('test_share-section').with(
-          :incl    => '/etc/samba/smb.conf',
-          :lens    => 'Samba.lns',
-          :context => '/files/etc/samba/smb.conf',
-          :changes => ["set target[. = 'test_share'] 'test_share'"],
-          :require => 'Class[Samba::Server::Config]',
-          :notify  => 'Class[Samba::Server::Service]')
-        }
-        it { is_expected.to contain_augeas('test_share-changes').with(
-          :incl    => '/etc/samba/smb.conf',
-          :lens    => 'Samba.lns',
-          :context => '/files/etc/samba/smb.conf',
-          :changes => [
-            "rm  \"target[. = 'test_share']/available\"",
-            "rm  \"target[. = 'test_share']/browsable\"",
-            "rm  \"target[. = 'test_share']/comment\"",
-            "rm  \"target[. = 'test_share']/copy\"",
-            "rm  \"target[. = 'test_share']/create mask\"",
-            "rm  \"target[. = 'test_share']/directory mask\"",
-            "rm  \"target[. = 'test_share']/force create mask\"",
-            "rm  \"target[. = 'test_share']/force directory mode\"",
-            "rm  \"target[. = 'test_share']/force group\"",
-            "rm  \"target[. = 'test_share']/force user\"",
-            "rm  \"target[. = 'test_share']/guest ok\"",
-            "rm  \"target[. = 'test_share']/guest only\"",
-            "rm  \"target[. = 'test_share']/hide unreadable\"",
-            "rm  target[. = 'test_share']/path",
-            "rm  \"target[. = 'test_share']/read only\"",
-            "rm  \"target[. = 'test_share']/public\"",
-            "rm  \"target[. = 'test_share']/writable\"",
-            "rm  \"target[. = 'test_share']/printable\"",
-            "rm  \"target[. = 'test_share']/follow symlinks\"",
-            "rm  \"target[. = 'test_share']/wide links\"",
-            "rm  \"target[. = 'test_share']/map acl inherit\"",
-            "rm  \"target[. = 'test_share']/store dos attributes\"",
-            "set \"target[. = 'test_share']/strict allocate\" no",
-            "rm  \"target[. = 'test_share']/valid users\"",
-            "rm  \"target[. = 'test_share']/oplocks\"",
-            "rm  \"target[. = 'test_share']/level2 oplocks\"",
-            "rm  \"target[. = 'test_share']/veto oplock files\"",
-            "rm  \"target[. = 'test_share']/write list\"",
-            "rm  \"target[. = 'test_share']/hide dot files\"",
-            "rm  \"target[. = 'test_share']/root preexec\""
-          ],
-          :require => 'Augeas[test_share-section]',
-          :notify  => 'Class[Samba::Server::Service]')
-        }
+        let(:change_set) { default_changes.with("strict allocate", "no") }
       end#strict_allocate false
 
       context 'when called with valid_users set to "bill,ben"' do
-        let(:title) { 'test_share' }
+        include_examples "default share"
         let(:params) {{
           :ensure      => 'present',
           :valid_users => 'bill,ben',
         }}
-        it { is_expected.to contain_samba__server__share('test_share') }
-        it { is_expected.to contain_augeas('test_share-section').with(
-          :incl    => '/etc/samba/smb.conf',
-          :lens    => 'Samba.lns',
-          :context => '/files/etc/samba/smb.conf',
-          :changes => ["set target[. = 'test_share'] 'test_share'"],
-          :require => 'Class[Samba::Server::Config]',
-          :notify  => 'Class[Samba::Server::Service]')
-        }
-        it { is_expected.to contain_augeas('test_share-changes').with(
-          :incl    => '/etc/samba/smb.conf',
-          :lens    => 'Samba.lns',
-          :context => '/files/etc/samba/smb.conf',
-          :changes => [
-            "rm  \"target[. = 'test_share']/available\"",
-            "rm  \"target[. = 'test_share']/browsable\"",
-            "rm  \"target[. = 'test_share']/comment\"",
-            "rm  \"target[. = 'test_share']/copy\"",
-            "rm  \"target[. = 'test_share']/create mask\"",
-            "rm  \"target[. = 'test_share']/directory mask\"",
-            "rm  \"target[. = 'test_share']/force create mask\"",
-            "rm  \"target[. = 'test_share']/force directory mode\"",
-            "rm  \"target[. = 'test_share']/force group\"",
-            "rm  \"target[. = 'test_share']/force user\"",
-            "rm  \"target[. = 'test_share']/guest ok\"",
-            "rm  \"target[. = 'test_share']/guest only\"",
-            "rm  \"target[. = 'test_share']/hide unreadable\"",
-            "rm  target[. = 'test_share']/path",
-            "rm  \"target[. = 'test_share']/read only\"",
-            "rm  \"target[. = 'test_share']/public\"",
-            "rm  \"target[. = 'test_share']/writable\"",
-            "rm  \"target[. = 'test_share']/printable\"",
-            "rm  \"target[. = 'test_share']/follow symlinks\"",
-            "rm  \"target[. = 'test_share']/wide links\"",
-            "rm  \"target[. = 'test_share']/map acl inherit\"",
-            "rm  \"target[. = 'test_share']/store dos attributes\"",
-            "rm  \"target[. = 'test_share']/strict allocate\"",
-            "set \"target[. = 'test_share']/valid users\" 'bill,ben'",
-            "rm  \"target[. = 'test_share']/oplocks\"",
-            "rm  \"target[. = 'test_share']/level2 oplocks\"",
-            "rm  \"target[. = 'test_share']/veto oplock files\"",
-            "rm  \"target[. = 'test_share']/write list\"",
-            "rm  \"target[. = 'test_share']/hide dot files\"",
-            "rm  \"target[. = 'test_share']/root preexec\""
-          ],
-          :require => 'Augeas[test_share-section]',
-          :notify  => 'Class[Samba::Server::Service]')
-        }
+        let(:change_set) { default_changes.with("valid users", "'bill,ben'") }
       end#valid_users
 
       context 'when called with op_locks set to "testing"' do
-        let(:title) { 'test_share' }
+        include_examples "default share"
         let(:params) {{
           :ensure   => 'present',
           :op_locks => 'testing',
         }}
-        it { is_expected.to contain_samba__server__share('test_share') }
-        it { is_expected.to contain_augeas('test_share-section').with(
-          :incl    => '/etc/samba/smb.conf',
-          :lens    => 'Samba.lns',
-          :context => '/files/etc/samba/smb.conf',
-          :changes => ["set target[. = 'test_share'] 'test_share'"],
-          :require => 'Class[Samba::Server::Config]',
-          :notify  => 'Class[Samba::Server::Service]')
-        }
-        it { is_expected.to contain_augeas('test_share-changes').with(
-          :incl    => '/etc/samba/smb.conf',
-          :lens    => 'Samba.lns',
-          :context => '/files/etc/samba/smb.conf',
-          :changes => [
-            "rm  \"target[. = 'test_share']/available\"",
-            "rm  \"target[. = 'test_share']/browsable\"",
-            "rm  \"target[. = 'test_share']/comment\"",
-            "rm  \"target[. = 'test_share']/copy\"",
-            "rm  \"target[. = 'test_share']/create mask\"",
-            "rm  \"target[. = 'test_share']/directory mask\"",
-            "rm  \"target[. = 'test_share']/force create mask\"",
-            "rm  \"target[. = 'test_share']/force directory mode\"",
-            "rm  \"target[. = 'test_share']/force group\"",
-            "rm  \"target[. = 'test_share']/force user\"",
-            "rm  \"target[. = 'test_share']/guest ok\"",
-            "rm  \"target[. = 'test_share']/guest only\"",
-            "rm  \"target[. = 'test_share']/hide unreadable\"",
-            "rm  target[. = 'test_share']/path",
-            "rm  \"target[. = 'test_share']/read only\"",
-            "rm  \"target[. = 'test_share']/public\"",
-            "rm  \"target[. = 'test_share']/writable\"",
-            "rm  \"target[. = 'test_share']/printable\"",
-            "rm  \"target[. = 'test_share']/follow symlinks\"",
-            "rm  \"target[. = 'test_share']/wide links\"",
-            "rm  \"target[. = 'test_share']/map acl inherit\"",
-            "rm  \"target[. = 'test_share']/store dos attributes\"",
-            "rm  \"target[. = 'test_share']/strict allocate\"",
-            "rm  \"target[. = 'test_share']/valid users\"",
-            "set \"target[. = 'test_share']/oplocks\" 'testing'",
-            "rm  \"target[. = 'test_share']/level2 oplocks\"",
-            "rm  \"target[. = 'test_share']/veto oplock files\"",
-            "rm  \"target[. = 'test_share']/write list\"",
-            "rm  \"target[. = 'test_share']/hide dot files\"",
-            "rm  \"target[. = 'test_share']/root preexec\""
-          ],
-          :require => 'Augeas[test_share-section]',
-          :notify  => 'Class[Samba::Server::Service]')
-        }
+        let(:change_set) { default_changes.with("oplocks", "'testing'") }
       end#op_locks
 
       context 'when called with level2_oplocks set to "testing"' do
-        let(:title) { 'test_share' }
+        include_examples "default share"
         let(:params) {{
           :ensure         => 'present',
           :level2_oplocks => 'testing',
         }}
-        it { is_expected.to contain_samba__server__share('test_share') }
-        it { is_expected.to contain_augeas('test_share-section').with(
-          :incl    => '/etc/samba/smb.conf',
-          :lens    => 'Samba.lns',
-          :context => '/files/etc/samba/smb.conf',
-          :changes => ["set target[. = 'test_share'] 'test_share'"],
-          :require => 'Class[Samba::Server::Config]',
-          :notify  => 'Class[Samba::Server::Service]')
-        }
-        it { is_expected.to contain_augeas('test_share-changes').with(
-          :incl    => '/etc/samba/smb.conf',
-          :lens    => 'Samba.lns',
-          :context => '/files/etc/samba/smb.conf',
-          :changes => [
-            "rm  \"target[. = 'test_share']/available\"",
-            "rm  \"target[. = 'test_share']/browsable\"",
-            "rm  \"target[. = 'test_share']/comment\"",
-            "rm  \"target[. = 'test_share']/copy\"",
-            "rm  \"target[. = 'test_share']/create mask\"",
-            "rm  \"target[. = 'test_share']/directory mask\"",
-            "rm  \"target[. = 'test_share']/force create mask\"",
-            "rm  \"target[. = 'test_share']/force directory mode\"",
-            "rm  \"target[. = 'test_share']/force group\"",
-            "rm  \"target[. = 'test_share']/force user\"",
-            "rm  \"target[. = 'test_share']/guest ok\"",
-            "rm  \"target[. = 'test_share']/guest only\"",
-            "rm  \"target[. = 'test_share']/hide unreadable\"",
-            "rm  target[. = 'test_share']/path",
-            "rm  \"target[. = 'test_share']/read only\"",
-            "rm  \"target[. = 'test_share']/public\"",
-            "rm  \"target[. = 'test_share']/writable\"",
-            "rm  \"target[. = 'test_share']/printable\"",
-            "rm  \"target[. = 'test_share']/follow symlinks\"",
-            "rm  \"target[. = 'test_share']/wide links\"",
-            "rm  \"target[. = 'test_share']/map acl inherit\"",
-            "rm  \"target[. = 'test_share']/store dos attributes\"",
-            "rm  \"target[. = 'test_share']/strict allocate\"",
-            "rm  \"target[. = 'test_share']/valid users\"",
-            "rm  \"target[. = 'test_share']/oplocks\"",
-            "set \"target[. = 'test_share']/level2 oplocks\" 'testing'",
-            "rm  \"target[. = 'test_share']/veto oplock files\"",
-            "rm  \"target[. = 'test_share']/write list\"",
-            "rm  \"target[. = 'test_share']/hide dot files\"",
-            "rm  \"target[. = 'test_share']/root preexec\""
-          ],
-          :require => 'Augeas[test_share-section]',
-          :notify  => 'Class[Samba::Server::Service]')
-        }
+        let(:change_set) { default_changes.with("level2 oplocks", "'testing'") }
       end#level2_oplocks
 
       context 'when called with veto_oplock_files set to "testing"' do
-        let(:title) { 'test_share' }
+        include_examples "default share"
         let(:params) {{
           :ensure            => 'present',
           :veto_oplock_files => 'testing',
         }}
-        it { is_expected.to contain_samba__server__share('test_share') }
-        it { is_expected.to contain_augeas('test_share-section').with(
-          :incl    => '/etc/samba/smb.conf',
-          :lens    => 'Samba.lns',
-          :context => '/files/etc/samba/smb.conf',
-          :changes => ["set target[. = 'test_share'] 'test_share'"],
-          :require => 'Class[Samba::Server::Config]',
-          :notify  => 'Class[Samba::Server::Service]')
-        }
-        it { is_expected.to contain_augeas('test_share-changes').with(
-          :incl    => '/etc/samba/smb.conf',
-          :lens    => 'Samba.lns',
-          :context => '/files/etc/samba/smb.conf',
-          :changes => [
-            "rm  \"target[. = 'test_share']/available\"",
-            "rm  \"target[. = 'test_share']/browsable\"",
-            "rm  \"target[. = 'test_share']/comment\"",
-            "rm  \"target[. = 'test_share']/copy\"",
-            "rm  \"target[. = 'test_share']/create mask\"",
-            "rm  \"target[. = 'test_share']/directory mask\"",
-            "rm  \"target[. = 'test_share']/force create mask\"",
-            "rm  \"target[. = 'test_share']/force directory mode\"",
-            "rm  \"target[. = 'test_share']/force group\"",
-            "rm  \"target[. = 'test_share']/force user\"",
-            "rm  \"target[. = 'test_share']/guest ok\"",
-            "rm  \"target[. = 'test_share']/guest only\"",
-            "rm  \"target[. = 'test_share']/hide unreadable\"",
-            "rm  target[. = 'test_share']/path",
-            "rm  \"target[. = 'test_share']/read only\"",
-            "rm  \"target[. = 'test_share']/public\"",
-            "rm  \"target[. = 'test_share']/writable\"",
-            "rm  \"target[. = 'test_share']/printable\"",
-            "rm  \"target[. = 'test_share']/follow symlinks\"",
-            "rm  \"target[. = 'test_share']/wide links\"",
-            "rm  \"target[. = 'test_share']/map acl inherit\"",
-            "rm  \"target[. = 'test_share']/store dos attributes\"",
-            "rm  \"target[. = 'test_share']/strict allocate\"",
-            "rm  \"target[. = 'test_share']/valid users\"",
-            "rm  \"target[. = 'test_share']/oplocks\"",
-            "rm  \"target[. = 'test_share']/level2 oplocks\"",
-            "set \"target[. = 'test_share']/veto oplock files\" 'testing'",
-            "rm  \"target[. = 'test_share']/write list\"",
-            "rm  \"target[. = 'test_share']/hide dot files\"",
-            "rm  \"target[. = 'test_share']/root preexec\""
-          ],
-          :require => 'Augeas[test_share-section]',
-          :notify  => 'Class[Samba::Server::Service]')
-        }
+        let(:change_set) { default_changes.with("veto oplock files", "'testing'") }
       end#veto_oplock_files
 
       context 'when called with write_list set to "bill,ben"' do
-        let(:title) { 'test_share' }
+        include_examples "default share"
         let(:params) {{
           :ensure     => 'present',
           :write_list => 'bill,ben',
         }}
-        it { is_expected.to contain_samba__server__share('test_share') }
-        it { is_expected.to contain_augeas('test_share-section').with(
-          :incl    => '/etc/samba/smb.conf',
-          :lens    => 'Samba.lns',
-          :context => '/files/etc/samba/smb.conf',
-          :changes => ["set target[. = 'test_share'] 'test_share'"],
-          :require => 'Class[Samba::Server::Config]',
-          :notify  => 'Class[Samba::Server::Service]')
-        }
-        it { is_expected.to contain_augeas('test_share-changes').with(
-          :incl    => '/etc/samba/smb.conf',
-          :lens    => 'Samba.lns',
-          :context => '/files/etc/samba/smb.conf',
-          :changes => [
-            "rm  \"target[. = 'test_share']/available\"",
-            "rm  \"target[. = 'test_share']/browsable\"",
-            "rm  \"target[. = 'test_share']/comment\"",
-            "rm  \"target[. = 'test_share']/copy\"",
-            "rm  \"target[. = 'test_share']/create mask\"",
-            "rm  \"target[. = 'test_share']/directory mask\"",
-            "rm  \"target[. = 'test_share']/force create mask\"",
-            "rm  \"target[. = 'test_share']/force directory mode\"",
-            "rm  \"target[. = 'test_share']/force group\"",
-            "rm  \"target[. = 'test_share']/force user\"",
-            "rm  \"target[. = 'test_share']/guest ok\"",
-            "rm  \"target[. = 'test_share']/guest only\"",
-            "rm  \"target[. = 'test_share']/hide unreadable\"",
-            "rm  target[. = 'test_share']/path",
-            "rm  \"target[. = 'test_share']/read only\"",
-            "rm  \"target[. = 'test_share']/public\"",
-            "rm  \"target[. = 'test_share']/writable\"",
-            "rm  \"target[. = 'test_share']/printable\"",
-            "rm  \"target[. = 'test_share']/follow symlinks\"",
-            "rm  \"target[. = 'test_share']/wide links\"",
-            "rm  \"target[. = 'test_share']/map acl inherit\"",
-            "rm  \"target[. = 'test_share']/store dos attributes\"",
-            "rm  \"target[. = 'test_share']/strict allocate\"",
-            "rm  \"target[. = 'test_share']/valid users\"",
-            "rm  \"target[. = 'test_share']/oplocks\"",
-            "rm  \"target[. = 'test_share']/level2 oplocks\"",
-            "rm  \"target[. = 'test_share']/veto oplock files\"",
-            "set \"target[. = 'test_share']/write list\" 'bill,ben'",
-            "rm  \"target[. = 'test_share']/hide dot files\"",
-            "rm  \"target[. = 'test_share']/root preexec\""
-          ],
-          :require => 'Augeas[test_share-section]',
-          :notify  => 'Class[Samba::Server::Service]')
-        }
+        let(:change_set) { default_changes.with("write list", "'bill,ben'") }
       end#write_list
 
       context 'when called with hide_dot_files set to true' do
-        let(:title) { 'test_share' }
+        include_examples "default share"
         let(:params) {{
           :ensure         => 'present',
           :hide_dot_files => true,
         }}
-        it { is_expected.to contain_samba__server__share('test_share') }
-        it { is_expected.to contain_augeas('test_share-section').with(
-          :incl    => '/etc/samba/smb.conf',
-          :lens    => 'Samba.lns',
-          :context => '/files/etc/samba/smb.conf',
-          :changes => ["set target[. = 'test_share'] 'test_share'"],
-          :require => 'Class[Samba::Server::Config]',
-          :notify  => 'Class[Samba::Server::Service]')
-        }
-        it { is_expected.to contain_augeas('test_share-changes').with(
-          :incl    => '/etc/samba/smb.conf',
-          :lens    => 'Samba.lns',
-          :context => '/files/etc/samba/smb.conf',
-          :changes => [
-            "rm  \"target[. = 'test_share']/available\"",
-            "rm  \"target[. = 'test_share']/browsable\"",
-            "rm  \"target[. = 'test_share']/comment\"",
-            "rm  \"target[. = 'test_share']/copy\"",
-            "rm  \"target[. = 'test_share']/create mask\"",
-            "rm  \"target[. = 'test_share']/directory mask\"",
-            "rm  \"target[. = 'test_share']/force create mask\"",
-            "rm  \"target[. = 'test_share']/force directory mode\"",
-            "rm  \"target[. = 'test_share']/force group\"",
-            "rm  \"target[. = 'test_share']/force user\"",
-            "rm  \"target[. = 'test_share']/guest ok\"",
-            "rm  \"target[. = 'test_share']/guest only\"",
-            "rm  \"target[. = 'test_share']/hide unreadable\"",
-            "rm  target[. = 'test_share']/path",
-            "rm  \"target[. = 'test_share']/read only\"",
-            "rm  \"target[. = 'test_share']/public\"",
-            "rm  \"target[. = 'test_share']/writable\"",
-            "rm  \"target[. = 'test_share']/printable\"",
-            "rm  \"target[. = 'test_share']/follow symlinks\"",
-            "rm  \"target[. = 'test_share']/wide links\"",
-            "rm  \"target[. = 'test_share']/map acl inherit\"",
-            "rm  \"target[. = 'test_share']/store dos attributes\"",
-            "rm  \"target[. = 'test_share']/strict allocate\"",
-            "rm  \"target[. = 'test_share']/valid users\"",
-            "rm  \"target[. = 'test_share']/oplocks\"",
-            "rm  \"target[. = 'test_share']/level2 oplocks\"",
-            "rm  \"target[. = 'test_share']/veto oplock files\"",
-            "rm  \"target[. = 'test_share']/write list\"",
-            "set \"target[. = 'test_share']/hide dot files\" yes",
-            "rm  \"target[. = 'test_share']/root preexec\""
-          ],
-          :require => 'Augeas[test_share-section]',
-          :notify  => 'Class[Samba::Server::Service]')
-        }
+        let(:change_set) { default_changes.with("hide dot files", "yes") }
       end#hide_dot_files true
 
       context 'when called with hide_dot_files set to false' do
-        let(:title) { 'test_share' }
+        include_examples "default share"
         let(:params) {{
           :ensure         => 'present',
           :hide_dot_files => false,
         }}
-        it { is_expected.to contain_samba__server__share('test_share') }
-        it { is_expected.to contain_augeas('test_share-section').with(
-          :incl    => '/etc/samba/smb.conf',
-          :lens    => 'Samba.lns',
-          :context => '/files/etc/samba/smb.conf',
-          :changes => ["set target[. = 'test_share'] 'test_share'"],
-          :require => 'Class[Samba::Server::Config]',
-          :notify  => 'Class[Samba::Server::Service]')
-        }
-        it { is_expected.to contain_augeas('test_share-changes').with(
-          :incl    => '/etc/samba/smb.conf',
-          :lens    => 'Samba.lns',
-          :context => '/files/etc/samba/smb.conf',
-          :changes => [
-            "rm  \"target[. = 'test_share']/available\"",
-            "rm  \"target[. = 'test_share']/browsable\"",
-            "rm  \"target[. = 'test_share']/comment\"",
-            "rm  \"target[. = 'test_share']/copy\"",
-            "rm  \"target[. = 'test_share']/create mask\"",
-            "rm  \"target[. = 'test_share']/directory mask\"",
-            "rm  \"target[. = 'test_share']/force create mask\"",
-            "rm  \"target[. = 'test_share']/force directory mode\"",
-            "rm  \"target[. = 'test_share']/force group\"",
-            "rm  \"target[. = 'test_share']/force user\"",
-            "rm  \"target[. = 'test_share']/guest ok\"",
-            "rm  \"target[. = 'test_share']/guest only\"",
-            "rm  \"target[. = 'test_share']/hide unreadable\"",
-            "rm  target[. = 'test_share']/path",
-            "rm  \"target[. = 'test_share']/read only\"",
-            "rm  \"target[. = 'test_share']/public\"",
-            "rm  \"target[. = 'test_share']/writable\"",
-            "rm  \"target[. = 'test_share']/printable\"",
-            "rm  \"target[. = 'test_share']/follow symlinks\"",
-            "rm  \"target[. = 'test_share']/wide links\"",
-            "rm  \"target[. = 'test_share']/map acl inherit\"",
-            "rm  \"target[. = 'test_share']/store dos attributes\"",
-            "rm  \"target[. = 'test_share']/strict allocate\"",
-            "rm  \"target[. = 'test_share']/valid users\"",
-            "rm  \"target[. = 'test_share']/oplocks\"",
-            "rm  \"target[. = 'test_share']/level2 oplocks\"",
-            "rm  \"target[. = 'test_share']/veto oplock files\"",
-            "rm  \"target[. = 'test_share']/write list\"",
-            "set \"target[. = 'test_share']/hide dot files\" no",
-            "rm  \"target[. = 'test_share']/root preexec\""
-          ],
-          :require => 'Augeas[test_share-section]',
-          :notify  => 'Class[Samba::Server::Service]')
-        }
+        let(:change_set) { default_changes.with("hide dot files", "no") }
       end#hide_dot_files false
 
       context 'when called with root_preexec set to "/bin/test"' do
-        let(:title) { 'test_share' }
+        include_examples "default share"
         let(:params) {{
           :ensure       => 'present',
           :root_preexec => '/bin/test',
         }}
-        it { is_expected.to contain_samba__server__share('test_share') }
-        it { is_expected.to contain_augeas('test_share-section').with(
-          :incl    => '/etc/samba/smb.conf',
-          :lens    => 'Samba.lns',
-          :context => '/files/etc/samba/smb.conf',
-          :changes => ["set target[. = 'test_share'] 'test_share'"],
-          :require => 'Class[Samba::Server::Config]',
-          :notify  => 'Class[Samba::Server::Service]')
-        }
-        it { is_expected.to contain_augeas('test_share-changes').with(
-          :incl    => '/etc/samba/smb.conf',
-          :lens    => 'Samba.lns',
-          :context => '/files/etc/samba/smb.conf',
-          :changes => [
-            "rm  \"target[. = 'test_share']/available\"",
-            "rm  \"target[. = 'test_share']/browsable\"",
-            "rm  \"target[. = 'test_share']/comment\"",
-            "rm  \"target[. = 'test_share']/copy\"",
-            "rm  \"target[. = 'test_share']/create mask\"",
-            "rm  \"target[. = 'test_share']/directory mask\"",
-            "rm  \"target[. = 'test_share']/force create mask\"",
-            "rm  \"target[. = 'test_share']/force directory mode\"",
-            "rm  \"target[. = 'test_share']/force group\"",
-            "rm  \"target[. = 'test_share']/force user\"",
-            "rm  \"target[. = 'test_share']/guest ok\"",
-            "rm  \"target[. = 'test_share']/guest only\"",
-            "rm  \"target[. = 'test_share']/hide unreadable\"",
-            "rm  target[. = 'test_share']/path",
-            "rm  \"target[. = 'test_share']/read only\"",
-            "rm  \"target[. = 'test_share']/public\"",
-            "rm  \"target[. = 'test_share']/writable\"",
-            "rm  \"target[. = 'test_share']/printable\"",
-            "rm  \"target[. = 'test_share']/follow symlinks\"",
-            "rm  \"target[. = 'test_share']/wide links\"",
-            "rm  \"target[. = 'test_share']/map acl inherit\"",
-            "rm  \"target[. = 'test_share']/store dos attributes\"",
-            "rm  \"target[. = 'test_share']/strict allocate\"",
-            "rm  \"target[. = 'test_share']/valid users\"",
-            "rm  \"target[. = 'test_share']/oplocks\"",
-            "rm  \"target[. = 'test_share']/level2 oplocks\"",
-            "rm  \"target[. = 'test_share']/veto oplock files\"",
-            "rm  \"target[. = 'test_share']/write list\"",
-            "rm  \"target[. = 'test_share']/hide dot files\"",
-            "set \"target[. = 'test_share']/root preexec\" '/bin/test'"
-          ],
-          :require => 'Augeas[test_share-section]',
-          :notify  => 'Class[Samba::Server::Service]')
-        }
+        let(:change_set) { default_changes.with("root preexec", "'/bin/test'") }
       end#root_preexec
-
     end
   end
 end
-
