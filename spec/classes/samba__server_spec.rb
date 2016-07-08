@@ -36,7 +36,7 @@ describe 'samba::server' do
          }
        }
     }}
-    it { 
+    it {
       should contain_samba__server__share( 'testShare' ).with({
           'path' => '/path/to/some/share',
           'browsable' => true,
