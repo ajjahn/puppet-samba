@@ -1,4 +1,7 @@
 require 'puppetlabs_spec_helper/module_spec_helper'
+require 'rspec-puppet-facts'
+
+include RspecPuppetFacts
 
 RSpec.configure do |c|
   c.before do
@@ -6,3 +9,5 @@ RSpec.configure do |c|
     Puppet.features.stubs(:root? => true)
   end
 end
+
+at_exit { RSpec::Puppet::Coverage.report! }
