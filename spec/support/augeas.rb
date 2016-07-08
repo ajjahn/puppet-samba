@@ -19,9 +19,10 @@ module Augeas
       [target, name, Change].hash
     end
 
-    def eql?(other)
+    def ==(other)
       other.is_a?(self.class) && [other.target, other.name] == [target, name]
     end
+    alias_method :eql?, :==
 
     private
 
@@ -37,11 +38,12 @@ module Augeas
 
   class ChangeSet
     def initialize
-      @set = {}
+      @set = []
     end
 
     def <<(change)
-      @set[change] = change
+      index = @set.index(change) || @set.length
+      @set[index] = change
     end
 
     def to_a
@@ -49,7 +51,7 @@ module Augeas
     end
 
     def changes
-      @set.values.map(&:to_s)
+      @set.map(&:to_s)
     end
   end
 
