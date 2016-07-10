@@ -34,6 +34,7 @@ shared_examples "default share" do
     set.with("oplocks")
     set.with("level2 oplocks")
     set.with("veto oplock files")
+    set.with("read list")
     set.with("write list")
     set.with("hide dot files")
     set.with("root preexec")
@@ -539,6 +540,15 @@ describe 'samba::server::share', :type => :define do
           :veto_oplock_files => 'testing',
         }}
         let(:change_set) { default_changes.with("veto oplock files", "'testing'") }
+      end
+
+      context 'with read_list set to "bill,ben"' do
+        include_examples "default share"
+        let(:params) {{
+          :ensure     => 'present',
+          :read_list => 'bill,ben',
+        }}
+        let(:change_set) { default_changes.with("read list", "'bill,ben'") }
       end
 
       context 'with write_list set to "bill,ben"' do

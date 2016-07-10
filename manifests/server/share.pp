@@ -189,7 +189,7 @@ define samba::server::share($ensure = present,
         default => "set \"${target}/veto oplock files\" '${veto_oplock_files}'",
       },
       $read_list ? {
-        ''      => "rm \"${target}/read list\"",
+        ''      => "rm  \"${target}/read list\"",
         default => "set \"${target}/read list\" '${read_list}'",
       },
       $write_list ? {
