@@ -40,6 +40,7 @@ shared_examples "default share" do
     set.with("root preexec")
     set.with("inherit permissions")
     set.with("inherit acls")
+    set.with("delete readonly")
   end
   let(:change_set) { default_changes }
   let(:changes) { change_set.to_a }
@@ -623,6 +624,24 @@ describe 'samba::server::share', :type => :define do
           :inherit_acls => false,
         }}
         let(:change_set) { default_changes.with("inherit acls", "no") }
+      end
+
+      context 'with delete_readonly set to true' do
+        include_examples "default share"
+        let(:params) {{
+          :ensure         => 'present',
+          :delete_readonly => true,
+        }}
+        let(:change_set) { default_changes.with("delete readonly", "yes") }
+      end
+
+      context 'with delete_readonly set to false' do
+        include_examples "default share"
+        let(:params) {{
+          :ensure         => 'present',
+          :delete_readonly => false,
+        }}
+        let(:change_set) { default_changes.with("delete readonly", "no") }
       end
     end
   end
