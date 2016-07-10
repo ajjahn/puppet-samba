@@ -42,6 +42,7 @@ shared_examples "default share" do
     set.with("inherit acls")
     set.with("delete readonly")
     set.with("printer name")
+    set.with("msdfs root")
   end
   let(:change_set) { default_changes }
   let(:changes) { change_set.to_a }
@@ -652,6 +653,24 @@ describe 'samba::server::share', :type => :define do
           :printer_name => 'killing trees',
         }}
         let(:change_set) { default_changes.with("printer name", "'killing trees'") }
+      end
+
+      context 'with msdfs_root set to true' do
+        include_examples "default share"
+        let(:params) {{
+          :ensure     => 'present',
+          :msdfs_root => true,
+        }}
+        let(:change_set) { default_changes.with("msdfs root", "yes") }
+      end
+
+      context 'with msdfs_root set to false' do
+        include_examples "default share"
+        let(:params) {{
+          :ensure     => 'present',
+          :msdfs_root => false,
+        }}
+        let(:change_set) { default_changes.with("msdfs root", "no") }
       end
     end
   end
