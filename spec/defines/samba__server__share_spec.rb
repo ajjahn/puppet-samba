@@ -39,6 +39,7 @@ shared_examples "default share" do
     set.with("hide dot files")
     set.with("root preexec")
     set.with("inherit permissions")
+    set.with("inherit acls")
   end
   let(:change_set) { default_changes }
   let(:changes) { change_set.to_a }
@@ -604,6 +605,24 @@ describe 'samba::server::share', :type => :define do
           :inherit_permissions => false,
         }}
         let(:change_set) { default_changes.with("inherit permissions", "no") }
+      end
+
+      context 'with inherit_acls set to true' do
+        include_examples "default share"
+        let(:params) {{
+          :ensure         => 'present',
+          :inherit_acls => true,
+        }}
+        let(:change_set) { default_changes.with("inherit acls", "yes") }
+      end
+
+      context 'with inherit_acls set to false' do
+        include_examples "default share"
+        let(:params) {{
+          :ensure         => 'present',
+          :inherit_acls => false,
+        }}
+        let(:change_set) { default_changes.with("inherit acls", "no") }
       end
     end
   end
