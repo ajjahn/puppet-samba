@@ -424,7 +424,7 @@ describe 'samba::server::share', :type => :define do
       context 'with acl_group_control set to true' do
         include_examples "default share"
         let(:params) {{
-          :ensure          => 'present',
+          :ensure            => 'present',
           :acl_group_control => true,
         }}
         let(:change_set) { default_changes.with("acl group control", "yes") }
@@ -433,7 +433,7 @@ describe 'samba::server::share', :type => :define do
       context 'with acl_group_control set to false' do
         include_examples "default share"
         let(:params) {{
-          :ensure          => 'present',
+          :ensure            => 'present',
           :acl_group_control => false,
         }}
         let(:change_set) { default_changes.with("acl group control", "no") }
@@ -550,7 +550,7 @@ describe 'samba::server::share', :type => :define do
       context 'with read_list set to "bill,ben"' do
         include_examples "default share"
         let(:params) {{
-          :ensure     => 'present',
+          :ensure    => 'present',
           :read_list => 'bill,ben',
         }}
         let(:change_set) { default_changes.with("read list", "'bill,ben'") }
@@ -595,7 +595,7 @@ describe 'samba::server::share', :type => :define do
       context 'with inherit_permissions set to true' do
         include_examples "default share"
         let(:params) {{
-          :ensure         => 'present',
+          :ensure              => 'present',
           :inherit_permissions => true,
         }}
         let(:change_set) { default_changes.with("inherit permissions", "yes") }
@@ -604,7 +604,7 @@ describe 'samba::server::share', :type => :define do
       context 'with inherit_permissions set to false' do
         include_examples "default share"
         let(:params) {{
-          :ensure         => 'present',
+          :ensure              => 'present',
           :inherit_permissions => false,
         }}
         let(:change_set) { default_changes.with("inherit permissions", "no") }
@@ -613,7 +613,7 @@ describe 'samba::server::share', :type => :define do
       context 'with inherit_acls set to true' do
         include_examples "default share"
         let(:params) {{
-          :ensure         => 'present',
+          :ensure       => 'present',
           :inherit_acls => true,
         }}
         let(:change_set) { default_changes.with("inherit acls", "yes") }
@@ -622,7 +622,7 @@ describe 'samba::server::share', :type => :define do
       context 'with inherit_acls set to false' do
         include_examples "default share"
         let(:params) {{
-          :ensure         => 'present',
+          :ensure       => 'present',
           :inherit_acls => false,
         }}
         let(:change_set) { default_changes.with("inherit acls", "no") }
@@ -631,7 +631,7 @@ describe 'samba::server::share', :type => :define do
       context 'with delete_readonly set to true' do
         include_examples "default share"
         let(:params) {{
-          :ensure         => 'present',
+          :ensure        => 'present',
           :delete_readonly => true,
         }}
         let(:change_set) { default_changes.with("delete readonly", "yes") }
@@ -640,7 +640,7 @@ describe 'samba::server::share', :type => :define do
       context 'with delete_readonly set to false' do
         include_examples "default share"
         let(:params) {{
-          :ensure         => 'present',
+          :ensure        => 'present',
           :delete_readonly => false,
         }}
         let(:change_set) { default_changes.with("delete readonly", "no") }
