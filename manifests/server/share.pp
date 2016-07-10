@@ -225,8 +225,8 @@ define samba::server::share($ensure = present,
         default => "rm  \"${target}/delete readonly\"",
       },
       $printer_name ? {
-        default => "set \"${target}/printer name\" '${printer_name}'",
         ''      => "rm  \"${target}/printer name\"",
+        default => "set \"${target}/printer name\" '${printer_name}'",
       },
     ]
 
