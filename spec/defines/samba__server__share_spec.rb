@@ -25,6 +25,7 @@ shared_examples "default share" do
     set.with("printable")
     set.with("follow symlinks")
     set.with("wide links")
+    set.with("acl group control")
     set.with("map acl inherit")
     set.with("profile acls")
     set.with("store dos attributes")
@@ -412,6 +413,24 @@ describe 'samba::server::share', :type => :define do
           :wide_links => false,
         }}
         let(:change_set) { default_changes.with("wide links", "no") }
+      end
+
+      context 'with acl_group_control set to true' do
+        include_examples "default share"
+        let(:params) {{
+          :ensure          => 'present',
+          :acl_group_control => true,
+        }}
+        let(:change_set) { default_changes.with("acl group control", "yes") }
+      end
+
+      context 'with acl_group_control set to false' do
+        include_examples "default share"
+        let(:params) {{
+          :ensure          => 'present',
+          :acl_group_control => false,
+        }}
+        let(:change_set) { default_changes.with("acl group control", "no") }
       end
 
       context 'with map_acl_inherit set to true' do
