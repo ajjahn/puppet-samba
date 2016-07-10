@@ -20,6 +20,7 @@ define samba::server::share($ensure = present,
                             $veto_oplock_files = '',
                             $read_only = '',
                             $public = '',
+                            $read_list = '',
                             $write_list = '',
                             $writable = '',
                             $printable = '',
@@ -186,6 +187,10 @@ define samba::server::share($ensure = present,
       $veto_oplock_files ? {
         ''      => "rm  \"${target}/veto oplock files\"",
         default => "set \"${target}/veto oplock files\" '${veto_oplock_files}'",
+      },
+      $read_list ? {
+        ''      => "rm \"${target}/read list\"",
+        default => "set \"${target}/read list\" '${read_list}'",
       },
       $write_list ? {
         ''      => "rm  \"${target}/write list\"",
