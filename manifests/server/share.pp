@@ -39,6 +39,7 @@ define samba::server::share($ensure = present,
                             $delete_readonly = '',
                             $printer_name = '',
                             $msdfs_root = '',
+                            $guest_account = '',
                             ) {
 
   $incl    = $samba::server::incl
@@ -233,6 +234,10 @@ define samba::server::share($ensure = present,
         true    => "set \"${target}/msdfs root\" yes",
         false   => "set \"${target}/msdfs root\" no",
         default => "rm  \"${target}/msdfs root\"",
+      },
+      $guest_account ? {
+        ''      => "rm  \"${target}/guest account\"",
+        default => "set \"${target}/guest account\" '${guest_account}'",
       },
     ]
 

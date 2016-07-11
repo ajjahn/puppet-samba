@@ -43,6 +43,7 @@ shared_examples "default share" do
     set.with("delete readonly")
     set.with("printer name")
     set.with("msdfs root")
+    set.with("guest account")
   end
   let(:change_set) { default_changes }
   let(:changes) { change_set.to_a }
@@ -671,6 +672,15 @@ describe 'samba::server::share', :type => :define do
           :msdfs_root => false,
         }}
         let(:change_set) { default_changes.with("msdfs root", "no") }
+      end
+
+      context 'with guest_account set to "killing trees"' do
+        include_examples "default share"
+        let(:params) {{
+          :ensure       => 'present',
+          :guest_account => 'someone',
+        }}
+        let(:change_set) { default_changes.with("guest account", "'someone'") }
       end
     end
   end
