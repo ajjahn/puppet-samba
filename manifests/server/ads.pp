@@ -39,7 +39,7 @@ class samba::server::ads($ensure = present,
     $winbind_package = 'winbind'
   }
 
-  package{
+  package {
     $krb5_user_package: ensure => installed;
     $winbind_package:   ensure => installed;
     'expect':           ensure => installed;
@@ -50,18 +50,24 @@ class samba::server::ads($ensure = present,
 
   # notify winbind
   samba::server::option {
-    'realm':                        value => $realm,
-    notify                                => Class['Samba::Server::Winbind'];
-    'winbind uid':                  value => $winbind_uid,
-    notify                                => Class['Samba::Server::Winbind'];
-    'winbind gid':                  value => $winbind_gid,
-    notify                                => Class['Samba::Server::Winbind'];
-    'winbind enum groups':          value => $winbind_enum_groups,
-    notify                                => Class['Samba::Server::Winbind'];
-    'winbind enum users':           value => $winbind_enum_users,
-    notify                                => Class['Samba::Server::Winbind'];
-    'winbind use default domain':   value => $winbind_use_default_domain,
-    notify                                => Class['Samba::Server::Winbind'];
+    'realm':
+      value  => $realm,
+      notify => Class['Samba::Server::Winbind'];
+    'winbind uid':
+      value  => $winbind_uid,
+      notify => Class['Samba::Server::Winbind'];
+    'winbind gid':
+      value  => $winbind_gid,
+      notify => Class['Samba::Server::Winbind'];
+    'winbind enum groups':
+      value  => $winbind_enum_groups,
+      notify => Class['Samba::Server::Winbind'];
+    'winbind enum users':
+      value  => $winbind_enum_users,
+      notify => Class['Samba::Server::Winbind'];
+    'winbind use default domain':
+      value  => $winbind_use_default_domain,
+      notify => Class['Samba::Server::Winbind'];
   }
 
   samba::server::option {
