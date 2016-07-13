@@ -3,3 +3,4 @@ pkg/
 log/
 Gemfile.lock
 spec/fixtures/
+.vagrant/
