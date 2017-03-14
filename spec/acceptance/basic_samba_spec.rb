@@ -5,7 +5,9 @@ describe 'basic samba' do
     let(:pp) {"
       class { 'samba::server':
         workgroup     => 'example',
-        server_string => 'Example Samba Server'
+        server_string => 'Example Samba Server',
+        dns_proxy     => 'no',
+        server_role   => 'standalone server',
       }
 
       samba::server::share {'example-share':
@@ -23,6 +25,7 @@ describe 'basic samba' do
         force_user           => 'user',
         hide_dot_files       => false,
         msdfs_root           => true,
+        hosts_allow          => '127.0.0.1'
       }
     "}
 

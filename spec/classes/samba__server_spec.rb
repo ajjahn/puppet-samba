@@ -20,6 +20,17 @@ describe 'samba::server' do
   it { should contain_samba__server__option('printing') }
   it { should contain_samba__server__option('printcap name') }
   it { should contain_samba__server__option('disable spoolss') }
+  it { should contain_samba__server__option('dns proxy') }
+  it { should contain_samba__server__option('log file') }
+  it { should contain_samba__server__option('max log size') }
+  it { should contain_samba__server__option('obey pam restrictions') }
+  it { should contain_samba__server__option('panic action') }
+  it { should contain_samba__server__option('passdb backend') }
+  it { should contain_samba__server__option('passwd chat') }
+  it { should contain_samba__server__option('passwd program') }
+  it { should contain_samba__server__option('server role') }
+  it { should contain_samba__server__option('syslog') }  
+  it { should contain_samba__server__option('usershare allow guests') }    
 
   context 'with hiera shares hash' do
     let(:params) {{
