@@ -679,7 +679,7 @@ describe 'samba::server::share', :type => :define do
       context 'with guest_account set to "killing trees"' do
         include_examples "default share"
         let(:params) {{
-          :ensure       => 'present',
+          :ensure        => 'present',
           :guest_account => 'someone',
         }}
         let(:change_set) { default_changes.with("guest account", "'someone'") }
@@ -689,18 +689,18 @@ describe 'samba::server::share', :type => :define do
         include_examples "default share"
         let(:params) {{
           :ensure       => 'present',
-          :hosts_allow => '127.0.0.1',
+          :hosts_allow  => '127.0.0.1',
         }}
-        let(:change_set) { default_changes.with("hosts allow", "127.0.0.1") }
+        let(:change_set) { default_changes.with("hosts allow", "'127.0.0.1'") }
       end
 
-      context 'with acl_allow_execute_always to "true"' do
+      context 'with acl_allow_execute_always to "yes"' do
         include_examples "default share"
         let(:params) {{
-          :ensure       => 'present',
-          :acl_allow_execute_always => true,
+          :ensure                   => 'present',
+          :acl_allow_execute_always => 'yes',
         }}
-        let(:change_set) { default_changes.with("acl allow execute always", "true") }
+        let(:change_set) { default_changes.with("acl allow execute always", "yes") }
       end
     end
   end
