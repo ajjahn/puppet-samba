@@ -694,13 +694,21 @@ describe 'samba::server::share', :type => :define do
         let(:change_set) { default_changes.with("hosts allow", "'127.0.0.1'") }
       end
 
-      context 'with acl_allow_execute_always to "yes"' do
+      context 'with acl_allow_execute_always to true' do
         include_examples "default share"
         let(:params) {{
           :ensure                   => 'present',
-          :acl_allow_execute_always => 'yes',
+          :acl_allow_execute_always => true,
         }}
         let(:change_set) { default_changes.with("acl allow execute always", "yes") }
+      end
+      context 'with acl_allow_execute_always to false' do
+        include_examples "default share"
+        let(:params) {{
+          :ensure                   => 'present',
+          :acl_allow_execute_always => false,
+        }}
+        let(:change_set) { default_changes.with("acl allow execute always", "no") }
       end
     end
   end
