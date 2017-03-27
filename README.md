@@ -42,10 +42,10 @@ node 'server.example.com' {
     guest_ok             => true,
     guest_account        => "guest",
     browsable            => false,
-    create_mask          => 0777,
-    force_create_mask    => 0777,
-    directory_mask       => 0777,
-    force_directory_mask => 0777,
+    create_mask          => '0777',
+    force_create_mode    => '0777',
+    directory_mask       => '0777',
+    force_directory_mask => '0777',
     force_group          => 'group',
     force_user           => 'user',
     copy                 => 'some-other-share',
@@ -69,8 +69,8 @@ node 'server.example.com' {
     path              => "$smb_share",
     browsable         => true,
     writable          => true,
-    create_mask       => 0770,
-    directory_mask    => 0770,
+    create_mask       => '0770',
+    directory_mask    => '0770',
   }
 
   class { 'samba::server::ads':
