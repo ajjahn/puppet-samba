@@ -44,6 +44,8 @@ shared_examples "default share" do
     set.with("printer name")
     set.with("msdfs root")
     set.with("guest account")
+    set.with("hosts allow")
+    set.with("acl allow execute always")
   end
   let(:change_set) { default_changes }
   let(:changes) { change_set.to_a }
@@ -75,7 +77,7 @@ describe 'samba::server::share', :type => :define do
         {
           "operatingsystem" => "Ubuntu",
           "operatingsystemrelease" => [
-            "14.04"
+            "16.04"
           ]
         },
         {
@@ -677,10 +679,36 @@ describe 'samba::server::share', :type => :define do
       context 'with guest_account set to "killing trees"' do
         include_examples "default share"
         let(:params) {{
-          :ensure       => 'present',
+          :ensure        => 'present',
           :guest_account => 'someone',
         }}
         let(:change_set) { default_changes.with("guest account", "'someone'") }
+      end
+
+      context 'with hosts_allow set to "127.0.0.1"' do
+        include_examples "default share"
+        let(:params) {{
+          :ensure       => 'present',
+          :hosts_allow  => '127.0.0.1',
+        }}
+        let(:change_set) { default_changes.with("hosts allow", "'127.0.0.1'") }
+      end
+
+      context 'with acl_allow_execute_always to true' do
+        include_examples "default share"
+        let(:params) {{
+          :ensure                   => 'present',
+          :acl_allow_execute_always => true,
+        }}
+        let(:change_set) { default_changes.with("acl allow execute always", "yes") }
+      end
+      context 'with acl_allow_execute_always to false' do
+        include_examples "default share"
+        let(:params) {{
+          :ensure                   => 'present',
+          :acl_allow_execute_always => false,
+        }}
+        let(:change_set) { default_changes.with("acl allow execute always", "no") }
       end
     end
   end

@@ -1,27 +1,38 @@
 # == Class samba::server
 #
-class samba::server($interfaces = '',
-                    $security = '',
-                    $server_string = '',
-                    $unix_password_sync = '',
-                    $netbios_name = '',
-                    $workgroup = '',
-                    $socket_options = '',
+class samba::server($bind_interfaces_only = 'yes',
                     $deadtime = '',
-                    $keepalive = '',
-                    $load_printers = '',
-                    $printing = '',
-                    $printcap_name = '',
-                    $map_to_guest = 'Never',
-                    $guest_account = '',
                     $disable_spoolss = '',
+                    $dns_proxy = '',
+                    $guest_account = '',
+                    $keepalive = '',
                     $kernel_oplocks = '',
-                    $pam_password_change = '',
+                    $load_printers = '',
+                    $log_file = '',
+                    $map_to_guest = '',
+                    $max_log_size = '',
+                    $netbios_name = '',
+                    $obey_pam_restrictions = '',
                     $os_level = '',
+                    $pam_password_change = '',
+                    $panic_action = '',
+                    $passdb_backend = '',
+                    $passwd_chat = '*Enter\snew\s*\spassword:* %n\n *Retype\snew\s*\spassword:* %n\n *password\supdated\ssuccessfully* .',
+                    $passwd_program = '',
                     $preferred_master = '',
-                    $bind_interfaces_only = 'yes',
+                    $printcap_name = '',
+                    $printing = '',
+                    $security = '',
+                    $server_role = '',
+                    $server_string = '',
                     $shares = {},
-                    $users = {}, ) {
+                    $socket_options = '',
+                    $syslog = '',
+                    $unix_password_sync = '',
+                    $usershare_allow_guests = '',
+                    $users = {},
+                    $workgroup = '',
+                    $interfaces = '' ) {
 
   include samba::server::install
   include samba::server::config
@@ -41,26 +52,37 @@ class samba::server($interfaces = '',
   }
 
   samba::server::option {
-    'interfaces':           value => $interfaces;
-    'bind interfaces only': value => $bind_interfaces_only;
-    'security':             value => $security;
-    'server string':        value => $server_string;
-    'unix password sync':   value => $unix_password_sync;
-    'netbios name':         value => $netbios_name;
-    'workgroup':            value => $workgroup;
-    'socket options':       value => $socket_options;
-    'deadtime':             value => $deadtime;
-    'keepalive':            value => $keepalive;
-    'load printers':        value => $load_printers;
-    'printing':             value => $printing;
-    'printcap name':        value => $printcap_name;
-    'map to guest':         value => $map_to_guest;
-    'guest account':        value => $guest_account;
-    'disable spoolss':      value => $disable_spoolss;
-    'kernel oplocks':       value => $kernel_oplocks;
-    'pam password change':  value => $pam_password_change;
-    'os level':             value => $os_level;
-    'preferred master':     value => $preferred_master;
+    'bind interfaces only':       value => $bind_interfaces_only;
+    'deadtime':                   value => $deadtime;
+    'disable spoolss':            value => $disable_spoolss;
+    'dns proxy':                  value => $dns_proxy;
+    'guest account':              value => $guest_account;
+    'keepalive':                  value => $keepalive;
+    'kernel oplocks':             value => $kernel_oplocks;
+    'load printers':              value => $load_printers;
+    'log file':                   value => $log_file;
+    'map to guest':               value => $map_to_guest;
+    'max log size':               value => $max_log_size;
+    'netbios name':               value => $netbios_name;
+    'obey pam restrictions':      value => $obey_pam_restrictions;
+    'os level':                   value => $os_level;
+    'pam password change':        value => $pam_password_change;
+    'panic action':               value => $panic_action;
+    'passdb backend':             value => $passdb_backend;
+    'passwd chat':                value => $passwd_chat;
+    'passwd program':             value => $passwd_program;
+    'preferred master':           value => $preferred_master;
+    'printcap name':              value => $printcap_name;
+    'printing':                   value => $printing;
+    'security':                   value => $security;
+    'server role':                value => $server_role;
+    'server string':              value => $server_string;
+    'socket options':             value => $socket_options;
+    'syslog':                     value => $syslog;
+    'unix password sync':         value => $unix_password_sync;
+    'usershare allow guests':     value => $usershare_allow_guests;
+    'workgroup':                  value => $workgroup;
+    'interfaces':                 value => $interfaces;
   }
 
   create_resources(samba::server::share, $shares)

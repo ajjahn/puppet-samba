@@ -40,6 +40,8 @@ define samba::server::share($ensure = present,
                             $printer_name = '',
                             $msdfs_root = '',
                             $guest_account = '',
+                            $hosts_allow = '',
+                            $acl_allow_execute_always = '',
                             ) {
 
   $incl    = $samba::server::incl
@@ -238,6 +240,15 @@ define samba::server::share($ensure = present,
       $guest_account ? {
         ''      => "rm  \"${target}/guest account\"",
         default => "set \"${target}/guest account\" '${guest_account}'",
+      },
+      $hosts_allow ? {
+        ''      => "rm  \"${target}/hosts allow\"",
+        default => "set \"${target}/hosts allow\" '${hosts_allow}'",
+      },
+      $acl_allow_execute_always ? {
+        true    => "set \"${target}/acl allow execute always\" yes",
+        false   => "set \"${target}/acl allow execute always\" no",
+        default => "rm  \"${target}/acl allow execute always\"",
       },
     ]
 
