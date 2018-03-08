@@ -32,11 +32,19 @@ class samba::server($bind_interfaces_only = 'yes',
                     $usershare_allow_guests = '',
                     $users = {},
                     $workgroup = '',
-                    $interfaces = '' ) {
+                    $interfaces = '',
+                    $service_ensure = 'running',
+                    $service_enable = true,
+                    $service_manage = true,
+) {
 
   include samba::server::install
   include samba::server::config
-  include samba::server::service
+  class {'samba::server::service':
+    ensure => $service_ensure,
+    enable => $service_enable,
+    manage => $service_manage,
+  }
 
   $incl    = '/etc/samba/smb.conf'
   $context = '/files/etc/samba/smb.conf'
