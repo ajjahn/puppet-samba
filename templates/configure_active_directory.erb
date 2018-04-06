@@ -112,7 +112,7 @@ if [ "$action" = "join" ]; then
     fi
 
     logger -st $PROG "Joining AD domain" >&2
-    $NET ads $action -U "${winbind_acct}%${password}" ${ou_parameter} \
+    $NET ads $action -U "${winbind_acct}%${password}" "${ou_parameter}" \
 	| grep Joined && success=true || success=false
 
 if [ $success = "false" ]; then
