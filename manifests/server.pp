@@ -14,6 +14,7 @@ class samba::server($bind_interfaces_only = 'yes',
                     $netbios_name = '',
                     $obey_pam_restrictions = '',
                     $os_level = '',
+                    $package_name = 'samba',
                     $pam_password_change = '',
                     $panic_action = '',
                     $passdb_backend = '',
@@ -34,7 +35,9 @@ class samba::server($bind_interfaces_only = 'yes',
                     $workgroup = '',
                     $interfaces = '' ) {
 
-  include samba::server::install
+  class { '::samba::server::install':
+    package_name => $package_name,
+  }
   include samba::server::config
   include samba::server::service
 
