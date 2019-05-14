@@ -5,6 +5,7 @@ define samba::server::user (
   $user_name = $name,
 ) {
   require ::samba::server::install
+  include ::samba::server::service
 
   exec { "add smb account for ${user_name}":
     command => "/bin/echo -e '${password}\\n${password}\\n' | /usr/bin/pdbedit --password-from-stdin -a '${user_name}'",

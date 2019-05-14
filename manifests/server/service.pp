@@ -4,6 +4,7 @@ class samba::server::service (
   $ensure = running,
   $enable = true
 ) inherits samba::server::params {
+  include ::samba::server::config
 
   service { $samba::server::params::service_name :
     ensure     => $ensure,
